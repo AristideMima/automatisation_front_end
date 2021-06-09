@@ -1,0 +1,14 @@
+.header_count{
+    font-family: "Tempus Sans ITC";
+    font-size: large ;
+    color: cornflowerblue;
+    font-weight: bold;
+}
+
+.header_title{
+    /*font-family: "Tempus Sans ITC";*/
+    /*font-size: large ;*/
+    /*color: cornflowerblue;*/
+    font-weight: bold;
+    text-transform: uppercase;
+}

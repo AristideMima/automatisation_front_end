@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/automatisation_arrete.iml" filepath="$PROJECT_DIR$/automatisation_arrete.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../automatisation_arrete_backend/automatisation_arrete_backend.iml" filepath="$PROJECT_DIR$/../automatisation_arrete_backend/automatisation_arrete_backend.iml" />
     </modules>
   </component>
 </project>
