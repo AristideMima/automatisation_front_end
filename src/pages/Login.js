@@ -9,21 +9,13 @@ import {
     Paper,
     TextField,
     Typography,
-    Container
 } from "@material-ui/core";
 import logo from "../assets/newLogo.png";
-import { paperLogStyle } from '../constants/constants'
+import { paperLogStyle, gridContainerStyle } from '../constants/constants'
 import PropTypes from 'prop-types';
 import { Link, Redirect } from 'react-router-dom';
 import { connect } from "react-redux";
 import { login } from "../actions/auth";
-import image from '../assets/back_5.jpg'
-
-
-const gridContainerStyle = {
-    minHeight: '100vh',
-    backgroundImage: `url(${image})`
-}
 
 class Login extends Component {
 
@@ -55,6 +47,8 @@ class Login extends Component {
 
     render() {
 
+        if(this.props.auth.isAuthenticated) return <Redirect to="/Home"/>
+
         // get state properties
         const { username, password } = this.state
 
@@ -72,7 +66,7 @@ class Login extends Component {
                 <Grid item xs={8} md={4}>
                     <Grow  in={true} style={{ transformOrigin: '0 0 0' }}>
                         <Paper elevation={10}  style={paperLogStyle}>
-                            <form onSubmit={this.onSubmit} noValidate>
+                            <form onSubmit={this.onSubmit}>
                                 <Grid align='center'>
                                     <img  src={logo} alt="Afriland" className="" style={{ maxWidth: "40%"}} />
                                     <Box mt={5}>
@@ -117,7 +111,7 @@ class Login extends Component {
                             <Grid align="center">
                                 <Box mt={3} >
                                     <Typography>
-                                        Vous avez déjà un compte ?  <Link href="#" > Inscrivez-vous </Link>
+                                        Vous avez déjà un compte ?  <Link to="/Register">Inscrivez-vous</Link>
                                     </Typography>
                                 </Box>
                             </Grid>

@@ -1,5 +1,6 @@
 
 import { transitions, positions } from "react-alert";
+import image from "../assets/back_5.jpg";
 
 // Constants file
 
@@ -111,9 +112,30 @@ export const data = [
 
 // Alerts options
 export const alertOptions = {
-    position: positions.BOTTOM_CENTER,
+    position: positions.TOP_CENTER,
     timeout: 2000,
-    offset: '30px',
+    offset: '50px',
     // you can also just use 'scale'
     transition: transitions.SCALE
 }
+
+export const gridContainerStyle = {
+    minHeight: '100vh',
+    backgroundImage: `url(${image})`
+}
+
+export const FormStyles = theme => ({
+    root: {
+        display: 'flex',
+        flexWrap: 'wrap',
+    },
+    margin: {
+        margin: theme.spacing(1),
+    },
+    withoutLabel: {
+        marginTop: theme.spacing(3),
+    },
+    textField: {
+        width: '25ch',
+    },
+})

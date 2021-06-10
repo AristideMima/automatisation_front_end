@@ -20,8 +20,6 @@ export const loadUser  = () => (dispatch, getState) => {
     // Get the token from the state
     const token  = getState().auth.token
 
-    console.log(token)
-
     // Headers
     const config = {
         headers: {
@@ -42,7 +40,7 @@ export const loadUser  = () => (dispatch, getState) => {
                 payload: res.data
             })
         }).catch( err => {
-            console.log("error")
+            console.log("error LOADING")
             dispatch( returnErrors(err.response.data, err.response.status))
             dispatch({
                 type: AUTH_ERROR

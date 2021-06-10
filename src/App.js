@@ -1,11 +1,9 @@
 import React from 'react';
 import 'react-circular-progressbar/dist/styles.css';
 import "./assets/css/style.css"
-import { withStyles } from "@material-ui/core/styles";
 import PrivateRoute from "./components/common/PrivateRoute";
 import { Provider } from "react-redux";
 import { Provider as AlertProvider } from "react-alert";
-import {login} from "./actions/auth";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { Route, Switch } from 'react-router-dom';
@@ -13,13 +11,16 @@ import AlertTemplate from "react-alert-template-basic";
 import store from "./store";
 import { alertOptions } from "./constants/constants";
 import Alerts from "./pages/Alerts";
-import HomePage from "./pages/Home";
+import { loadUser } from "./actions/auth";
+import Home from "./pages/Home";
 
 class App extends React.Component {
 
 
      constructor(props) {
          super(props);
+
+         store.dispatch(loadUser())
 
      }
 
@@ -33,7 +34,7 @@ class App extends React.Component {
                     </div>
                     <div className='flyout'>
                         <Switch>
-                            <PrivateRoute exact path ='/HomeIdentity' component={HomePage} />
+                            <PrivateRoute exact path ='/Home' component={Home} />
                             <Route exact path ='/' component={Login} />
                             <Route exact path ='/Register' component={Register} />
                             <Route

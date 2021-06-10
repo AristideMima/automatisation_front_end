@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import { Route, Redirect, BrowserRouter as Router} from "react-router-dom";
+import { Route, Redirect} from "react-router-dom";
 import { connect} from "react-redux";
-// import Container from "../../pages/loading";
+import Container from "../loading";
 
 const PrivateRoute =  ({ component: Component, auth, ...rest }) => {
     return (
@@ -10,7 +10,7 @@ const PrivateRoute =  ({ component: Component, auth, ...rest }) => {
                 {...rest}
                 render={ props => {
                     if(auth.isLoading){
-                        return "Loading"
+                        return <Container/>
                     }else if(auth.isAuthenticated){
                         console.log("authenticated");
                         return <Component {...props} />
