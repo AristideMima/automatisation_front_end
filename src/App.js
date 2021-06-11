@@ -13,6 +13,7 @@ import { alertOptions } from "./constants/constants";
 import Alerts from "./pages/Alerts";
 import { loadUser } from "./actions/auth";
 import Home from "./pages/Home";
+import FileUpload from "./pages/FileUpload";
 
 class App extends React.Component {
 
@@ -37,6 +38,7 @@ class App extends React.Component {
                             <PrivateRoute exact path ='/Home' component={Home} />
                             <Route exact path ='/' component={Login} />
                             <Route exact path ='/Register' component={Register} />
+                            <Route exact path ='/FileUpload' component={FileUpload} />
                             <Route
                                 render={function() {
                                     return <h1>Not Found</h1>;

@@ -12,7 +12,7 @@ import {
     Divider,
     Drawer, Grid,
     IconButton,
-    Link, List, ListItem, ListItemIcon,
+     List, ListItem, ListItemIcon,
     Menu, Paper,
     Toolbar,
     Typography
@@ -34,6 +34,7 @@ import {CircularProgressbar} from "react-circular-progressbar";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import {ArgumentAxis, BarSeries, Chart, Title, Tooltip, ValueAxis} from "@devexpress/dx-react-chart-material-ui";
 import {Animation, EventTracker} from "@devexpress/dx-react-chart";
+import { Link } from 'react-router-dom'
 
 class Template extends Component {
 
@@ -259,7 +260,7 @@ class Template extends Component {
                     </div>
                     <Divider />
                     <List>
-                        {['Charger les fichiers', 'Lancer les calculs', 'Statistiques agence', 'Statistiques comptes'].map((text, index) => (
+                        {[<Link to ="/FileUpload">Charger les fichiers</Link>, 'Lancer les calculs', 'Statistiques agence', 'Statistiques comptes'].map((text, index) => (
                             <ListItem button key={text}>
                                 <ListItemIcon>{index % 2 === 0 ? <CloudUploadIcon /> : <AccountTreeIcon />}</ListItemIcon>
                                 <ListItemText primary={text} />

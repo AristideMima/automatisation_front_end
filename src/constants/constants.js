@@ -124,6 +124,12 @@ export const gridContainerStyle = {
     backgroundImage: `url(${image})`
 }
 
+export const gridUploadStyle = {
+    borderRadius: '10%',
+    border: '1px dashed #bdbdbd',
+    padding: "5%"
+}
+
 export const FormStyles = theme => ({
     root: {
         display: 'flex',
