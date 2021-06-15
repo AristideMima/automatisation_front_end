@@ -209,22 +209,16 @@ class Template extends Component {
                             >
                                 <AccountCircle />
                             </IconButton>
-                            <Link
-                                to="/"
+                            <IconButton
                                 onClick={this.props.logout}
-                                color="white"
+                                edge="end"
+                                aria-label="account of current user"
+                                aria-controls={menuId}
+                                aria-haspopup="true"
+                                color="inherit"
                             >
-                                <IconButton
-                                    edge="end"
-                                    aria-label="account of current user"
-                                    aria-controls={menuId}
-                                    aria-haspopup="true"
-                                    onClick={handleProfileMenuOpen}
-                                    color="inherit"
-                                >
-                                    <SettingsPowerIcon />
-                                </IconButton>
-                            </Link>
+                                <SettingsPowerIcon />
+                            </IconButton>
                         </div>
                         <div className={classes.sectionMobile}>
                             <IconButton

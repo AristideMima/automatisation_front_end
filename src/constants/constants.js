@@ -130,6 +130,15 @@ export const gridUploadStyle = {
     padding: "5%"
 }
 
+export const specialLinkLog = {
+    textDecoration: "none",
+    color: "#424242",
+    fontWeight: "bold",
+    hover: {
+        textDecoration: "underline"
+    }
+}
+
 export const FormStyles = theme => ({
     root: {
         display: 'flex',

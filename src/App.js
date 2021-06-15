@@ -37,8 +37,8 @@ class App extends React.Component {
                         <Switch>
                             <PrivateRoute exact path ='/Home' component={Home} />
                             <Route exact path ='/' component={Login} />
+                            <PrivateRoute exact path ='/FileUpload' component={FileUpload} />
                             <Route exact path ='/Register' component={Register} />
-                            <Route exact path ='/FileUpload' component={FileUpload} />
                             <Route
                                 render={function() {
                                     return <h1>Not Found</h1>;

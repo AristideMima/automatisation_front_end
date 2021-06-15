@@ -32,7 +32,6 @@ import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import {ArgumentAxis, BarSeries, Chart, Title, Tooltip, ValueAxis} from "@devexpress/dx-react-chart-material-ui";
 import {Animation, EventTracker} from "@devexpress/dx-react-chart";
 import {data, useStyles} from "../constants/constants";
-import {compose} from "redux";
 import {withStyles} from "@material-ui/core/styles";
 import Template from "./Template";
 

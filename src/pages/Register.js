@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { paperLogStyle, gridContainerStyle } from '../constants/constants'
+import {paperLogStyle, gridContainerStyle, specialLinkLog} from '../constants/constants'
 import {
     Box,
     Button,
@@ -18,6 +18,7 @@ import {Link, Redirect} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
 import { register } from "../actions/auth";
+import imageRegister from "../assets/add_user_male.svg"
 import { createMessage } from "../actions/messages";
 import { FormStyles } from "../constants/constants";
 
@@ -82,7 +83,8 @@ class Register extends Component {
                                     <Grid align='center'>
                                         <img  src={logo} alt="Afriland" className="" style={{ maxWidth: "40%"}} />
                                         <Box mt={5}>
-                                            <Typography variant="h4" color="textSecondary" > Inscription </Typography>
+                                            <img  src={imageRegister} alt="Inscription" className="" style={{ maxWidth: "12%"}} />
+                                            <Typography variant="h6" color="textSecondary" > Inscription </Typography>
                                         </Box>
                                     </Grid>
                                     <Box m={2}>
@@ -150,7 +152,7 @@ class Register extends Component {
                                 <Grid align="center">
                                     <Box mt={3} >
                                         <Typography display="inline">
-                                            Vous avez déjà un compte ?  <Link to="/" > Connectez-vous </Link>
+                                            Vous avez déjà un compte ?  <Link style={specialLinkLog} to="/" > Connectez-vous </Link>
                                         </Typography>
 
                                     </Box>

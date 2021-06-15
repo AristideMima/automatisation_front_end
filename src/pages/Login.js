@@ -11,7 +11,8 @@ import {
     Typography,
 } from "@material-ui/core";
 import logo from "../assets/newLogo.png";
-import { paperLogStyle, gridContainerStyle } from '../constants/constants'
+import loginImage from "../assets/external2.svg"
+import {paperLogStyle, gridContainerStyle, specialLinkLog} from '../constants/constants'
 import PropTypes from 'prop-types';
 import { Link, Redirect } from 'react-router-dom';
 import { connect } from "react-redux";
@@ -70,7 +71,8 @@ class Login extends Component {
                                 <Grid align='center'>
                                     <img  src={logo} alt="Afriland" className="" style={{ maxWidth: "40%"}} />
                                     <Box mt={5}>
-                                        <Typography variant="h4" color="textSecondary" >Connexion</Typography>
+                                        <img  src={loginImage} alt="login" className="" style={{ maxWidth: "12%"}} />
+                                        <Typography variant="h6" color="textSecondary" >Connexion</Typography>
                                     </Box>
                                 </Grid>
                                 <Box m={2}>
@@ -111,7 +113,7 @@ class Login extends Component {
                             <Grid align="center">
                                 <Box mt={3} >
                                     <Typography>
-                                        Vous avez déjà un compte ?  <Link to="/Register">Inscrivez-vous</Link>
+                                        Vous n'avez pas de compte ?  <Link style={specialLinkLog} to="/Register">Inscrivez-vous</Link>
                                     </Typography>
                                 </Box>
                             </Grid>
