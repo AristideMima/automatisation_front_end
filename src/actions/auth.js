@@ -34,13 +34,14 @@ export const loadUser  = () => (dispatch, getState) => {
 
     axios.get(`${url}api/auth/user`, config)
         .then( res => {
-            console.log("succsess")
+            console.log("sucesss")
             dispatch({
                 type: USER_LOADED,
                 payload: res.data
             })
         }).catch( err => {
             console.log("error LOADING")
+            console.log(err)
             dispatch( returnErrors(err.response.data, err.response.status))
             dispatch({
                 type: AUTH_ERROR

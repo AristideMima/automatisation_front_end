@@ -1,32 +1,11 @@
 import React, { Component  } from 'react'
-import { connect } from "react-redux";
-import PropTypes from 'prop-types'
-import { logout } from "../actions/auth";
 import {
-    AppBar,
-    Badge, Box,
-    CssBaseline,
+     Box,
     Divider,
-    Drawer, Grid,
-    IconButton,
+    Grid,
     Link,
-    List, ListItem, ListItemIcon, Menu, Paper,
-    Toolbar,
-    Typography
+     Paper,
 } from "@material-ui/core";
-import clsx from "clsx";
-import {
-    AccountTree as AccountTreeIcon,
-    ChevronRight as ChevronRightIcon, Close as CloseIcon, CloudUpload as CloudUploadIcon, Edit as EditIcon,
-    Mail as MailIcon, Menu as MenuItem,
-    Menu as MenuIcon, More as MoreIcon,
-    Notifications as NotificationsIcon,
-    SettingsPower as SettingsPowerIcon
-} from "@material-ui/icons";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import logo from "../assets/newLogo.png";
-import ListItemText from "@material-ui/core/ListItemText";
-import Settings from "@material-ui/icons/Settings";
 import {CircularProgressbar} from "react-circular-progressbar";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import {ArgumentAxis, BarSeries, Chart, Title, Tooltip, ValueAxis} from "@devexpress/dx-react-chart-material-ui";
@@ -53,7 +32,7 @@ class Home extends Component {
 
         const { data: chartData, targetItem } = this.state
 
-        const theme = this.props.theme;
+        // const theme = this.props.theme;
 
         const title = 'Tableau de bord -  Arrêtés des comptes'
         const subTitle = 'Bienvenue sur cette interface qui vous permet d\'effectuer vos arrêtés de comptes.'

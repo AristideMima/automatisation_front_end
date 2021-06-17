@@ -2,9 +2,9 @@ import React, { Component  } from 'react'
 import { connect } from "react-redux";
 import PropTypes from 'prop-types'
 import { logout } from "../actions/auth";
-import {compose} from "redux";
+import { compose } from "redux";
 import {withStyles} from "@material-ui/core/styles";
-import {data, useStyles} from "../constants/constants";
+import { useStyles} from "../constants/constants";
 import {
     AppBar,
     Badge, Box,
@@ -13,7 +13,7 @@ import {
     Drawer, Grid,
     IconButton,
      List, ListItem, ListItemIcon,
-    Menu, Paper,
+    Menu,
     Toolbar,
     Typography
 } from "@material-ui/core";
@@ -30,10 +30,6 @@ import clsx from "clsx";
 import logo from "../assets/newLogo.png";
 import ListItemText from "@material-ui/core/ListItemText";
 import Settings from "@material-ui/icons/Settings";
-import {CircularProgressbar} from "react-circular-progressbar";
-import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
-import {ArgumentAxis, BarSeries, Chart, Title, Tooltip, ValueAxis} from "@devexpress/dx-react-chart-material-ui";
-import {Animation, EventTracker} from "@devexpress/dx-react-chart";
 import { Link } from 'react-router-dom'
 
 class Template extends Component {
@@ -61,7 +57,6 @@ class Template extends Component {
         const { classes } = this.props;
 
         const theme = this.props.theme;
-        console.log(this.props)
         const  {open, auth, mobileMoreAnchorEl, anchorEl, data: chartData, targetItem} = this.state;
         // const [auth, setAuth] = React.useState(true);
         // const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -91,24 +86,24 @@ class Template extends Component {
             })
         };
 
-        const handleChange = (event) => {
-            this.setState({
-                auth: event.target.checked
-            })
-        };
-
+        // const handleChange = (event) => {
+        //     this.setState({
+        //         auth: event.target.checked
+        //     })
+        // };
+        //
         const handleMobileMenuClose = () => {
             this.setState({
                 mobileMoreAnchorEl: null
             })
         };
-
-        const handleMenuClose = () => {
-            this.setState({
-                anchorEl: null
-            })
-            handleMobileMenuClose();
-        };
+        //
+        // const handleMenuClose = () => {
+        //     this.setState({
+        //         anchorEl: null
+        //     })
+        //     handleMobileMenuClose();
+        // };
 
         const handleProfileMenuOpen = (event) => {
             this.setState({

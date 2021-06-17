@@ -14,6 +14,7 @@ import Alerts from "./pages/Alerts";
 import { loadUser } from "./actions/auth";
 import Home from "./pages/Home";
 import FileUpload from "./pages/FileUpload";
+import Calcul from "./pages/Calcul";
 
 class App extends React.Component {
 
@@ -38,6 +39,7 @@ class App extends React.Component {
                             <PrivateRoute exact path ='/Home' component={Home} />
                             <Route exact path ='/' component={Login} />
                             <PrivateRoute exact path ='/FileUpload' component={FileUpload} />
+                            <PrivateRoute exact path ='/Calcul' component={Calcul} />
                             <Route exact path ='/Register' component={Register} />
                             <Route
                                 render={function() {

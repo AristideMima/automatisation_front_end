@@ -1,5 +1,5 @@
 import { Component, Fragment } from 'react'
-import { withAlert, useAlert } from "react-alert";
+import { withAlert } from "react-alert";
 import { connect } from "react-redux";
 import PropTypes from 'prop-types';
 
@@ -44,7 +44,10 @@ class Alerts extends Component {
 
         if( message !== prevProps.message) {
 
-            if (message.clientMsg) alert.success(message.clientMsg)
+            // if (message.clientMsg) alert.success(message.clientMsg)
+
+            if (message.fileupload) alert.success(message.fileupload)
+
 
             if (message.passwordDoNotMatch) alert.error(message.passwordDoNotMatch)
         }

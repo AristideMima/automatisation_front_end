@@ -20,6 +20,16 @@ export const useStyles = theme => ({
         fontFamily: "cursive",
         fontSize: "x-large",
     },
+    instructions: {
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    },
+    backButton: {
+        marginRight: theme.spacing(1),
+    },
+    rootStepper: {
+        width: '100%',
+    },
 
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
@@ -112,7 +122,7 @@ export const data = [
 
 // Alerts options
 export const alertOptions = {
-    position: positions.TOP_CENTER,
+    position: positions.MIDDLE,
     timeout: 2000,
     offset: '50px',
     // you can also just use 'scale'

@@ -1,19 +1,18 @@
-import {AUTH_ERROR, USER_LOADED, USER_LOADING} from "./types";
+import {AUTH_ERROR, FILE_UPLOAD_SUCCESS, USER_LOADED, USER_LOADING} from "./types";
 import axios from "axios";
 import {returnErrors} from "./messages";
+import { createMessage } from "./messages";
 
 
-
-
-
-let url = "http://127.0.0.1:8000/"
+const url = 'http://127.0.0.1:8000/api/upload/';
 
 // Upload file to the server
-export const fileUpload  = () => (dispatch, getState) => {
-    dispatch({type: USER_LOADING,})
+export const fileUpload  = (file) => (dispatch) => {
+
+    dispatch({type: FILE_UPLOAD_SUCCESS,})
 
     // Get the token from the state
-    const token  = getState().auth.token
+    //const token  = getState().auth.token
 
     // Headers
     const config = {
@@ -23,22 +22,18 @@ export const fileUpload  = () => (dispatch, getState) => {
     }
 
     // If token, add to headers
-    if(token){
-        config.headers['Authorization'] = `Token  ${token}`
-    }
+    // if(token){
+    //     config.headers['Authorization'] = `Token  ${token}`
+    // }
 
-    axios.post(`${url}api/auth/user`, config)
-        .then( res => {
-            console.log("succsess")
-            dispatch({
-                type: USER_LOADED,
-                payload: res.data
-            })
+    const formData = new FormData();
+    formData.append('file', file);
+
+    axios.put(`${url}`, formData)
+        .then( res =>{
+            //dispatch(createMessage({ fileupload: res.data}));
+            console.log(res.data)
         }).catch( err => {
-        console.log("error LOADING")
-        dispatch( returnErrors(err.response.data, err.response.status))
-        dispatch({
-            type: AUTH_ERROR
-        })
+        console.log(err)
     })
 }

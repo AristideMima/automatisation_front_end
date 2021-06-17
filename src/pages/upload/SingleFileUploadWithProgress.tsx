@@ -2,6 +2,7 @@ import { Grid, LinearProgress } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import { FileHeader } from './FileHeader';
 import React from 'react';
+import axios from 'axios'
 
 export interface SingleFileUploadWithProgressProps {
     file: File;
@@ -34,12 +35,13 @@ export function SingleFileUploadWithProgress({
 }
 
 function uploadFile(file: File, onProgress: (percentage: number) => void) {
-    const url = 'https://api.cloudinary.com/v1_1/demo/image/upload';
-    const key = 'docs_upload_example_us_preset';
+    const url = 'http://127.0.0.1:8000/api/upload/';
+    const key = 'file';
 
     return new Promise<string>((res, rej) => {
+
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', url);
+        xhr.open('put', url);
 
         xhr.onload = () => {
             const resp = JSON.parse(xhr.responseText);
@@ -55,8 +57,23 @@ function uploadFile(file: File, onProgress: (percentage: number) => void) {
 
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('upload_preset', key);
+        //formData.append('upload_preset', key);
 
-        xhr.send(formData);
+        axios.put(`${url}`, formData)
+            .then( res =>{
+                console.log(res.data)
+            }).catch( err => {
+                console.log(err)
+        })
+
+        // xhr.setRequestHeader('Authorization', ' Token ' + JWT);
+        // xhr.setRequestHeader("Content-type", "application/json")
+        // axios.put(`${url}`, formData).then(res => {
+        //     console.log(res)
+        // }).catch(err => {
+        //     console.log(err)
+        // })
+
+        //xhr.send(formData);
     });
 }
