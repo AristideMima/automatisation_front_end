@@ -8,6 +8,10 @@ export  const paperLogStyle = { padding: 30}
 
 const drawerWidth = 240;
 
+export const formStepperStyle = {
+    padding: "2%"
+}
+
 export const useStyles = theme => ({
 
     root: {
