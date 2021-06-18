@@ -40,7 +40,6 @@ export const loadUser  = () => (dispatch, getState) => {
                 payload: res.data
             })
         }).catch( err => {
-            console.log("error LOADING")
             console.log(err)
             dispatch( returnErrors(err.response.data, err.response.status))
             dispatch({

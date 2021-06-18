@@ -65,10 +65,7 @@ class FileUpload extends Component {
 
     render() {
 
-
-
-
-        const title = 'Upload des fchiers'
+        const title = 'Upload des fichiers'
         const subTitle = 'Cliquez sur l\'icone pour pouvoir envoyers les fichiers vers le serveur'
 
         const content = (

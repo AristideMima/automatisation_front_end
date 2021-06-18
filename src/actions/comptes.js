@@ -1,29 +1,9 @@
 import axios from "axios";
-import { HISTORIQUE_LOADED_SUCCESS } from "./types";
+import { COMPTES_LOADED_SUCCESS } from "./types";
 import { returnErrors } from "./messages";
 
-let url = 'http://127.0.0.1:8000/api'
+let url = 'http://127.0.0.1:8000/api/comptes'
 
-// get historiques values
-export const getHistoriques = () => (dispatch, getState) => {
-
-    const config = {
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }
-    axios.get(`${url}/historiques`)
-        .then( res => {
-            console.log("Data retrieved")
-            dispatch({
-                type: HISTORIQUE_LOADED_SUCCESS,
-                payload: res.data
-            })
-
-        }).catch( err => {
-        dispatch(returnErrors(err.response, err.response.status))
-    })
-}
 
 // get comptes values
 export const getComptes = () => (dispatch, getState) => {
@@ -33,11 +13,10 @@ export const getComptes = () => (dispatch, getState) => {
             'Content-Type': 'application/json'
         }
     }
-    axios.get(`${url}/comptes`)
+    axios.get(`${url}`, config)
         .then( res => {
-            console.log("Data retrieved")
             dispatch({
-                type: HISTORIQUE_LOADED_SUCCESS,
+                type: COMPTES_LOADED_SUCCESS,
                 payload: res.data
             })
 
@@ -45,27 +24,3 @@ export const getComptes = () => (dispatch, getState) => {
         dispatch(returnErrors(err.response, err.response.status))
     })
 }
-
-// get operations values
-export const getOperations = () => (dispatch, getState) => {
-
-    const config = {
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }
-
-    axios.get(`${url}/operations`)
-        .then( res => {
-            console.log("Data retrieved")
-            dispatch({
-                type: HISTORIQUE_LOADED_SUCCESS,
-                payload: res.data
-            })
-
-        }).catch( err => {
-        dispatch(returnErrors(err.response, err.response.status))
-    })
-}
-
-

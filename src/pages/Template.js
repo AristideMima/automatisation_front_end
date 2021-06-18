@@ -249,7 +249,7 @@ class Template extends Component {
                     </div>
                     <Divider />
                     <List>
-                        {[<Link to ="/FileUpload">Charger les fichiers</Link>, 'Lancer les calculs', 'Statistiques agence', 'Statistiques comptes'].map((text, index) => (
+                        {[<Link to ="/FileUpload">Charger les fichiers</Link>, <Link to ="/Calcul">Lancer les calculs</Link>, 'Statistiques agence', 'Statistiques comptes'].map((text, index) => (
                             <ListItem button key={text}>
                                 <ListItemIcon>{index % 2 === 0 ? <CloudUploadIcon /> : <AccountTreeIcon />}</ListItemIcon>
                                 <ListItemText primary={text} />
@@ -270,17 +270,12 @@ class Template extends Component {
                     <div className={classes.toolbar} />
                     <Grid container spacing={3}>
                         <Grid item xs={12}>
-                            <Box
-                                mt={5}
-                                mb={1}
-                            >
+                            <Box mt={5} mb={1} >
                                 <Typography variant="h4" color="textSecondary" className="header_title">
                                     {this.props.component['title']}
                                 </Typography>
                             </Box>
-                            <Box
-                                mb={4}
-                            >
+                            <Box mb={4}>
                                 <Typography variant="inherit"  display="block" color="textSecondary" >
                                     {this.props.component['subTitle']}
                                 </Typography>

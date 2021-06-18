@@ -53,9 +53,7 @@ class Register extends Component {
             })
         }else{
             const newUser = { username, email, password }
-
             this.props.register(newUser)
-
         }
 
     }

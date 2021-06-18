@@ -4,11 +4,15 @@ import messages from "./messages";
 import auth from './auth'
 import files from './files'
 import historiques from "./historiques";
+import comptes from "./comptes";
+import operations from "./operations";
 
 export default combineReducers({
     errors,
     messages,
     auth,
     files,
-    historiques
+    historiques,
+    comptes,
+    operations
 })

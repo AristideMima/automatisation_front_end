@@ -1,28 +1,26 @@
 import {
-    HISTORIQUE_LOADED_SUCCESS, HISTORIQUE_LOADED_FAILED
+    HISTORIQUE_LOADED_SUCCESS, HISTORIQUE_LOADED_FAILED, OPERATION_LOADED_SUCCESS, OPERATION_LOADED_FAILED
 } from "../actions/types";
 
 
 const initialState = {
-   historiques :  []
+   operations :  []
 }
 
 export default function (state = initialState, action) {
 
         switch (action.type) {
-            case HISTORIQUE_LOADED_SUCCESS:
-                console.log("Yeah file uploaded")
+            case OPERATION_LOADED_SUCCESS:
                 return {
                     ...state,
-                    historiques: action.payload
+                    operations: action.payload
                 };
-            case HISTORIQUE_LOADED_FAILED:
+            case OPERATION_LOADED_FAILED:
                 return {
                     ...state,
-                    historiques: []
+                    operations: []
                 };
             default:
                 return state;
         }
 }
-
