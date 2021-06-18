@@ -102,103 +102,164 @@ class SelectAccount extends Component{
 
 }
 
-function SelectOperation(props){
+class SelectOperation extends Component{
 
-    const columns = [
-        {
-            name: "code_operation",
-            label: "Code opération",
-            options: {
-                filter: true,
-                sort: true
-            }
-        },
-    ];
 
-    const options = {
-        filterType: 'checkbox',
-        rowsPerPage: 5,
-    };
+    constructor(props) {
+        super(props);
 
-    return (
-        <>
-            <MUIDataTable
-                title={"Opérations à exclure"}
-                data={props.data}
-                columns={columns}
-                options={options}
-            />
-        </>
-    );
+        this.state = {
+            data: this.props.data,
+            operations_selected : [],
+            columns : [
+                {
+                    name: "code_operation",
+                    label: "Code opération",
+                    options: {
+                        filter: true,
+                        sort: true
+                    }
+                },
+            ],
+            options : {
+                filterType: 'checkbox',
+                rowsPerPage: 5,
+                onRowsSelect: this.onRowsSelect,
+                print: false,
+                download: false,
+                filter: false,
+                viewColumns: false
+            },
+        }
+    }
+
+    onRowsSelect = (curRowSelected, allRowsSelected) => {
+
+        // console.log("Row Selected: ", this.state.data[curRowSelected[0].index].num_compte);
+        // console.log("All Selected: ", allRowsSelected);
+
+        const operations = allRowsSelected.map( ind => this.state.data[ind.index].code_operation)
+
+        this.sendOperation(operations)
+    }
+
+    sendOperation = (operations) => {
+        console.log("called")
+        this.props.getOpera(operations)
+    }
+
+
+    render() {
+        return (
+            <>
+                <MUIDataTable
+                    title={"Opérations à exclure"}
+                    data={this.state.data}
+                    columns={this.state.columns}
+                    options={this.state.options}
+                />
+            </>
+        );
+    }
 }
 
-function FormStepper (){
-     return (
-         <>
-             <Paper elevation={10} style={formStepperStyle}>
-                 <form>
-                     <Grid spacing={2} container justify="center">
-                         <Grid item md={3}>
-                             <Box>
-                                 <TextField
-                                     name="taux_interet_1"
-                                     label='Taux d’intérêts 1'
-                                     placeholder="Taux d’intérêts"
-                                     defaultValue={13.5}
-                                     type="number"
-                                     required/>
-                             </Box>
-                         </Grid>
-                         <Grid item md={3}>
-                             <Box>
-                                 <TextField
-                                     name="taux_interet_2"
-                                     label='Taux d’intérêts 2'
-                                     placeholder="Taux d’intérêts"
-                                     defaultValue={14.5}
-                                     type="number"
-                                     required/>
-                             </Box>
-                         </Grid>
-                         <Grid item md={3}>
-                             <Box >
-                                 <TextField
-                                     name="taux_comission"
-                                     label='Taux de commissions,'
-                                     placeholder="Taux de commissions,"
-                                     defaultValue={0.025}
-                                     type="number"
-                                     fullWidth
-                                     required/>
-                             </Box>
-                         </Grid>
-                         <Grid item md={3}>
-                             <Box >
-                                 <TextField
-                                     name="fort_decouvert"
-                                     label='Taux du plus fort découvert'
-                                     placeholder="Taux du plus fort découvert"
-                                     defaultValue={0.020833}
-                                     fullWidth
-                                     required/>
-                             </Box>
-                         </Grid>
-                         <Grid item md={3}>
-                             <Box >
-                                 <TextField
-                                     name="tva"
-                                     label='TVA'
-                                     placeholder="tva"
-                                     defaultValue={19.25}
-                                     fullWidth
-                                     required/>
-                             </Box>
-                         </Grid>
-                     </Grid>
-                 </form>
-             </Paper>
-         </>
-     )
+class FormStepper extends Component {
+
+    state = {
+        taux_int_1: 13.25,
+        taux_int_2: 14.25,
+        taux_com: 0.025,
+        fort_dec: 0.02,
+        tva: 19.25
+    }
+
+    handleChange = (e) => {
+        this.setState({
+            [e.target.name]: e.target.value
+        })
+
+        this.props.updateOptions(this.state)
+    }
+
+
+    render() {
+
+        const { taux_int_1, taux_int_2, taux_com, fort_dec, tva } = this.state
+
+        return (
+            <>
+                <Paper elevation={10} style={formStepperStyle}>
+                    <form>
+                        <Grid spacing={2} container justify="center">
+                            <Grid item md={3}>
+                                <Box>
+                                    <TextField
+                                        name="taux_int_1"
+                                        label='Taux d’intérêts 1'
+                                        placeholder="Taux d’intérêts"
+                                        defaultValue={13.5}
+                                        value={taux_int_1}
+                                        onChange={this.handleChange}
+                                        type="number"
+                                        required/>
+                                </Box>
+                            </Grid>
+                            <Grid item md={3}>
+                                <Box>
+                                    <TextField
+                                        name="taux_int_2"
+                                        label='Taux d’intérêts 2'
+                                        placeholder="Taux d’intérêts"
+                                        defaultValue={14.5}
+                                        value={taux_int_2}
+                                        onChange={this.handleChange}
+                                        type="number"
+                                        required/>
+                                </Box>
+                            </Grid>
+                            <Grid item md={3}>
+                                <Box >
+                                    <TextField
+                                        name="taux_com"
+                                        label='Taux de commissions,'
+                                        placeholder="Taux de commissions,"
+                                        defaultValue={0.025}
+                                        type="number"
+                                        value={taux_com}
+                                        onChange={this.handleChange}
+                                        required/>
+                                </Box>
+                            </Grid>
+                            <Grid item md={3}>
+                                <Box >
+                                    <TextField
+                                        name="fort_dec"
+                                        label='Taux du plus fort découvert'
+                                        placeholder="Taux du plus fort découvert"
+                                        defaultValue={0.020833}
+                                        value={fort_dec}
+                                        onChange={this.handleChange}
+                                        required/>
+                                </Box>
+                            </Grid>
+                            <Grid item md={3}>
+                                <Box >
+                                    <TextField
+                                        name="tva"
+                                        label='TVA'
+                                        placeholder="tva"
+                                        defaultValue={19.25}
+                                        value={tva}
+                                        onChange={this.handleChange}
+                                        required/>
+                                </Box>
+                            </Grid>
+                        </Grid>
+                    </form>
+                </Paper>
+            </>
+        )
+    }
 }
 
 class Calcul extends Component {
@@ -226,8 +287,18 @@ class Calcul extends Component {
         this.setState({
             accounts: accs
         })
+    }
+    getOperations = (ops) => {
+        this.setState({
+            operations: ops
+        })
+    }
+    updateOptions = (optionsChild) => {
+        this.setState({
+            options: optionsChild
+        })
 
-        // console.log(accs)
+        console.log(optionsChild)
     }
 
     static propTypes = {
@@ -249,9 +320,9 @@ class Calcul extends Component {
             case 0:
                 return <SelectAccount getAccount={this.getAccounts} data={this.props.comptes} />;
             case 1:
-                return <SelectOperation  data={this.props.operations} />;
+                return <SelectOperation getOpera={this.getOperations}  data={this.props.operations} />;
             case 2:
-                return <FormStepper />;
+                return <FormStepper updateProps={this.updateOptions} />;
             case 3:
                 return 'cliquez sur lancer l\'arrêté';
             default:
@@ -276,16 +347,18 @@ class Calcul extends Component {
                 }
                 return;
             case 1:
-                if(this.state.operations.length !== 0){
-                    this.setState((prevState) => ({
-                        activeStep: prevState.activeStep + 1
-                    }) )
-                }
+                this.setState((prevState) => ({
+                    activeStep: prevState.activeStep + 1
+                }))
+                return;
             case 2:
                 const obj = this.state.options
                 const res = Object.keys(obj).every((k) => isNaN(obj[k]))
-
-                console.log(res)
+                if (!res){
+                    this.setState((prevState) => ({
+                        activeStep: prevState.activeStep + 1
+                    }))
+                }
                 return;
             default:
                 return;
