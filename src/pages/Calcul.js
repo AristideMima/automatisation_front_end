@@ -8,7 +8,20 @@ import { getCalcul } from "../actions/calculs";
 
 import {
     Grid,
-    Button, Stepper, Step, StepLabel, Typography, Box, Paper, TextField,
+    Button,
+    Stepper,
+    Step,
+    StepLabel,
+    Typography,
+    Box,
+    Paper,
+    TextField,
+    Table,
+    TableRow,
+    TableCell,
+    TableBody,
+    TableHead,
+    TableContainer,
 } from "@material-ui/core";
 import { formStepperStyle, useStyles} from "../constants/constants";
 import { compose } from "redux";
@@ -322,6 +335,7 @@ class Calcul extends Component {
 
     state = {
         open: false,
+        classes: this.props,
         activeStep: 0,
         accounts: [],
         index: [],
@@ -394,10 +408,117 @@ class Calcul extends Component {
             case 2:
                 return <FormStepper updateProps={this.updateOptions} options={this.state.options} />;
             case 3:
-                return <Grid container spacing={2}>
-                    <Grid item md={4} xs={12}>Account table</Grid>
-                    <Grid item md={4} xs={12}>Opération table</Grid>
-                    <Grid item md={4} xs={12}>Options table</Grid>
+                return<Grid container spacing={2}>
+                    <Grid item md={3} xs={12}>
+                        <TableContainer component={Paper}>
+                            <Table className={this.state.classes.table} aria-label="simple table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Index</TableCell>
+                                        <TableCell>Numéro de compte</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {this.state.accounts.map((account, index) => (
+                                            <TableRow key={index+1}>
+                                                <TableCell component="th" scope="row">
+                                                    {index}
+                                                </TableCell>
+                                                <TableCell component="th" scope="row">
+                                                    {account}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                </TableBody>
+                                </Table>
+                        </TableContainer>
+                    </Grid>
+                    <Grid item md={3} xs={12}>
+                        <TableContainer component={Paper}>
+                            <Table className={this.state.classes.table} aria-label="simple table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Index</TableCell>
+                                        <TableCell>Opérations à exclure</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {this.state.operations.map((operation, index) => (
+                                        <TableRow key={index+1}>
+                                            <TableCell component="th" scope="row">
+                                                {index}
+                                            </TableCell>
+                                            <TableCell component="th" scope="row">
+                                                {operation}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Grid>
+                    <Grid item md={6} xs={12}>
+                        <TableContainer component={Paper}>
+                            <Table className={this.state.classes.table} aria-label="simple table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Index</TableCell>
+                                        <TableCell>Option</TableCell>
+                                        <TableCell>Valeur</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                     <TableRow key={1}>
+                                        <TableCell component="th" scope="row">
+                                            {1}
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            Taux d'intérêts débiteurs
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            {this.state.options["taux_int_1"]} et {this.state.options["taux_int_2"]}
+                                        </TableCell>
+                                    </TableRow>
+
+                                    <TableRow key={2}>
+                                        <TableCell component="th" scope="row">
+                                            {2}
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            Commission & plus Fort découvert
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            {this.state.options["taux_com"]} et {this.state.options["fort_dec"]}
+                                        </TableCell>
+                                    </TableRow>
+
+                                    <TableRow key={3}>
+                                        <TableCell component="th" scope="row">
+                                            {3}
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            Tva
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            {this.state.options["tva"]}
+                                        </TableCell>
+                                    </TableRow>
+
+                                    <TableRow key={4}>
+                                        <TableCell component="th" scope="row">
+                                            {4}
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            Période d'arrêté
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            {this.state.options["date_deb"]} au  {this.state.options["date_fin"]}
+                                        </TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Grid>
                 </Grid>
 
             default:
@@ -506,9 +627,11 @@ class Calcul extends Component {
                         ) : (
                             <div>
                                 <Grid container justify="center">
-                                    <Box mt={5} mb={5}>
-                                        <div className={classes.instructions}>{this.getStepContent(activeStep)}</div>
-                                    </Box>
+                                    <Grid item md={10}>
+                                        <Box mt={5} mb={5}>
+                                            <div className={classes.instructions}>{this.getStepContent(activeStep)}</div>
+                                        </Box>
+                                    </Grid>
                                 </Grid>
                             </div>
                         )}
