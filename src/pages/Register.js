@@ -10,7 +10,6 @@ import {
     Paper,
     TextField,
     Typography,
-    FormControl,
 
 } from "@material-ui/core";
 import logo from "../assets/newLogo.png";
@@ -20,7 +19,6 @@ import { connect } from "react-redux";
 import { register } from "../actions/auth";
 import imageRegister from "../assets/add_user_male.svg"
 import { createMessage } from "../actions/messages";
-import { FormStyles } from "../constants/constants";
 
 class Register extends Component {
 

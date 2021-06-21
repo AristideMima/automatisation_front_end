@@ -15,6 +15,7 @@ import { loadUser } from "./actions/auth";
 import Home from "./pages/Home";
 import FileUpload from "./pages/FileUpload";
 import Calcul from "./pages/Calcul";
+import Results from "./pages/Results";
 
 class App extends React.Component {
 
@@ -41,6 +42,7 @@ class App extends React.Component {
                             <PrivateRoute exact path ='/FileUpload' component={FileUpload} />
                             <PrivateRoute exact path ='/Calcul' component={Calcul} />
                             <Route exact path ='/Register' component={Register} />
+                            <Route exact path ='/Results' component={Results} />
                             <Route
                                 render={function() {
                                     return <h1>Not Found</h1>;

@@ -168,3 +168,5 @@ export const FormStyles = theme => ({
         width: '25ch',
     },
 })
+
+export const pointer = {cursor: 'pointer'};

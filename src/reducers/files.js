@@ -8,7 +8,7 @@ const initialState = {
    files :  []
 }
 
-export default function (state = initialState, action) {
+export default function files(state = initialState, action) {
 
         switch (action.type) {
             case FILE_UPLOAD_SUCCESS:

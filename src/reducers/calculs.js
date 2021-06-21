@@ -1,24 +1,24 @@
 import {
-    COMPTES_LOADED_SUCCESS, COMPTES_LOADED_FAILED
+    GET_CALCUL_SUCESS, GET_CALCUL_FAILED
 } from "../actions/types";
 
 
 const initialState = {
-   comptes :  []
+   calculs :  []
 }
 
-export default function (state = initialState, action) {
+export default function calculs(state = initialState, action) {
 
         switch (action.type) {
-            case COMPTES_LOADED_SUCCESS:
+            case GET_CALCUL_SUCESS:
                 return {
                     ...state,
-                    comptes: action.payload
+                    calculs: action.payload
                 };
-            case COMPTES_LOADED_FAILED:
+            case GET_CALCUL_FAILED:
                 return {
                     ...state,
-                    comptes: []
+                    calculs: []
                 };
             default:
                 return state;

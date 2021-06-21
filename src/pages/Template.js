@@ -5,6 +5,9 @@ import { logout } from "../actions/auth";
 import { compose } from "redux";
 import {withStyles} from "@material-ui/core/styles";
 import { useStyles} from "../constants/constants";
+import {  Redirect } from "react-router-dom";
+import ViewComfyIcon from '@material-ui/icons/ViewComfy';
+
 import {
     AppBar,
     Badge, Box,
@@ -13,30 +16,28 @@ import {
     Drawer, Grid,
     IconButton,
      List, ListItem, ListItemIcon,
-    Menu,
+    // Menu,
     Toolbar,
     Typography
 } from "@material-ui/core";
 import {
-    AccountTree as AccountTreeIcon,
     ChevronRight as ChevronRightIcon, Close as CloseIcon, CloudUpload as CloudUploadIcon, Edit as EditIcon,
     Mail as MailIcon,
     Menu as MenuIcon,
-    Menu as MenuItem, More as MoreIcon,
-    Notifications as NotificationsIcon, SettingsPower as SettingsPowerIcon
+    // Menu as MenuItem,
+    More as MoreIcon,
+    Notifications as NotificationsIcon, SettingsPower as SettingsPowerIcon,
 } from "@material-ui/icons";
+
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import clsx from "clsx";
 import logo from "../assets/newLogo.png";
 import ListItemText from "@material-ui/core/ListItemText";
 import Settings from "@material-ui/icons/Settings";
-import { Link } from 'react-router-dom'
+import { pointer } from "../constants/constants"
+import HomeIcon from '@material-ui/icons/Home';
 
 class Template extends Component {
-
-    constructor(props) {
-        super(props);
-    }
 
     static propTypes = {
         logout: PropTypes.func.isRequired
@@ -47,24 +48,27 @@ class Template extends Component {
         auth: true,
         mobileMoreAnchorEl: null,
         anchorEl: null,
+        redirect: null
     }
-
 
     render() {
 
+        if (this.state.redirect){
+            return <Redirect to={this.state.redirect} />
+        }
         // datas
 
         const { classes } = this.props;
 
         const theme = this.props.theme;
-        const  {open, auth, mobileMoreAnchorEl, anchorEl, data: chartData, targetItem} = this.state;
+        const  {open} = this.state;
         // const [auth, setAuth] = React.useState(true);
         // const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
         // const [anchorEl, setAnchorEl] = React.useState(null);
 
 
-        const isMenuOpen = Boolean(anchorEl);
-        const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+        // const isMenuOpen = Boolean(anchorEl);
+        // const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
         const handleMobileMenuOpen = (event) => {
             this.setState({
@@ -92,11 +96,11 @@ class Template extends Component {
         //     })
         // };
         //
-        const handleMobileMenuClose = () => {
-            this.setState({
-                mobileMoreAnchorEl: null
-            })
-        };
+        // const handleMobileMenuClose = () => {
+        //     this.setState({
+        //         mobileMoreAnchorEl: null
+        //     })
+        // };
         //
         // const handleMenuClose = () => {
         //     this.setState({
@@ -112,45 +116,45 @@ class Template extends Component {
         };
 
         const mobileMenuId = 'primary-search-account-menu-mobile';
-        const renderMobileMenu = (
-            <Menu
-                anchorEl={mobileMoreAnchorEl}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                id={mobileMenuId}
-                keepMounted
-                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                open={isMobileMenuOpen}
-                onClose={handleMobileMenuClose}
-            >
-                <MenuItem>
-                    <IconButton aria-label="show 4 new mails" color="inherit">
-                        <Badge badgeContent={4} color="#F23937">
-                            <MailIcon />
-                        </Badge>
-                    </IconButton>
-                    <p>Messages</p>
-                </MenuItem>
-                <MenuItem>
-                    <IconButton aria-label="show 11 new notifications" color="inherit">
-                        <Badge badgeContent={11} color="secondary">
-                            <NotificationsIcon />
-                        </Badge>
-                    </IconButton>
-                    <p>Notifications</p>
-                </MenuItem>
-                <MenuItem onClick={handleProfileMenuOpen}>
-                    <IconButton
-                        aria-label="account of current user"
-                        aria-controls="primary-search-account-menu"
-                        aria-haspopup="true"
-                        color="inherit"
-                    >
-                        <AccountCircle />
-                    </IconButton>
-                    <p>Profile</p>
-                </MenuItem>
-            </Menu>
-        );
+        // const renderMobileMenu = (
+        //     <Menu
+        //         anchorEl={mobileMoreAnchorEl}
+        //         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        //         id={mobileMenuId}
+        //         keepMounted
+        //         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        //         open={isMobileMenuOpen}
+        //         onClose={handleMobileMenuClose}
+        //     >
+        //         <MenuItem>
+        //             <IconButton aria-label="show 4 new mails" color="inherit">
+        //                 <Badge badgeContent={4} color="#F23937">
+        //                     <MailIcon />
+        //                 </Badge>
+        //             </IconButton>
+        //             <p>Messages</p>
+        //         </MenuItem>
+        //         <MenuItem>
+        //             <IconButton aria-label="show 11 new notifications" color="inherit">
+        //                 <Badge badgeContent={11} color="secondary">
+        //                     <NotificationsIcon />
+        //                 </Badge>
+        //             </IconButton>
+        //             <p>Notifications</p>
+        //         </MenuItem>
+        //         <MenuItem onClick={handleProfileMenuOpen}>
+        //             <IconButton
+        //                 aria-label="account of current user"
+        //                 aria-controls="primary-search-account-menu"
+        //                 aria-haspopup="true"
+        //                 color="inherit"
+        //             >
+        //                 <AccountCircle />
+        //             </IconButton>
+        //             <p>Profile</p>
+        //         </MenuItem>
+        //     </Menu>
+        // );
 
         // End datas
 
@@ -249,12 +253,19 @@ class Template extends Component {
                     </div>
                     <Divider />
                     <List>
-                        {[<Link to ="/FileUpload">Charger les fichiers</Link>, <Link to ="/Calcul">Lancer les calculs</Link>, 'Statistiques agence', 'Statistiques comptes'].map((text, index) => (
-                            <ListItem button key={text}>
-                                <ListItemIcon>{index % 2 === 0 ? <CloudUploadIcon /> : <AccountTreeIcon />}</ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItem>
-                        ))}
+                        <ListItem onClick={() => this.setState({ redirect: "/Home"})} style={pointer}>
+                            <ListItemIcon><HomeIcon /> </ListItemIcon>
+                            <ListItemText primary="Accueil" />
+                        </ListItem>
+                        <ListItem onClick={() => this.setState({ redirect: "/FileUpload"})} style={pointer}>
+                            <ListItemIcon><CloudUploadIcon /> </ListItemIcon>
+                            <ListItemText primary="Charger les fichiers" />
+                        </ListItem>
+                        <ListItem onClick={() => this.setState({ redirect: "/Calcul"})} style={pointer}>
+                            <ListItemIcon><ViewComfyIcon/></ListItemIcon>
+                            <ListItemText primary="Lancer le calcul" />
+                        </ListItem>
+
                     </List>
                     <Divider />
                     <List>

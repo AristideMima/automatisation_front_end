@@ -6,6 +6,7 @@ import files from './files'
 import historiques from "./historiques";
 import comptes from "./comptes";
 import operations from "./operations";
+import calculs from "./calculs";
 
 export default combineReducers({
     errors,
@@ -14,5 +15,6 @@ export default combineReducers({
     files,
     historiques,
     comptes,
-    operations
+    operations,
+    calculs
 })

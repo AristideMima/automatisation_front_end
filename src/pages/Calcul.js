@@ -4,12 +4,13 @@ import PropTypes from 'prop-types'
 import { getHistoriques } from "../actions/historiques";
 import { getComptes } from "../actions/comptes"
 import { getOperations } from "../actions/operations";
+import { getCalcul } from "../actions/calculs";
 
 import {
     Grid,
-    IconButton, Button, Stepper, Step, StepLabel, Typography, Box, Paper, TextField, FormControlLabel, Checkbox, Grow
+    Button, Stepper, Step, StepLabel, Typography, Box, Paper, TextField,
 } from "@material-ui/core";
-import {data, formStepperStyle, paperLogStyle, specialLinkLog, useStyles} from "../constants/constants";
+import { formStepperStyle, useStyles} from "../constants/constants";
 import { compose } from "redux";
 import {withStyles} from "@material-ui/core/styles";
 import Template from "./Template";
@@ -17,57 +18,51 @@ import MUIDataTable from "mui-datatables";
 
 class SelectAccount extends Component{
 
-    constructor(props) {
-        super(props);
+    state = {
+        data: this.props.data,
+        accountsSelected : [],
+        columns : [
+            {
+                name: "num_compte",
+                label: "Numéro de compte",
+                options: {
+                    filter: true,
+                    sort: true,
 
-
-        this.state = {
-            data: this.props.data,
-            accountsSelected : [],
-            columns : [
-                {
-                    name: "num_compte",
-                    label: "Numéro de compte",
-                    options: {
-                        filter: true,
-                        sort: true,
-
-                    }
-                },
-                {
-                    name: "intitule_compte",
-                    label: "Intitulé du compte",
-                    options: {
-                        filter: true,
-                        sort: true
-                    },
                 }
-            ],
-            options : {
-                filterType: 'checkbox',
-                rowsPerPage: 5,
-                onRowsSelect: this.onRowsSelect,
-                print: false,
-                download: false,
-                filter: false,
-                viewColumns: false
             },
-            accounts_selected : []
-        }
+            {
+                name: "intitule_compte",
+                label: "Intitulé du compte",
+                options: {
+                    filter: true,
+                    sort: true
+                },
+            }
+        ],
+        rows_selected : this.props.index,
+        accounts_selected : [],
     }
 
     sendAccount = (accounts) => {
-        console.log("called")
         this.props.getAccount(accounts)
     }
 
-    componentWillReceiveProps(nextProps) {
+    static getDerivedStateFromProps(nextProps, state) {
 
-        if (nextProps.data !== this.state.data) {
-            this.setState({
-                data: nextProps.data
-            });
+        if (nextProps.data !== state.data) {
+            return {
+                data: nextProps.data,
+            }
         }
+
+        if(nextProps.index !== state.rows_selected){
+            return {
+                rows_selected: nextProps.index
+            }
+        }
+
+        return null
     }
 
 
@@ -76,27 +71,43 @@ class SelectAccount extends Component{
         // console.log("Row Selected: ", this.state.data[curRowSelected[0].index].num_compte);
         // console.log("All Selected: ", allRowsSelected);
 
+
         const accounts = allRowsSelected.map( ind => this.state.data[ind.index].num_compte)
+        const indexes = allRowsSelected.map( ind => ind.dataIndex)
         this.setState({
-            accounts_selected: accounts
+            accounts_selected: accounts,
+            rows_selected: indexes
         })
 
-        this.sendAccount(accounts)
+        this.sendAccount({accounts, indexes})
     }
 
 
     render() {
 
+        const options =  {
+                filterType: 'checkbox',
+                rowsPerPage: 10,
+                onRowSelectionChange: this.onRowsSelect,
+                print: false,
+                download: false,
+                filter: false,
+                viewColumns: false,
+                rowsSelected: this.state.rows_selected,
+            }
+
+            console.log(this.state.rows_selected)
+
         return (
-            <>
+            <div>
                 <MUIDataTable
                     title={"Liste des numéros de compte"}
                     data={this.state.data}
                     columns={this.state.columns}
-                    options={this.state.options}
+                    options={options}
 
                 />
-            </>
+            </div>
         );
     }
 
@@ -105,32 +116,20 @@ class SelectAccount extends Component{
 class SelectOperation extends Component{
 
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            data: this.props.data,
-            operations_selected : [],
-            columns : [
-                {
-                    name: "code_operation",
-                    label: "Code opération",
-                    options: {
-                        filter: true,
-                        sort: true
-                    }
-                },
-            ],
-            options : {
-                filterType: 'checkbox',
-                rowsPerPage: 5,
-                onRowsSelect: this.onRowsSelect,
-                print: false,
-                download: false,
-                filter: false,
-                viewColumns: false
+    state = {
+        data: this.props.data,
+        operations_selected : [],
+        rows_selected: this.props.index,
+        columns : [
+            {
+                name: "code_operation",
+                label: "Code opération",
+                options: {
+                    filter: true,
+                    sort: true
+                }
             },
-        }
+        ]
     }
 
     onRowsSelect = (curRowSelected, allRowsSelected) => {
@@ -139,8 +138,13 @@ class SelectOperation extends Component{
         // console.log("All Selected: ", allRowsSelected);
 
         const operations = allRowsSelected.map( ind => this.state.data[ind.index].code_operation)
+        const indexes = allRowsSelected.map(ind => ind.dataIndex)
 
-        this.sendOperation(operations)
+        this.setState({
+            rows_selected: indexes
+        })
+
+        this.sendOperation({operations, indexes})
     }
 
     sendOperation = (operations) => {
@@ -150,13 +154,25 @@ class SelectOperation extends Component{
 
 
     render() {
+
+        const options = {
+                filterType: 'checkbox',
+                rowsPerPage: 10,
+                onRowSelectionChange: this.onRowsSelect,
+                print: false,
+                download: false,
+                filter: false,
+                viewColumns: false,
+                rowsSelected: this.state.rows_selected
+            }
+
         return (
             <>
                 <MUIDataTable
                     title={"Opérations à exclure"}
                     data={this.state.data}
                     columns={this.state.columns}
-                    options={this.state.options}
+                    options={options}
                 />
             </>
         );
@@ -166,11 +182,13 @@ class SelectOperation extends Component{
 class FormStepper extends Component {
 
     state = {
-        taux_int_1: 13.25,
-        taux_int_2: 14.25,
-        taux_com: 0.025,
-        fort_dec: 0.02,
-        tva: 19.25
+        taux_int_1: this.props.options['taux_int_1'],
+        taux_int_2: this.props.options['taux_int_2'],
+        taux_com: this.props.options['taux_com'],
+        fort_dec: this.props.options['fort_dec'],
+        tva: this.props.options['tva'],
+        date_deb: this.props.options['date_deb'],
+        date_fin: this.props.options['date_fin']
     }
 
     handleChange = (e) => {
@@ -178,80 +196,118 @@ class FormStepper extends Component {
             [e.target.name]: e.target.value
         })
 
-        this.props.updateOptions(this.state)
+        this.props.updateProps(this.state)
     }
 
 
     render() {
 
-        const { taux_int_1, taux_int_2, taux_com, fort_dec, tva } = this.state
+        const { taux_int_1, taux_int_2, taux_com, fort_dec, tva, date_deb, date_fin } = this.state
 
         return (
             <>
                 <Paper elevation={10} style={formStepperStyle}>
                     <form>
-                        <Grid spacing={2} container justify="center">
-                            <Grid item md={3}>
+                        <Grid spacing={1} container justify="center">
+                            <Grid item md={4}>
+                                <h3>Taux d'intérêts</h3>
+                            </Grid>
+                            <Grid item md={4}>
                                 <Box>
                                     <TextField
                                         name="taux_int_1"
                                         label='Taux d’intérêts 1'
                                         placeholder="Taux d’intérêts"
-                                        defaultValue={13.5}
                                         value={taux_int_1}
                                         onChange={this.handleChange}
                                         type="number"
                                         required/>
                                 </Box>
                             </Grid>
-                            <Grid item md={3}>
+                            <Grid item md={4}>
                                 <Box>
                                     <TextField
                                         name="taux_int_2"
                                         label='Taux d’intérêts 2'
                                         placeholder="Taux d’intérêts"
-                                        defaultValue={14.5}
                                         value={taux_int_2}
                                         onChange={this.handleChange}
                                         type="number"
                                         required/>
                                 </Box>
                             </Grid>
-                            <Grid item md={3}>
+
+                            <Grid item md={4}>
+                                <h3>Commissions/ Fort découvert</h3>
+                            </Grid>
+
+                            <Grid item md={4}>
                                 <Box >
                                     <TextField
                                         name="taux_com"
                                         label='Taux de commissions,'
                                         placeholder="Taux de commissions,"
-                                        defaultValue={0.025}
                                         type="number"
                                         value={taux_com}
                                         onChange={this.handleChange}
                                         required/>
                                 </Box>
                             </Grid>
-                            <Grid item md={3}>
+                            <Grid item md={4}>
                                 <Box >
                                     <TextField
                                         name="fort_dec"
                                         label='Taux du plus fort découvert'
                                         placeholder="Taux du plus fort découvert"
-                                        defaultValue={0.020833}
                                         value={fort_dec}
                                         onChange={this.handleChange}
                                         required/>
                                 </Box>
                             </Grid>
-                            <Grid item md={3}>
+
+                            <Grid item md={4}>
+                                <h3>TVA</h3>
+                            </Grid>
+
+                            <Grid item md={8}>
                                 <Box >
                                     <TextField
                                         name="tva"
                                         label='TVA'
                                         placeholder="tva"
-                                        defaultValue={19.25}
                                         value={tva}
                                         onChange={this.handleChange}
                                         required/>
+                                </Box>
+                            </Grid>
+
+                            <Grid item md={4}>
+                                <h3>Période de l'arrêté</h3>
+                            </Grid>
+                            <Grid item  md={4}>
+                                <Box>
+                                    <TextField
+                                        id="date"
+                                        type="date"
+                                        name="date_deb"
+                                        label="Date de début"
+                                        value={date_deb}
+                                        onChange={this.handleChange}
+                                        required
+                                    />
+                                </Box>
+                            </Grid>
+                            <Grid item md={4}>
+                                <Box>
+                                    <TextField
+                                        id="date"
+                                        type="date"
+                                        name="date_fin"
+                                        label="Date de fin"
+                                        value={date_fin}
+                                        onChange={this.handleChange}
+                                        required
+                                    />
                                 </Box>
                             </Grid>
                         </Grid>
@@ -264,35 +320,46 @@ class FormStepper extends Component {
 
 class Calcul extends Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     state = {
         open: false,
-        files: [],
         activeStep: 0,
         accounts: [],
+        index: [],
+        index_operations: [],
         operations: [],
         options: {
             taux_int_1: 13.25,
             taux_int_2: 14.25,
             taux_com: 0.025,
             fort_dec: 0.02,
-            tva: 19.25
+            tva: 19.25,
+            date_deb: "2018-03-29",
+            date_fin: "2022-01-01"
         }
     }
 
-    getAccounts = (accs) => {
+    getAccounts = (props) => {
+
+        // Updating new selected accounts
+        // const new_accs = [...new Set([...props.accounts,...this.state.accounts])]
+        // const new_indexes = [...new Set([...props.indexes,...this.state.index])]
+
+
         this.setState({
-            accounts: accs
+            accounts: props.accounts,
+            index: props.indexes
+        })
+
+        console.log(props.accounts)
+
+    }
+    getOperations = (props) => {
+        this.setState({
+            operations: props.operations,
+            index_operations: props.index_operations
         })
     }
-    getOperations = (ops) => {
-        this.setState({
-            operations: ops
-        })
-    }
+
     updateOptions = (optionsChild) => {
         this.setState({
             options: optionsChild
@@ -305,10 +372,13 @@ class Calcul extends Component {
         getHistoriques: PropTypes.func.isRequired,
         historiques: PropTypes.array.isRequired,
 
-        // getComptes: PropTypes.func.isRequired,
-        // comptes: PropTypes.array.isRequired,
-        // getOperations: PropTypes.func.isRequired,
-        // operations: PropTypes.array.isRequired
+        getComptes: PropTypes.func.isRequired,
+        comptes: PropTypes.array.isRequired,
+        getOperations: PropTypes.func.isRequired,
+        operations: PropTypes.array.isRequired,
+
+        getCalcul: PropTypes.func.isRequired,
+        calculs: PropTypes.array.isRequired
     }
 
     getSteps = () => {
@@ -318,13 +388,18 @@ class Calcul extends Component {
      getStepContent = (stepIndex) => {
         switch (stepIndex) {
             case 0:
-                return <SelectAccount getAccount={this.getAccounts} data={this.props.comptes} />;
+                return <SelectAccount getAccount={this.getAccounts} data={this.props.comptes} index={this.state.index} />;
             case 1:
-                return <SelectOperation getOpera={this.getOperations}  data={this.props.operations} />;
+                return <SelectOperation getOpera={this.getOperations}  data={this.props.operations} index={this.state.index_operations} />;
             case 2:
-                return <FormStepper updateProps={this.updateOptions} />;
+                return <FormStepper updateProps={this.updateOptions} options={this.state.options} />;
             case 3:
-                return 'cliquez sur lancer l\'arrêté';
+                return <Grid container spacing={2}>
+                    <Grid item md={4} xs={12}>Account table</Grid>
+                    <Grid item md={4} xs={12}>Opération table</Grid>
+                    <Grid item md={4} xs={12}>Options table</Grid>
+                </Grid>
+
             default:
                 return 'cliquez sur lancer l\'arrêté';
         }
@@ -360,11 +435,13 @@ class Calcul extends Component {
                     }))
                 }
                 return;
+            case 3:
+                this.setState((prevState) => ({
+                    activeStep: prevState.activeStep + 1
+                }))
+                return;
             default:
                 return;
-
-
-
         }
 
     };
@@ -390,7 +467,7 @@ class Calcul extends Component {
         const steps = this.getSteps()
 
         const title = 'Calcul des arrêtés'
-        const subTitle = 'Suivant les différentes étapes pour faire vos arrêtés'
+        const subTitle = 'Suivez les différentes étapes pour faire vos arrêtés'
 
         const content = (
             <>
@@ -407,7 +484,7 @@ class Calcul extends Component {
                             >
                                 Précédent
                             </Button>
-                            <Button variant="contained" color="secondary" onClick={this.handleNext}>
+                            <Button disabled={activeStep === steps.length - 1} variant="contained" color="secondary" onClick={this.handleNext}>
                                 {activeStep === steps.length - 1 ? 'Lancer l\'arrêté' : 'Suivant'}
                             </Button>
 
@@ -430,7 +507,7 @@ class Calcul extends Component {
                             <div>
                                 <Grid container justify="center">
                                     <Box mt={5} mb={5}>
-                                        <Typography className={classes.instructions}>{this.getStepContent(activeStep)}</Typography>
+                                        <div className={classes.instructions}>{this.getStepContent(activeStep)}</div>
                                     </Box>
                                 </Grid>
                             </div>
@@ -456,7 +533,8 @@ class Calcul extends Component {
 const mapStateToProps = state => ({
     historiques: state.historiques.historiques,
     comptes: state.comptes.comptes,
-    operations: state.operations.operations
+    operations: state.operations.operations,
+    calculs: state.calculs.calculs
 })
 
-export default compose(withStyles(useStyles, {withTheme: true}), connect(mapStateToProps, { getHistoriques, getComptes, getOperations }))(Calcul)
+export default compose(withStyles(useStyles, {withTheme: true}), connect(mapStateToProps, { getHistoriques, getComptes, getOperations, getCalcul }))(Calcul)

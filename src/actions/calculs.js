@@ -1,22 +1,22 @@
 import axios from "axios";
-import { COMPTES_LOADED_SUCCESS } from "./types";
+import { GET_CALCUL_SUCESS } from "./types";
 import { returnErrors } from "./messages";
 
-let url = 'http://127.0.0.1:8000/api/comptes'
+let url = 'http://127.0.0.1:8000/api/calculs'
 
 
 // get comptes values
-export const getComptes = () => (dispatch, getState) => {
+export const getCalcul = (formData) => (dispatch, getState) => {
 
     const config = {
         headers: {
             'Content-Type': 'application/json'
         }
     }
-    axios.get(`${url}`, config)
+    axios.post(`${url}`, formData, config)
         .then( res => {
             dispatch({
-                type: COMPTES_LOADED_SUCCESS,
+                type: GET_CALCUL_SUCESS,
                 payload: res.data
             })
 

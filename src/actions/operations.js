@@ -9,11 +9,11 @@ let url = 'http://127.0.0.1:8000/api'
 export const getOperations = () => (dispatch, getState) => {
 
 
-    const config = {
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }
+    // const config = {
+    //     headers: {
+    //         'Content-Type': 'application/json'
+    //     }
+    // }
 
     axios.get(`${url}/operations`)
         .then( res => {

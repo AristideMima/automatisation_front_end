@@ -1,7 +1,6 @@
-import {AUTH_ERROR, FILE_UPLOAD_SUCCESS, USER_LOADED, USER_LOADING} from "./types";
+import {FILE_UPLOAD_SUCCESS} from "./types";
 import axios from "axios";
-import {returnErrors} from "./messages";
-import { createMessage } from "./messages";
+
 
 
 const url = 'http://127.0.0.1:8000/api/upload/';
@@ -15,11 +14,11 @@ export const fileUpload  = (file) => (dispatch) => {
     //const token  = getState().auth.token
 
     // Headers
-    const config = {
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }
+    // const config = {
+    //     headers: {
+    //         'Content-Type': 'application/json'
+    //     }
+    // }
 
     // If token, add to headers
     // if(token){

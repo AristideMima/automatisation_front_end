@@ -7,7 +7,7 @@ const initialState = {
    comptes :  []
 }
 
-export default function (state = initialState, action) {
+export default function comptes(state = initialState, action) {
 
         switch (action.type) {
             case COMPTES_LOADED_SUCCESS:

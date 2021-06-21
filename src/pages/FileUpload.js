@@ -9,7 +9,7 @@ import {Grid,
 import {
     CloudUpload as CloudUploadIcon
 } from "@material-ui/icons";
-import {data, gridContainerStyle, useStyles} from "../constants/constants";
+import { useStyles} from "../constants/constants";
 import { compose } from "redux";
 import {withStyles} from "@material-ui/core/styles";
 import Template from "./Template";

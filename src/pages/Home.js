@@ -58,7 +58,7 @@ class Home extends Component {
                         </Grid>
                         <Divider />
                         <Box mt={2}>
-                            <Link href="#" color="cornflowerblue"  >
+                            <Link href="#" color="primary"  >
                                 Voir plus de détails
                             </Link>
                         </Box>

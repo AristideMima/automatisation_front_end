@@ -7,7 +7,7 @@ const initialState = {
    historiques :  []
 }
 
-export default function (state = initialState, action) {
+export default function historiques (state = initialState, action) {
 
         switch (action.type) {
             case HISTORIQUE_LOADED_SUCCESS:
