@@ -1,19 +1,178 @@
-import { Component } from 'react'
+import React, { Component } from 'react'
+import {withStyles} from "@material-ui/core/styles";
+import {useStyles} from "../constants/constants";
+import {Grid} from "@material-ui/core";
+import Template from "./Template";
+import MUIDataTable from "mui-datatables";
 
 class Results extends Component {
 
     constructor(props) {
         super(props);
 
-        console.log(this.props)
+        // console.log(this.props.history.location.state)
     }
 
     render() {
+        const { classes } = this.props;
+
+        const options = {
+            print: true,
+            download: true,
+            filter: true,
+            rowsPerPage: 10
+        }
+
+        const columns  = [
+            {
+                name: "CPTABLE",
+                label: "DATE COMPTABLE",
+                options: {
+                    filter: true,
+                    sort: true,
+
+                }
+            },
+            {
+                name: "VALEUR",
+                label: "DATE VALEUR",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            },
+
+            {
+                name: "LIBELLES",
+                label: "LIBELLES",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            },
+            {
+                name: "CREDIT_MVTS",
+                label: "MOUVEMENT CREDITS",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            },
+            {
+                name: "DEBITS_MVTS",
+                label: "MOUVEMENT DEBITS",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            },
+            {
+                name: "SOLDES",
+                label: "SOLDES",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            },
+            {
+                name: "SOLDE_JOUR",
+                label: "SOLDE JOURS",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            },
+            {
+                name: "jrs",
+                label: "NOMBRE DE JOURS",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            },
+            {
+                name: "CREDIT_NBR",
+                label: "NOMBRE CREDITS",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            },
+            {
+                name: "DEBITS_NBR",
+                label: "NOMBRE DEBIT",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            },
+            {
+                name: "SOLDES_NBR",
+                label: "NOMBRE SOLDES",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            },
+            {
+                name: "MVTS_13",
+                label: "MOUVEMENT 13.5%",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            },
+            {
+                name: "MVTS_14",
+                label: "MOUVEMENT 14.5ù",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            }
+        ]
+
+        // const columns = [
+        //     {
+        //         name: "code_operation",
+        //         label: "Code opération",
+        //         options: {
+        //             filter: true,
+        //             sort: true
+        //         }
+        //     }
+        // ]
+
+
+
+        const title = 'Résultats'
+        const subTitle = 'Résultats des calculs des différents arrêtés'
+
+        console.log(this.props.history.location.state.first)
+
+        const content = (
+            <>
+                <Grid container justify="center" >
+                   <Grid item md={12}>
+                       <MUIDataTable
+                           title={"Résultats arrêté"}
+                           columns={columns}
+                           options={options}
+                       />
+                   </Grid>
+                </Grid>
+            </>
+        )
+
+        const component = {
+            'title': title,
+            'subTitle': subTitle,
+            'content': content
+        }
+
         return (
-            <div>
-                Nothing to render
-            </div>
+            <Template component={component} />
         );
     }
 }
-export default Results
+export default withStyles(useStyles, {withTheme: true})(Results)

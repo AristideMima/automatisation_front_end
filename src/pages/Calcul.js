@@ -5,7 +5,7 @@ import { getHistoriques } from "../actions/historiques";
 import { getComptes } from "../actions/comptes"
 import { getOperations } from "../actions/operations";
 import { getCalcul } from "../actions/calculs";
-
+import axios from "axios";
 import {
     Grid,
     Button,
@@ -95,7 +95,6 @@ class SelectAccount extends Component{
         this.sendAccount({accounts, indexes})
     }
 
-
     render() {
 
         const options =  {
@@ -109,7 +108,7 @@ class SelectAccount extends Component{
                 rowsSelected: this.state.rows_selected,
             }
 
-            console.log(this.state.rows_selected)
+            // console.log(this.state.rows_selected)
 
         return (
             <div>
@@ -201,13 +200,20 @@ class FormStepper extends Component {
         fort_dec: this.props.options['fort_dec'],
         tva: this.props.options['tva'],
         date_deb: this.props.options['date_deb'],
-        date_fin: this.props.options['date_fin']
+        date_fin: this.props.options['date_fin'],
+        solde_initial: this.props.options['solde_initial']
     }
 
     handleChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
         })
+        // this.props.updateProps(this.state)
+    }
+
+    handleSubmit = (e) =>{
+
+        e.preventDefault()
 
         this.props.updateProps(this.state)
     }
@@ -215,12 +221,12 @@ class FormStepper extends Component {
 
     render() {
 
-        const { taux_int_1, taux_int_2, taux_com, fort_dec, tva, date_deb, date_fin } = this.state
+        const { taux_int_1, taux_int_2, taux_com, fort_dec, tva, date_deb, date_fin, solde_initial } = this.state
 
         return (
             <>
                 <Paper elevation={10} style={formStepperStyle}>
-                    <form>
+                    <form onSubmit={this.handleSubmit}>
                         <Grid spacing={1} container justify="center">
                             <Grid item md={4}>
                                 <h3>Taux d'intérêts</h3>
@@ -279,16 +285,27 @@ class FormStepper extends Component {
                             </Grid>
 
                             <Grid item md={4}>
-                                <h3>TVA</h3>
+                                <h3>TVA / Solde</h3>
                             </Grid>
 
-                            <Grid item md={8}>
+                            <Grid item md={4}>
                                 <Box >
                                     <TextField
                                         name="tva"
                                         label='TVA'
                                         placeholder="tva"
                                         value={tva}
+                                        onChange={this.handleChange}
+                                        required/>
+                                </Box>
+                            </Grid>
+                            <Grid item md={4}>
+                                <Box >
+                                    <TextField
+                                        name="solde_initial"
+                                        label='Solde initial'
+                                        placeholder="Solde inititial"
+                                        value={solde_initial}
                                         onChange={this.handleChange}
                                         required/>
                                 </Box>
@@ -323,6 +340,13 @@ class FormStepper extends Component {
                                     />
                                 </Box>
                             </Grid>
+                            <Grid container justify="center" alignContent="center">
+                                <Box mt={5}>
+                                    <Button type="submit" variant="contained" color="primary">
+                                        Valider
+                                    </Button>
+                                </Box>
+                            </Grid>
                         </Grid>
                     </form>
                 </Paper>
@@ -348,7 +372,8 @@ class Calcul extends Component {
             fort_dec: 0.02,
             tva: 19.25,
             date_deb: "2018-03-29",
-            date_fin: "2022-01-01"
+            date_fin: "2022-01-01",
+            solde_initial: 0
         }
     }
 
@@ -364,7 +389,7 @@ class Calcul extends Component {
             index: props.indexes
         })
 
-        console.log(props.accounts)
+        // console.log(props.accounts)
 
     }
     getOperations = (props) => {
@@ -399,7 +424,7 @@ class Calcul extends Component {
         return ['Choix des numéros de compte', 'Opérations à exclure', 'Options suplémentaires', 'Lancement'];
     }
 
-     getStepContent = (stepIndex) => {
+    getStepContent = (stepIndex) => {
         switch (stepIndex) {
             case 0:
                 return <SelectAccount getAccount={this.getAccounts} data={this.props.comptes} index={this.state.index} />;
@@ -497,10 +522,10 @@ class Calcul extends Component {
                                             {3}
                                         </TableCell>
                                         <TableCell component="th" scope="row">
-                                            Tva
+                                            Tva & solde initial
                                         </TableCell>
                                         <TableCell component="th" scope="row">
-                                            {this.state.options["tva"]}
+                                            {this.state.options["tva"]} & {this.state.options['solde_initial']}
                                         </TableCell>
                                     </TableRow>
 
@@ -532,7 +557,7 @@ class Calcul extends Component {
         this.props.getOperations()
     }
 
-     handleNext = () => {
+    handleNext = () => {
 
         switch (this.state.activeStep) {
             case 0:
@@ -557,8 +582,25 @@ class Calcul extends Component {
                 }
                 return;
             case 3:
+                // Computation happening
+                axios.post('http://127.0.0.1:8000/api/calculs', {"accounts": this.state.accounts, "operations": this.state.operations, "options": this.state.options})
+                    .then(
+                    res => {
+
+                        console.log(res.data)
+                        // this.props.history.push(
+                        //     {
+                        //         pathname: '/Results',
+                        //         state: res.data
+                        //     }
+                        // )
+                    }
+                ).catch( err => {
+                    console.log(err)
+            })
+
                 this.setState((prevState) => ({
-                    activeStep: prevState.activeStep + 1
+                    activeStep: 0
                 }))
                 return;
             default:
@@ -605,7 +647,7 @@ class Calcul extends Component {
                             >
                                 Précédent
                             </Button>
-                            <Button disabled={activeStep === steps.length - 1} variant="contained" color="secondary" onClick={this.handleNext}>
+                            <Button disabled={activeStep === steps.length} variant="contained" color="secondary" onClick={this.handleNext}>
                                 {activeStep === steps.length - 1 ? 'Lancer l\'arrêté' : 'Suivant'}
                             </Button>
 
