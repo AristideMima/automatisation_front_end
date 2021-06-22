@@ -20,7 +20,7 @@ class Results extends Component {
             print: true,
             download: true,
             filter: true,
-            rowsPerPage: 10
+            rowsPerPage: 100,
         }
 
         const columns  = [
@@ -108,7 +108,7 @@ class Results extends Component {
             },
             {
                 name: "SOLDES_NBR",
-                label: "NOMBRE SOLDES",
+                label: "SOLDE",
                 options: {
                     filter: true,
                     sort: true
@@ -144,7 +144,6 @@ class Results extends Component {
         // ]
 
 
-
         const title = 'Résultats'
         const subTitle = 'Résultats des calculs des différents arrêtés'
 
@@ -155,7 +154,7 @@ class Results extends Component {
                 <Grid container justify="left" >
                    <Grid item md={10}>
                        <MUIDataTable
-                           title={"Résultats arrêté"}
+                           title={"Résultats arrêté - " + this.props.history.location.state.data[0].account}
                            data={this.props.history.location.state.data[0].first}
                            columns={columns}
                            options={options}

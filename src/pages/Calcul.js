@@ -99,13 +99,14 @@ class SelectAccount extends Component{
 
         const options =  {
                 filterType: 'checkbox',
-                rowsPerPage: 10,
+                rowsPerPage: 200,
                 onRowSelectionChange: this.onRowsSelect,
                 print: false,
                 download: false,
                 filter: false,
                 viewColumns: false,
                 rowsSelected: this.state.rows_selected,
+                selectableRowsHideCheckboxes: false
             }
 
             // console.log(this.state.rows_selected)
