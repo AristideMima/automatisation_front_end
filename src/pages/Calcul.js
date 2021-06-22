@@ -366,14 +366,14 @@ class Calcul extends Component {
         index_operations: [],
         operations: [],
         options: {
-            taux_int_1: 13.25,
-            taux_int_2: 14.25,
+            taux_int_1: 7.0,
+            taux_int_2: 15.5,
             taux_com: 0.025,
-            fort_dec: 0.02,
+            fort_dec: 0.020833,
             tva: 19.25,
-            date_deb: "2018-03-29",
-            date_fin: "2022-01-01",
-            solde_initial: 0
+            date_deb: "2021-04-30",
+            date_fin: "2021-05-31",
+            solde_initial: 2369317300
         }
     }
 
@@ -587,13 +587,13 @@ class Calcul extends Component {
                     .then(
                     res => {
 
-                        console.log(res.data)
-                        // this.props.history.push(
-                        //     {
-                        //         pathname: '/Results',
-                        //         state: res.data
-                        //     }
-                        // )
+                        // console.log(res.data)
+                        this.props.history.push(
+                            {
+                                pathname: '/Results',
+                                state: res.data
+                            }
+                        )
                     }
                 ).catch( err => {
                     console.log(err)

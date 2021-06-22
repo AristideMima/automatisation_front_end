@@ -124,7 +124,7 @@ class Results extends Component {
             },
             {
                 name: "MVTS_14",
-                label: "MOUVEMENT 14.5ù",
+                label: "MOUVEMENT 14.5%",
                 options: {
                     filter: true,
                     sort: true
@@ -148,20 +148,21 @@ class Results extends Component {
         const title = 'Résultats'
         const subTitle = 'Résultats des calculs des différents arrêtés'
 
-        console.log(this.props.history.location.state.first)
+        console.log(this.props.history.location.state.data[0])
 
         const content = (
-            <>
-                <Grid container justify="center" >
-                   <Grid item md={12}>
+            <div className={classes.root}>
+                <Grid container justify="left" >
+                   <Grid item md={10}>
                        <MUIDataTable
                            title={"Résultats arrêté"}
+                           data={this.props.history.location.state.data[0].first}
                            columns={columns}
                            options={options}
                        />
                    </Grid>
                 </Grid>
-            </>
+            </div>
         )
 
         const component = {
