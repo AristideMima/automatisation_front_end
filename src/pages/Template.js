@@ -36,6 +36,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Settings from "@material-ui/icons/Settings";
 import { pointer } from "../constants/constants"
 import HomeIcon from '@material-ui/icons/Home';
+import { Link } from 'react-router-dom'
 
 class Template extends Component {
 
@@ -253,15 +254,15 @@ class Template extends Component {
                     </div>
                     <Divider />
                     <List>
-                        <ListItem onClick={() => this.setState({ redirect: "/Home"})} style={pointer}>
-                            <ListItemIcon><HomeIcon /> </ListItemIcon>
-                            <ListItemText primary="Accueil" />
+                        <ListItem button component={Link} to="/" style={pointer}>
+                            <ListItemIcon><HomeIcon/></ListItemIcon>
+                            <ListItemText primary="Accueil"/>
                         </ListItem>
-                        <ListItem onClick={() => this.setState({ redirect: "/FileUpload"})} style={pointer}>
-                            <ListItemIcon><CloudUploadIcon /> </ListItemIcon>
+                        <ListItem button component={Link} to="/FileUpload" style={pointer}>
+                            <ListItemIcon><CloudUploadIcon/></ListItemIcon>
                             <ListItemText primary="Charger les fichiers" />
                         </ListItem>
-                        <ListItem onClick={() => this.setState({ redirect: "/Calcul"})} style={pointer}>
+                        <ListItem  button component={Link} to="/Calcul" style={pointer}>
                             <ListItemIcon><ViewComfyIcon/></ListItemIcon>
                             <ListItemText primary="Lancer le calcul" />
                         </ListItem>

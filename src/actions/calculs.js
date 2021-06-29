@@ -1,7 +1,6 @@
 import axios from "axios";
 import { GET_CALCUL_SUCESS } from "./types";
 import { returnErrors } from "./messages";
-import { useHistory } from "react-router";
 
 let url = 'http://127.0.0.1:8000/api/calculs'
 

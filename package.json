@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/icons": "^4.6.2",
     "@devexpress/dx-react-chart": "^2.7.5",
     "@devexpress/dx-react-chart-material-ui": "^2.7.5",
     "@devexpress/dx-react-core": "^2.7.5",
@@ -12,7 +13,9 @@
     "@testing-library/jest-dom": "^5.0.2",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "antd": "^4.16.6",
     "axios": "^0.21.1",
+    "danfojs": "^0.2.7",
     "formik": "^2.2.9",
     "material-ui-dropzone": "^3.5.0",
     "mui-datatables": "^3.7.7",
@@ -33,6 +36,7 @@
     "redux-devtools-extension": "^2.13.9",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",
+    "reqwest": "^2.0.5",
     "typescript": "^4.3.2",
     "web-vitals": "^1.0.1",
     "yup": "^0.32.9"

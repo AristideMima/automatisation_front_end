@@ -23,6 +23,7 @@ export const useStyles = theme => ({
         textAlign: "center",
         fontFamily: "cursive",
         fontSize: "x-large",
+        color: "white"
     },
     instructions: {
         marginTop: theme.spacing(1),
@@ -169,4 +170,11 @@ export const FormStyles = theme => ({
     },
 })
 
-export const pointer = {cursor: 'pointer'};
+export const pointer = {
+    cursor: 'pointer',
+    textDecoration: 'None'
+};
+
+export const NoDecoration = {
+    textDecoration: 'None'
+}

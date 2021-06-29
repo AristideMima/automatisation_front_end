@@ -1,5 +1,5 @@
 import axios from "axios";
-import { returnErrors } from "./messages";
+import {createMessage, returnErrors} from "./messages";
 import {
     USER_LOADED,
     USER_LOADING,
@@ -65,7 +65,7 @@ export const login = (username, password) =>  dispatch => {
 
     axios.post(`${url}api/auth/login`, body, config)
         .then( res => {
-            console.log(res)
+            dispatch(createMessage("You are now login"));
             dispatch({
                 type: LOGIN_SUCCESS,
                 payload: res.data
@@ -82,7 +82,7 @@ export const login = (username, password) =>  dispatch => {
 // LOGOUT
 export const logout  = () => (dispatch, getState) => {
 
-    // Get the tokent from the state
+    // Get the token from the state
     const token  = getState().auth.token
 
     // Headers
@@ -114,7 +114,7 @@ export const register = ({username, password, email}) =>  dispatch => {
     // Headers
     const config = {
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'aplication/json'
         }
     }
     // Request body

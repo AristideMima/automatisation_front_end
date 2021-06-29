@@ -50,17 +50,17 @@ class Results extends Component {
                     sort: true
                 }
             },
-            {
-                name: "CREDIT_MVTS",
-                label: "MOUVEMENT CREDITS",
+			{
+                name: "DEBIT_MVTS",
+                label: "MOUVEMENT DEBITS",
                 options: {
                     filter: true,
                     sort: true
                 }
             },
             {
-                name: "DEBITS_MVTS",
-                label: "MOUVEMENT DEBITS",
+                name: "CREDIT_MVTS",
+                label: "MOUVEMENT CREDITS",
                 options: {
                     filter: true,
                     sort: true
