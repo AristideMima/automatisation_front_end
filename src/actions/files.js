@@ -8,8 +8,6 @@ const url = 'http://127.0.0.1:8000/api/upload/';
 // Upload file to the server
 export const fileUpload  = (file) => (dispatch) => {
 
-    dispatch({type: FILE_UPLOAD_SUCCESS,})
-
     // Get the token from the state
     //const token  = getState().auth.token
 
@@ -31,6 +29,7 @@ export const fileUpload  = (file) => (dispatch) => {
     axios.put(`${url}`, formData)
         .then( res =>{
             //dispatch(createMessage({ fileupload: res.data}));
+            dispatch({type: FILE_UPLOAD_SUCCESS,})
             console.log(res.data)
         }).catch( err => {
         console.log(err)

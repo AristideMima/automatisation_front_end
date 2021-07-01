@@ -16,6 +16,7 @@ import Home from "./pages/Home";
 import FileUpload from "./pages/FileUpload";
 import Calcul from "./pages/Calcul";
 import Results from "./pages/Results";
+import NotFound from "./pages/404";
 
 class App extends React.Component {
 
@@ -45,7 +46,7 @@ class App extends React.Component {
                             <Route exact path ='/Results' component={Results} />
                             <Route
                                 render={function() {
-                                    return <h1>Not Found</h1>;
+                                    return <NotFound/>
                                 }}
                             />
                         </Switch>

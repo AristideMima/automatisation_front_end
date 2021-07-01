@@ -37,6 +37,9 @@ import Settings from "@material-ui/icons/Settings";
 import { pointer } from "../constants/constants"
 import HomeIcon from '@material-ui/icons/Home';
 import { Link } from 'react-router-dom'
+import { BackTop } from "antd";
+import { VerticalAlignTopOutlined } from '@ant-design/icons';
+import ViewQuiltIcon from '@material-ui/icons/ViewQuilt';
 
 class Template extends Component {
 
@@ -75,6 +78,17 @@ class Template extends Component {
             this.setState({
                 mobileMoreAnchorEl: event.currentTarget
             })
+        };
+
+        const style = {
+            height: 40,
+            width: 40,
+            lineHeight: '40px',
+            borderRadius: "50%",
+            backgroundColor: '#f5222d',
+            color: '#fff',
+            textAlign: 'center',
+            fontSize: 20,
         };
 
         const menuId = 'primary-search-account-menu';
@@ -266,6 +280,10 @@ class Template extends Component {
                             <ListItemIcon><ViewComfyIcon/></ListItemIcon>
                             <ListItemText primary="Lancer le calcul" />
                         </ListItem>
+                        <ListItem  button component={Link} to="#" style={pointer}>
+                            <ListItemIcon><ViewQuiltIcon /></ListItemIcon>
+                            <ListItemText primary="Statistiques" />
+                        </ListItem>
 
                     </List>
                     <Divider />
@@ -296,10 +314,12 @@ class Template extends Component {
                                 {/*</Typography>*/}
                             </Box>
                         </Grid>
-
                         {this.props.component['content']}
-
-
+                        <BackTop>
+                            <div style={style}>
+                                <VerticalAlignTopOutlined />
+                            </div>
+                        </BackTop>
                     </Grid>
                 </main>
             </div>
