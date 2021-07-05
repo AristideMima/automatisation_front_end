@@ -16,6 +16,8 @@ import {
     Drawer, Grid,
     IconButton,
      List, ListItem, ListItemIcon,
+    Card, CardHeader, CardMedia, CardContent,
+    CardActions, Collapse, Avatar,
     // Menu,
     Toolbar,
     Typography
@@ -32,6 +34,7 @@ import {
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import clsx from "clsx";
 import logo from "../assets/newLogo.png";
+import icon_svg from "../assets/WebMoney_48px.png";
 import ListItemText from "@material-ui/core/ListItemText";
 import Settings from "@material-ui/icons/Settings";
 import { pointer } from "../constants/constants"
@@ -40,6 +43,7 @@ import { Link } from 'react-router-dom'
 import { BackTop } from "antd";
 import { VerticalAlignTopOutlined } from '@ant-design/icons';
 import ViewQuiltIcon from '@material-ui/icons/ViewQuilt';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 class Template extends Component {
 
@@ -268,23 +272,22 @@ class Template extends Component {
                     </div>
                     <Divider />
                     <List>
-                        <ListItem button component={Link} to="/" style={pointer}>
+                        <ListItem button component={Link} to="/" style={pointer} selected={this.props.component['selected'] === 0}>
                             <ListItemIcon><HomeIcon/></ListItemIcon>
                             <ListItemText primary="Accueil"/>
                         </ListItem>
-                        <ListItem button component={Link} to="/FileUpload" style={pointer}>
+                        <ListItem button component={Link} to="/FileUpload" style={pointer}  selected={this.props.component['selected'] === 1} >
                             <ListItemIcon><CloudUploadIcon/></ListItemIcon>
                             <ListItemText primary="Charger les fichiers" />
                         </ListItem>
-                        <ListItem  button component={Link} to="/Calcul" style={pointer}>
+                        <ListItem  button component={Link} to="/Calcul" style={pointer}  selected={this.props.component['selected'] === 2} >
                             <ListItemIcon><ViewComfyIcon/></ListItemIcon>
                             <ListItemText primary="Lancer le calcul" />
                         </ListItem>
-                        <ListItem  button component={Link} to="#" style={pointer}>
+                        <ListItem  button component={Link} to="#" style={pointer} selected={this.props.component['selected'] === 3}>
                             <ListItemIcon><ViewQuiltIcon /></ListItemIcon>
                             <ListItemText primary="Statistiques" />
                         </ListItem>
-
                     </List>
                     <Divider />
                     <List>
@@ -299,20 +302,58 @@ class Template extends Component {
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
                     <Grid container spacing={3}>
-                        <Grid item xs={12}>
-                            <Box mt={5} mb={1} >
-                                <Typography variant="h4" color="textSecondary" className="header_title">
-                                    {this.props.component['title']}
-                                </Typography>
-                            </Box>
-                            <Box mb={4}>
-                                <Typography variant="inherit"  display="block" color="textSecondary" >
-                                    {this.props.component['subTitle']}
-                                </Typography>
-                                {/*<Typography variant="p"  display="block">*/}
-                                {/*    Accédez aux foncionnalités sur le pannel de gauche*/}
-                                {/*</Typography>*/}
-                            </Box>
+                        <Box mb={2}></Box>
+
+                        <Grid item xs={12} >
+                            <div  className="custom_titled_header">
+
+                                <Grid container spacing={2} justify="center" direction="column" alignItems="center">
+                                    {/*<Grid item xs={3}>*/}
+                                    {/*    /!*<img  src={icon_svg} alt="Dashboard" className="" style={{ maxWidth: "30%"}} />*!/*/}
+                                    {/*</Grid>*/}
+                                    <Grid item xs={12}>
+
+                                        <Card className="card_header_title">
+                                            <CardHeader
+                                                avatar={
+                                                    <Avatar aria-label="recipe" className={classes.avatar}>
+                                                        {this.props.component['title'][0]}
+                                                    </Avatar>
+                                                }
+                                                action={
+                                                    <IconButton aria-label="settings">
+                                                        <img  src={this.props.component['img']} alt="Dashboard" />
+                                                    </IconButton>
+                                                }
+                                                title={this.props.component['title']}
+                                                subheader={this.props.component['subTitle']}
+
+                                                titleTypographyProps = {{ variant: "h5"}}
+                                            />
+                                        </Card>
+
+                                        {/*<Box mt={5} mb={1} >*/}
+                                        {/*    <Typography variant="h4" color="textSecondary"  className="header_title">*/}
+                                        {/*        {this.props.component['title']}*/}
+                                        {/*    </Typography>*/}
+
+
+                                        {/*    <Typography variant="paragraph"  color="white" >*/}
+                                        {/*        {this.props.component['subTitle']}*/}
+                                        {/*    </Typography>*/}
+                                        {/*</Box>*/}
+                                        {/*<Box mb={4}>*/}
+
+                                        {/*    /!*<Typography variant="p"  display="block">*!/*/}
+                                        {/*    /!*    Accédez aux foncionnalités sur le pannel de gauche*!/*/}
+                                        {/*    /!*</Typography>*!/*/}
+                                        {/*</Box>*/}
+                                    </Grid>
+                                </Grid>
+                                {/*<Box mb={2}>*/}
+                                {/*    <Divider  />*/}
+                                {/*</Box>*/}
+                            </div>
                         </Grid>
                         {this.props.component['content']}
                         <BackTop>

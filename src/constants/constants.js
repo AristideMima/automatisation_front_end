@@ -1,5 +1,6 @@
 
 import { transitions, positions } from "react-alert";
+import { red } from '@material-ui/core/colors';
 import image from "../assets/back_5.jpg";
 
 // Constants file
@@ -112,6 +113,12 @@ export const useStyles = theme => ({
     paperStyle: {
         padding: theme.spacing(10),
         textAlign: 'center',
+    },
+    avatar: {
+        backgroundColor: "#9e9e9e",
+    },
+    card: {
+        maxWidth: "100%"
     }
 });
 

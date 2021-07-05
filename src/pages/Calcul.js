@@ -28,6 +28,8 @@ import { compose } from "redux";
 import {withStyles} from "@material-ui/core/styles";
 import Template from "./Template";
 import MUIDataTable from "mui-datatables";
+import img from "../assets/google_compute_engine_48px.png";
+
 
 class SelectAccount extends Component{
 
@@ -125,6 +127,7 @@ class SelectAccount extends Component{
     }
 
 }
+
 
 class SelectOperation extends Component{
 
@@ -686,12 +689,14 @@ class Calcul extends Component {
         const component = {
             'title': title,
             'subTitle': subTitle,
-            'content': content
+            'content': content,
+            'selected': 2,
+            "img": img
         }
-
 
         return (
             <Template component={component} />
+
         );
     }
 }

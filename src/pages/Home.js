@@ -13,6 +13,8 @@ import {Animation, EventTracker} from "@devexpress/dx-react-chart";
 import {data, useStyles} from "../constants/constants";
 import {withStyles} from "@material-ui/core/styles";
 import Template from "./Template";
+import img from "../assets/WebMoney_48px.png";
+
 
 
 class Home extends Component {
@@ -161,7 +163,9 @@ class Home extends Component {
         const component = {
             'title': title,
             'subTitle': subTitle,
-            'content': content
+            'content': content,
+            'selected': 0,
+            'img': img,
         }
 
 

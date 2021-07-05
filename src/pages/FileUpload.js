@@ -4,11 +4,12 @@ import PropTypes from 'prop-types'
 import { fileUpload } from "../actions/files";
 
 import {Grid,
-    IconButton, Box
+    // IconButton,
+    Box
 } from "@material-ui/core";
-import {
-    CloudUpload as CloudUploadIcon
-} from "@material-ui/icons";
+// import {
+//     CloudUpload as CloudUploadIcon
+// } from "@material-ui/icons";
 import { useStyles} from "../constants/constants";
 import { compose } from "redux";
 import {withStyles} from "@material-ui/core/styles";
@@ -19,6 +20,8 @@ import { UploadOutlined } from '@ant-design/icons';
 // import reqwest from 'reqwest';
 import axios from "axios";
 import * as dfd from "danfojs/src/index";
+
+import img from "../assets/dropbox_48px.png";
 
 const url = 'http://127.0.0.1:8000/api/upload/';
 
@@ -165,7 +168,7 @@ class FileUpload extends Component {
             <>
                 <Grid container justify="center" alignItems="center" direction="column">
                     <Grid md={12} xs={12}>
-                        {(fileList.length === 0 && this.state.uploaded == true) && (
+                        {(fileList.length === 0 && this.state.uploaded === true) && (
                             <Box mt={5}>
                                 <p>
                                     <h5> Upload réussi</h5>
@@ -227,7 +230,9 @@ class FileUpload extends Component {
         const component = {
             'title': title,
             'subTitle': subTitle,
-            'content': content
+            'content': content,
+            'selected': 1,
+            "img": img
         }
 
         console.log(df.head().print())
@@ -241,6 +246,5 @@ class FileUpload extends Component {
 const mapStateToProps = state => ({
     fileUpload: state.fileUpload
 })
-
 
 export default compose(withStyles(useStyles, {withTheme: true}), connect(mapStateToProps, { fileUpload }))(FileUpload)
