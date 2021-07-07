@@ -1,7 +1,6 @@
 import React, { Component  } from 'react'
 import { connect } from "react-redux";
 import PropTypes from 'prop-types'
-import { getHistoriques } from "../actions/historiques";
 import { getComptes } from "../actions/comptes"
 import { getOperations } from "../actions/operations";
 import { getCalcul } from "../actions/calculs";
@@ -53,7 +52,40 @@ class SelectAccount extends Component{
                     filter: true,
                     sort: true
                 },
-            }
+            },
+            {
+                name: "code_agence",
+                label: "Code agence",
+                options: {
+                    filter: true,
+                    sort: true
+                },
+            },
+            {
+                name: "type_account",
+                label: "Type de compte",
+                options: {
+                    filter: true,
+                    sort: true
+                },
+            },
+            {
+                name: "montant",
+                label: "Montant autorisé",
+                options: {
+                    filter: true,
+                    sort: true
+                },
+            },
+            {
+                name: "period",
+                label: "Période autorisation",
+                options: {
+                    filter: true,
+                    sort: true
+                },
+            },
+
         ],
         rows_selected : this.props.index,
         accounts_selected : [],
@@ -80,12 +112,10 @@ class SelectAccount extends Component{
         return null
     }
 
-
     onRowsSelect = (curRowSelected, allRowsSelected) => {
 
         // console.log("Row Selected: ", this.state.data[curRowSelected[0].index].num_compte);
         // console.log("All Selected: ", allRowsSelected);
-
 
         const accounts = allRowsSelected.map( ind => this.state.data[ind.index].num_compte)
         const indexes = allRowsSelected.map( ind => ind.dataIndex)
@@ -98,6 +128,10 @@ class SelectAccount extends Component{
     }
 
     render() {
+
+        const selected = (({num_compte, code_agence, type_account, intitule_compte}) => ({num_compte, code_agence, type_account, intitule_compte}))(this.props.data)
+
+        console.log(selected)
 
         const options =  {
                 filterType: 'checkbox',
@@ -114,15 +148,15 @@ class SelectAccount extends Component{
             // console.log(this.state.rows_selected)
 
         return (
-            <div>
+            <Grid item md={12}>
                 <MUIDataTable
                     title={"Liste des numéros de compte"}
-                    data={this.state.data}
+                    data={this.props.data}
                     columns={this.state.columns}
                     options={options}
 
                 />
-            </div>
+            </Grid>
         );
     }
 
@@ -183,14 +217,14 @@ class SelectOperation extends Component{
             }
 
         return (
-            <>
+            <Grid item md={10}>
                 <MUIDataTable
                     title={"Opérations à exclure"}
                     data={this.state.data}
                     columns={this.state.columns}
                     options={options}
                 />
-            </>
+            </Grid>
         );
     }
 }
@@ -412,8 +446,6 @@ class Calcul extends Component {
     }
 
     static propTypes = {
-        getHistoriques: PropTypes.func.isRequired,
-        historiques: PropTypes.array.isRequired,
 
         getComptes: PropTypes.func.isRequired,
         comptes: PropTypes.array.isRequired,
@@ -556,7 +588,6 @@ class Calcul extends Component {
     }
 
     componentDidMount() {
-        this.props.getHistoriques()
         this.props.getComptes()
         this.props.getOperations()
     }
@@ -673,11 +704,7 @@ class Calcul extends Component {
                         ) : (
                             <div>
                                 <Grid container justify="center">
-                                    <Grid item md={10}>
-                                        <Box mt={5} mb={5}>
                                             <div className={classes.instructions}>{this.getStepContent(activeStep)}</div>
-                                        </Box>
-                                    </Grid>
                                 </Grid>
                             </div>
                         )}
@@ -702,10 +729,9 @@ class Calcul extends Component {
 }
 
 const mapStateToProps = state => ({
-    historiques: state.historiques.historiques,
     comptes: state.comptes.comptes,
     operations: state.operations.operations,
     calculs: state.calculs.calculs
 })
 
-export default compose(withStyles(useStyles, {withTheme: true}), connect(mapStateToProps, { getHistoriques, getComptes, getOperations, getCalcul }))(Calcul)
+export default compose(withStyles(useStyles, {withTheme: true}), connect(mapStateToProps, { getComptes, getOperations, getCalcul }))(Calcul)
