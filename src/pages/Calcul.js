@@ -179,6 +179,14 @@ class SelectOperation extends Component{
                     sort: true
                 }
             },
+            {
+                name: "libelle_operation",
+                label: "Libellé opération",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            }
         ]
     }
 
@@ -198,7 +206,6 @@ class SelectOperation extends Component{
     }
 
     sendOperation = (operations) => {
-        console.log("called")
         this.props.getOpera(operations)
     }
 
@@ -217,7 +224,7 @@ class SelectOperation extends Component{
             }
 
         return (
-            <Grid item md={10}>
+            <Grid item md={12} xs={12}>
                 <MUIDataTable
                     title={"Opérations à exclure"}
                     data={this.state.data}
@@ -695,20 +702,16 @@ class Calcul extends Component {
                             </Step>
                         ))}
                     </Stepper>
-                    <div>
-                        {activeStep === steps.length ? (
-                            <div>
-                                <Typography className={classes.instructions}>Terminer</Typography>
-                                <Button onClick={this.handleReset}>Recommencer</Button>
-                            </div>
-                        ) : (
-                            <div>
-                                <Grid container justify="center">
-                                            <div className={classes.instructions}>{this.getStepContent(activeStep)}</div>
-                                </Grid>
-                            </div>
-                        )}
-                    </div>
+                    {activeStep === steps.length ? (
+                        <div>
+                            <Typography className={classes.instructions}>Terminer</Typography>
+                            <Button onClick={this.handleReset}>Recommencer</Button>
+                        </div>
+                    ) : (
+                        <Grid container justify="center" spacing={0}>
+                            <div className={classes.instructions}>{this.getStepContent(activeStep)}</div>
+                        </Grid>
+                    )}
                 </div>
             </>
         )
