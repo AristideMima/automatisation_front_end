@@ -16,8 +16,10 @@ import {
     Drawer, Grid,
     IconButton,
      List, ListItem, ListItemIcon,
-    Card, CardHeader, CardMedia, CardContent,
-    CardActions, Collapse, Avatar,
+    Card, CardHeader,
+    // CardMedia, CardContent,
+    // CardActions, Collapse,
+    Avatar,
     // Menu,
     Toolbar,
     Typography
@@ -34,7 +36,6 @@ import {
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import clsx from "clsx";
 import logo from "../assets/newLogo.png";
-import icon_svg from "../assets/WebMoney_48px.png";
 import ListItemText from "@material-ui/core/ListItemText";
 import Settings from "@material-ui/icons/Settings";
 import { pointer } from "../constants/constants"
@@ -43,7 +44,8 @@ import { Link } from 'react-router-dom'
 import { BackTop } from "antd";
 import { VerticalAlignTopOutlined } from '@ant-design/icons';
 import ViewQuiltIcon from '@material-ui/icons/ViewQuilt';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import ConfirmationNumberIcon from '@material-ui/icons/ConfirmationNumber';
+
 
 class Template extends Component {
 
@@ -280,11 +282,15 @@ class Template extends Component {
                             <ListItemIcon><CloudUploadIcon/></ListItemIcon>
                             <ListItemText primary="Charger les fichiers" />
                         </ListItem>
-                        <ListItem  button component={Link} to="/Calcul" style={pointer}  selected={this.props.component['selected'] === 2} >
-                            <ListItemIcon><ViewComfyIcon/></ListItemIcon>
-                            <ListItemText primary="Lancer le calcul" />
+                        <ListItem  button component={Link} to="/CalculConforme" style={pointer}  selected={this.props.component['selected'] === 2} >
+                            <ListItemIcon><ConfirmationNumberIcon/></ListItemIcon>
+                            <ListItemText primary="Arrêté conforme" />
                         </ListItem>
-                        <ListItem  button component={Link} to="#" style={pointer} selected={this.props.component['selected'] === 3}>
+                        <ListItem  button component={Link} to="/CalculRegularisation" style={pointer}  selected={this.props.component['selected'] === 3} >
+                            <ListItemIcon><ViewComfyIcon/></ListItemIcon>
+                            <ListItemText primary="Arrêté régularisation" />
+                        </ListItem>
+                        <ListItem  button component={Link} to="#" style={pointer} selected={this.props.component['selected'] === 4}>
                             <ListItemIcon><ViewQuiltIcon /></ListItemIcon>
                             <ListItemText primary="Statistiques" />
                         </ListItem>

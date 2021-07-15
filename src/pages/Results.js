@@ -4,6 +4,8 @@ import {useStyles} from "../constants/constants";
 import {Grid} from "@material-ui/core";
 import Template from "./Template";
 import MUIDataTable from "mui-datatables";
+import img from "../assets/accounting_80px.png";
+
 
 class Results extends Component {
 
@@ -167,7 +169,8 @@ class Results extends Component {
         const component = {
             'title': title,
             'subTitle': subTitle,
-            'content': content
+            'content': content,
+            "img": img
         }
 
         return (

@@ -4,7 +4,8 @@ import {
 
 
 const initialState = {
-   comptes :  []
+   comptes :  [],
+    isLoading: true,
 }
 
 export default function comptes(state = initialState, action) {
@@ -13,12 +14,14 @@ export default function comptes(state = initialState, action) {
             case COMPTES_LOADED_SUCCESS:
                 return {
                     ...state,
-                    comptes: action.payload
+                    comptes: action.payload,
+                    isLoading: true
                 };
             case COMPTES_LOADED_FAILED:
                 return {
                     ...state,
-                    comptes: []
+                    comptes: [],
+                    isLoading: false
                 };
             default:
                 return state;

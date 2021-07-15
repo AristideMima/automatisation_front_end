@@ -13,7 +13,9 @@ export const getComptes = () => (dispatch, getState) => {
             'Content-Type': 'application/json'
         }
     }
-    axios.get(`${url}`, config)
+
+
+    axios.post(`${url}`, {"conf": "conf"}, config, )
         .then( res => {
             dispatch({
                 type: COMPTES_LOADED_SUCCESS,

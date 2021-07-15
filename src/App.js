@@ -15,8 +15,10 @@ import { loadUser } from "./actions/auth";
 import Home from "./pages/Home";
 import FileUpload from "./pages/FileUpload";
 import Calcul from "./pages/Calcul";
+import CalculReg from "./pages/CalculReg"
 import Results from "./pages/Results";
 import NotFound from "./pages/404";
+import { PersistGate } from 'redux-persist/integration/react'
 
 class App extends React.Component {
 
@@ -41,7 +43,8 @@ class App extends React.Component {
                             <PrivateRoute exact path ='/Home' component={Home} />
                             <Route exact path ='/' component={Login} />
                             <PrivateRoute exact path ='/FileUpload' component={FileUpload} />
-                            <PrivateRoute exact path ='/Calcul' component={Calcul} />
+                            <PrivateRoute exact path ='/CalculConforme' component={Calcul} />
+                            <PrivateRoute exact path ='/CalculRegularisation' component={CalculReg} />
                             <Route exact path ='/Register' component={Register} />
                             <Route exact path ='/Results' component={Results} />
                             <Route

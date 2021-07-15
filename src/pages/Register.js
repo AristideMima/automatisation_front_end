@@ -21,8 +21,6 @@ import imageRegister from "../assets/add_user_male.svg"
 import { createMessage } from "../actions/messages";
 
 class Register extends Component {
-
-
     state = {
         username: '',
         email:'',

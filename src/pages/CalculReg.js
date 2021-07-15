@@ -5,8 +5,9 @@ import { getComptes } from "../actions/comptes"
 import { getOperations } from "../actions/operations";
 import { getCalcul } from "../actions/calculs";
 import axios from "axios";
-import {Grid, Button, Stepper, Step, StepLabel, Box, Paper, TextField,
-     Table as TableMaterial ,TableRow,TableCell,TableBody,TableHead,TableContainer,
+import {Grid, Button, Stepper, Step, StepLabel, Box, Paper, TextField
+    // Table
+    ,TableRow,TableCell,TableBody,TableHead,TableContainer, Checkbox
 } from "@material-ui/core";
 import { formStepperStyle, useStyles, url, config} from "../constants/constants";
 import { compose } from "redux";
@@ -14,11 +15,17 @@ import {withStyles} from "@material-ui/core/styles";
 import Template from "./Template";
 import MUIDataTable from "mui-datatables";
 import img from "../assets/google_compute_engine_48px.png";
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormLabel from '@material-ui/core/FormLabel';
+
 import { Table, Popconfirm, Form, Input, InputNumber, Typography} from 'antd';
 
 
 class SelectAccount extends Component{
-
     /*
      * Select corresponding account with preferred operations
      */
@@ -56,11 +63,10 @@ class SelectAccount extends Component{
 
         const { selectedRowKeys } = this.state;
 
-
         const dataProps = this.props.data
 
         const EditableCell = ({ editing, dataIndex, title, inputType, record, index, children, ...restProps
-        }) => {
+                              }) => {
             const inputNode = inputType === 'number' ? <InputNumber size = "large"/> : <Input />;
             return (
                 <td {...restProps}>
@@ -149,6 +155,8 @@ class SelectAccount extends Component{
                 }
             };
 
+            console.log(dataProps)
+
             const columns = [
                 {
                     title: 'Numéro de compte',
@@ -164,6 +172,36 @@ class SelectAccount extends Component{
                     title: 'Type de compte',
                     dataIndex: 'type_account',
                     editable: false,
+                },
+                {
+                    title: 'Intérêt débiteur 1',
+                    dataIndex: 'taxe_interet_debiteur_1',
+                    editable: true,
+                    render: val => { return val + "%"}
+                },
+                {
+                    title: 'Intérêt débiteur 2',
+                    dataIndex: 'taxe_interet_debiteur_2',
+                    editable: true,
+                    render: val => { return val + "%"}
+                },
+                {
+                    title: 'Commision découvert',
+                    dataIndex: 'taux_commission_dec',
+                    editable: true,
+                    render: val => { return val + "%"}
+                },
+                {
+                    title: 'Commision mouvement',
+                    dataIndex: 'taux_commission_mvt',
+                    editable: true,
+                    render: val => { return val + "%"}
+                },
+                {
+                    title: 'Tva',
+                    dataIndex: 'taux_tva',
+                    editable: true,
+                    render: val => { return val + "%"}
                 },
                 {
                     title: 'Solde initial',
@@ -210,7 +248,7 @@ class SelectAccount extends Component{
           </span>
                         ) : (
                             <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-                                Modifier le solde initial
+                                Modifier
                             </Typography.Link>
                         );
                     },
@@ -254,7 +292,6 @@ class SelectAccount extends Component{
             );
         }
 
-
         return (
             <Grid item md={12}>
                 {/*<MUIDataTable*/}
@@ -273,7 +310,106 @@ class SelectAccount extends Component{
 
 }
 
+class SelectOperation extends Component{
 
+
+    state = {
+        data: this.props.data,
+        operations_selected : [],
+        rows_selected: this.props.index,
+        columns : [
+            {
+                name: "code_operation",
+                label: "Code opération",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            },
+            {
+                name: "libelle_operation",
+                label: "Libellé opération",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            }
+        ]
+    }
+
+    onRowsSelect = (curRowSelected, allRowsSelected) => {
+
+
+        const operations = allRowsSelected.map( ind => this.state.data[ind.index].code_operation)
+        const indexes = allRowsSelected.map(ind => ind.dataIndex)
+
+        this.setState({
+            rows_selected: indexes
+        })
+
+        this.sendOperation({operations, indexes})
+    }
+
+    sendOperation = (operations) => {
+        this.props.getOperation(operations)
+    }
+
+
+    render() {
+
+        const options = {
+                filterType: 'checkbox',
+                rowsPerPage: 10,
+                onRowSelectionChange: this.onRowsSelect,
+                print: false,
+                download: false,
+                filter: false,
+                viewColumns: false,
+                rowsSelected: this.state.rows_selected,
+                customToolbarSelect: () => {}
+            }
+
+        return (
+            <Grid item md={12} xs={12}>
+                <MUIDataTable
+                    title={"Opérations à exclure"}
+                    data={this.state.data}
+                    columns={this.state.columns}
+                    options={options}
+                />
+            </Grid>
+        );
+    }
+}
+
+// class SelectMode extends Component {
+//
+//     state = {
+//         conforme: "conf"
+//     }
+//
+//     handleRadioChange = (e) => this.setState({
+//         conforme: e.target.value
+//     })
+//
+//     render(){
+//         const value = this.state.conforme
+//         return (
+//             <>
+//                 <form >
+//                     <FormControl component="fieldset" >
+//                         <FormLabel component="legend">Choisissez le mode d'arrêté</FormLabel>
+//                         <RadioGroup aria-label="quiz" name="quiz" value={value} onChange={this.handleRadioChange} >
+//                             <FormControlLabel value="conf" control={<Radio />} label="Arrêté conforme au système" />
+//                             <FormControlLabel value="reg" control={<Radio />} label="Arrêté en régularisation" />
+//                         </RadioGroup>
+//                         {/*<FormHelperText>{helperText}</FormHelperText>*/}
+//                     </FormControl>
+//                 </form>
+//             </>
+//         )
+//     }
+// }
 
 class FormStepper extends Component {
 
@@ -439,7 +575,7 @@ class FormStepper extends Component {
     }
 }
 
-class Calcul extends Component {
+class CalculReg extends Component {
 
     state = {
         data: [],
@@ -447,7 +583,29 @@ class Calcul extends Component {
         classes: this.props,
         activeStep: 0,
         accounts: [],
-        index: []
+        index: [],
+        operations: [],
+        options: {
+            taux_int_1: 7.0,
+            taux_int_2: 15.5,
+            taux_com: 0.025,
+            fort_dec: 0.020833,
+            tva: 19.25,
+            date_deb: "2021-04-30",
+            date_fin: "2021-05-31",
+            solde_initial: 2369317300
+        }
+    }
+
+    componentDidMount() {
+        // console.log(this.props.comptes)
+
+        axios.post(`${url}`, {"conf": "reg"}, config)
+            .then( res => {
+                this.setState({data: res.data})
+            }).catch( err => {
+            console.log(err)
+        })
     }
 
     getAccounts = (props) => {
@@ -457,7 +615,7 @@ class Calcul extends Component {
             index: props.selectedRowKeys,
             data: typeof props.newData !== 'undefined' ? props.newData:prev.data
         }))
-        console.log(props)
+
     }
 
     getOperations = (props) => {
@@ -472,74 +630,147 @@ class Calcul extends Component {
             options: optionsChild
         })
 
+        console.log(optionsChild)
     }
 
     static propTypes = {
-
         getCalcul: PropTypes.func.isRequired,
         calculs: PropTypes.array.isRequired
     }
 
     getSteps = () => {
-        return [ 'Choix des numéros de compte', 'Lancement'];
+        return [ 'Choix des numéros de compte', 'Opérations à exclure', 'Options suplémentaires', 'Lancement'];
     }
 
     getStepContent = (stepIndex) => {
+        let i = 0;
         switch (stepIndex) {
-            case 0:
-                return   <SelectAccount getAccount={this.getAccounts} data={this.state.data} index={this.state.index} />;
-            case 1:
-                return <Grid container spacing={2}>
-                    <Grid item md={12} xs={12}>
+            case i++:
+                return <SelectAccount getAccount={this.getAccounts} data={this.state.data} index={this.state.index} />;
+            case i++:
+                return <></>;// <SelectOperation getOpera={this.getOperations}  data={this.props.operations} index={this.state.index_operations} />;
+            case i++:
+                return <></>; // <FormStepper updateProps={this.updateOptions} options={this.state.options} />;
+            case i++:
+                return<Grid container spacing={2}>
+                    <Grid item md={3} xs={12}>
                         <TableContainer component={Paper}>
-                            <TableMaterial className={this.state.classes.table} aria-label="simple table">
+                            <Table className={this.state.classes.table} aria-label="simple table">
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell>#</TableCell>
+                                        <TableCell>Index</TableCell>
                                         <TableCell>Numéro de compte</TableCell>
-                                        <TableCell>Intitulé du compte</TableCell>
-                                        <TableCell>Solde initial</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {this.state.accounts.map((account) => (
-                                            <TableRow key={account.key}>
+                                    {this.state.accounts.map((account, index) => (
+                                            <TableRow key={index+1}>
                                                 <TableCell component="th" scope="row">
-                                                    {account.key}
+                                                    {index}
                                                 </TableCell>
                                                 <TableCell component="th" scope="row">
-                                                    {account.num_compte}
-                                                </TableCell>
-                                                <TableCell component="th" scope="row">
-                                                    {account.intitule_compte}
-                                                </TableCell>
-                                                <TableCell component="th" scope="row">
-                                                    {account.solde_initial}
+                                                    {account}
                                                 </TableCell>
                                             </TableRow>
                                         ))}
                                 </TableBody>
-                                </TableMaterial>
+                                </Table>
                         </TableContainer>
                     </Grid>
-                </Grid> ;
+                    <Grid item md={3} xs={12}>
+                        <TableContainer component={Paper}>
+                            <Table className={this.state.classes.table} aria-label="simple table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Index</TableCell>
+                                        <TableCell>Opérations à exclure</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {this.state.operations.map((operation, index) => (
+                                        <TableRow key={index+1}>
+                                            <TableCell component="th" scope="row">
+                                                {index}
+                                            </TableCell>
+                                            <TableCell component="th" scope="row">
+                                                {operation}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Grid>
+                    <Grid item md={6} xs={12}>
+                        <TableContainer component={Paper}>
+                            <Table className={this.state.classes.table} aria-label="simple table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Index</TableCell>
+                                        <TableCell>Option</TableCell>
+                                        <TableCell>Valeur</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                     <TableRow key={1}>
+                                        <TableCell component="th" scope="row">
+                                            {1}
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            Taux d'intérêts débiteurs
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            {this.state.options["taux_int_1"]} et {this.state.options["taux_int_2"]}
+                                        </TableCell>
+                                    </TableRow>
+
+                                    <TableRow key={2}>
+                                        <TableCell component="th" scope="row">
+                                            {2}
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            Commission & plus Fort découvert
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            {this.state.options["taux_com"]} et {this.state.options["fort_dec"]}
+                                        </TableCell>
+                                    </TableRow>
+
+                                    <TableRow key={3}>
+                                        <TableCell component="th" scope="row">
+                                            {3}
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            Tva & solde initial
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            {this.state.options["tva"]} & {this.state.options['solde_initial']}
+                                        </TableCell>
+                                    </TableRow>
+
+                                    <TableRow key={4}>
+                                        <TableCell component="th" scope="row">
+                                            {4}
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            Période d'arrêté
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            {this.state.options["date_deb"]} au  {this.state.options["date_fin"]}
+                                        </TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Grid>
+                </Grid>
+
             default:
                 return 'cliquez sur lancer l\'arrêté';
         }
     }
 
-    componentDidMount() {
-        // console.log(this.props.comptes)
-        axios.post(`${url}`, {"conf": "conf"}, config, )
-            .then( res => {
-                this.setState({data: res.data})
-            }).catch( err => {
-                console.log(err)
-        })
-    }
-
     next = () => {
-
         this.setState((prevState) => ({
             activeStep: prevState.activeStep + 1
         }) )
@@ -554,25 +785,32 @@ class Calcul extends Component {
                 }
                 return;
             case 1:
-
+                this.next()
+                return;
+            case 2:
+                const obj = this.state.options
+                const res = Object.keys(obj).every((k) => isNaN(obj[k]))
+                if (!res){
+                    this.next()
+                }
+                return;
+            case 3:
                 // Computation happening
-                axios.post('http://127.0.0.1:8000/api/calculs', {"accounts": this.state.accounts})
-                    .then(
-                    res => {
-
-                        console.log("Good computation")
-
-                        // console.log(res.data)
-                        // this.props.history.push(
-                        //     {
-                        //         pathname: '/Results',
-                        //         state: res.data
-                        //     }
-                        // )
-                    }
-                ).catch( err => {
-                    console.log(err)
-            })
+                // axios.post('http://127.0.0.1:8000/api/calculs', {"accounts": this.state.accounts, "operations": this.state.operations, "options": this.state.options})
+                //     .then(
+                //     res => {
+                //
+                //         // console.log(res.data)
+                //         this.props.history.push(
+                //             {
+                //                 pathname: '/Results',
+                //                 state: res.data
+                //             }
+                //         )
+                //     }
+                // ).catch( err => {
+                //     console.log(err)
+                // })
 
                 this.setState((prevState) => ({
                     activeStep: 0
@@ -598,17 +836,14 @@ class Calcul extends Component {
 
     render() {
 
-
-        // {this.state.data.length > 0 && console.log(this.state.data)}
-
         const { classes } = this.props;
 
         const activeStep = this.state.activeStep
 
         const steps = this.getSteps()
 
-        const title = 'Calcul des arrêtés - Conforme'
-        const subTitle = 'Espace de vérification des arrêtés conformes - Valider les étapes pour lancer le calcul'
+        const title = 'Calcul des arrêtés - Régularisation'
+        const subTitle = 'Espace de calcul des arrêtés en régularisation - Valider les étapes pour lancer le calcul'
 
         const content = (
             <>
@@ -658,7 +893,7 @@ class Calcul extends Component {
             'title': title,
             'subTitle': subTitle,
             'content': content,
-            'selected': 2,
+            'selected': 3,
             "img": img
         }
 
@@ -673,4 +908,4 @@ const mapStateToProps = state => ({
     calculs: state.calculs.calculs
 })
 
-export default compose(withStyles(useStyles, {withTheme: true}), connect(mapStateToProps, { getCalcul }))(Calcul)
+export default compose(withStyles(useStyles, {withTheme: true}), connect(mapStateToProps, { getCalcul }))(CalculReg)
