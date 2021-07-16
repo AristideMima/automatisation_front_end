@@ -361,7 +361,9 @@ class Template extends Component {
                                 {/*</Box>*/}
                             </div>
                         </Grid>
-                        {this.props.component['content']}
+                        <Grid item xs={12}>
+                            {this.props.component['content']}
+                        </Grid>
                         <BackTop>
                             <div style={style}>
                                 <VerticalAlignTopOutlined />

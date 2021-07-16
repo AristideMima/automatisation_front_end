@@ -611,7 +611,6 @@ class Calcul extends Component {
         const subTitle = 'Espace de vérification des arrêtés conformes - Valider les étapes pour lancer le calcul'
 
         const content = (
-            <>
                 <div className={classes.rootStepper}>
                     <Grid container justify="center" >
                         <Box
@@ -651,7 +650,6 @@ class Calcul extends Component {
                         </Grid>
                     )}
                 </div>
-            </>
         )
 
         const component = {

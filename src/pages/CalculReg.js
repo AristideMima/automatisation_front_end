@@ -159,76 +159,89 @@ class SelectAccount extends Component{
 
             const columns = [
                 {
-                    title: 'Numéro de compte',
+                    key: '0',
+                    title: 'Numéro',
                     dataIndex: 'num_compte',
                     editable: false,
+                    fixed: 'left',
                 },
                 {
-                    title: 'Intitulé du compte',
+                    key: '1',
+                    title: 'Intitulé',
                     dataIndex: 'intitule_compte',
                     editable: false,
                 },
                 {
-                    title: 'Type de compte',
+                    key: '2',
+                    title: 'Type',
                     dataIndex: 'type_account',
                     editable: false,
                 },
                 {
-                    title: 'Intérêt débiteur 1',
+                    key: '3',
+                    title: 'Int débit 1',
                     dataIndex: 'taxe_interet_debiteur_1',
                     editable: true,
                     render: val => { return val + "%"}
                 },
                 {
-                    title: 'Intérêt débiteur 2',
+                    key: '4',
+                    title: 'Int débit 2',
                     dataIndex: 'taxe_interet_debiteur_2',
                     editable: true,
                     render: val => { return val + "%"}
                 },
                 {
-                    title: 'Commision découvert',
+                    key: '5',
+                    title: 'Com découvert',
                     dataIndex: 'taux_commission_dec',
                     editable: true,
                     render: val => { return val + "%"}
                 },
                 {
-                    title: 'Commision mouvement',
+                    key: '6',
+                    title: 'Com mouvement',
                     dataIndex: 'taux_commission_mvt',
                     editable: true,
                     render: val => { return val + "%"}
                 },
                 {
+                    key: '7',
                     title: 'Tva',
                     dataIndex: 'taux_tva',
                     editable: true,
                     render: val => { return val + "%"}
                 },
                 {
+                    key: '8',
                     title: 'Solde initial',
                     dataIndex: 'solde_initial',
                     editable: true,
                     render: val => this.currencyTransform(val),
                 },
                 {
+                    key: '9',
                     title: 'Montant autorisé',
                     dataIndex: 'montant',
-                    width: 200,
                     editable: false,
                     render: val => this.currencyTransform(val),
                 },
                 {
+                    key: '10',
                     title: 'Début autorisation',
                     dataIndex: 'date_deb_autorisation',
                     editable: false,
                 },
                 {
+                    key: '11',
                     title: 'Fin autorisation',
                     dataIndex: 'date_fin_autorisation',
                     editable: false,
                 },
                 {
-                    title: 'operation',
+                    title: 'Action',
                     dataIndex: 'operation',
+                    fixed: 'right',
                     render: (_, record) => {
                         const editable = isEditing(record);
                         return editable ? (
@@ -274,6 +287,8 @@ class SelectAccount extends Component{
             return (
                 <Form form={form} component={false}>
                     <Table
+                        auto
+                        scroll={{ x: 500, y: 300 }}
                         rowSelection={rowSelection}
                         components={{
                             body: {
@@ -283,7 +298,6 @@ class SelectAccount extends Component{
                         bordered
                         dataSource={data}
                         columns={mergedColumns}
-                        rowClassName="editable-row"
                         pagination={{
                             onChange: cancel,
                         }}
@@ -293,7 +307,7 @@ class SelectAccount extends Component{
         }
 
         return (
-            <Grid item md={12}>
+            <Grid item md={11} xs={11}>
                 {/*<MUIDataTable*/}
                 {/*    title={"Liste des numéros de compte"}*/}
                 {/*    data={this.props.data}*/}
