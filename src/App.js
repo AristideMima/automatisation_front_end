@@ -19,6 +19,8 @@ import CalculReg from "./pages/CalculReg"
 import Results from "./pages/Results";
 import NotFound from "./pages/404";
 import { PersistGate } from 'redux-persist/integration/react'
+import {ConformeCourant} from "./pages/ConformeCourant";
+import ConformeEpargne from "./pages/ConformeEpargne";
 
 class App extends React.Component {
 
@@ -43,8 +45,8 @@ class App extends React.Component {
                             <PrivateRoute exact path ='/Home' component={Home} />
                             <Route exact path ='/' component={Login} />
                             <PrivateRoute exact path ='/FileUpload' component={FileUpload} />
-                            <PrivateRoute exact path ='/CalculConforme' component={Calcul} />
-                            <PrivateRoute exact path ='/CalculRegularisation' component={CalculReg} />
+                            <PrivateRoute exact path ='/ConformeCourant' component={ConformeCourant} />
+                            <PrivateRoute exact path ='/ConformeEpargne' component={ConformeEpargne} />
                             <Route exact path ='/Register' component={Register} />
                             <Route exact path ='/Results' component={Results} />
                             <Route

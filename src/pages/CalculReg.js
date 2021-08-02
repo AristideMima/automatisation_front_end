@@ -92,7 +92,6 @@ class SelectAccount extends Component{
             );
         }
 
-
         const rowSelection = {
             selectedRowKeys,
             onChange: this.onChangeSelect

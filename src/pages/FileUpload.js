@@ -5,7 +5,7 @@ import { fileUpload } from "../actions/files";
 
 import {Grid,
     // IconButton,
-    Box
+    // Box
 } from "@material-ui/core";
 // import {
 //     CloudUpload as CloudUploadIcon
@@ -15,20 +15,22 @@ import { compose } from "redux";
 import {withStyles} from "@material-ui/core/styles";
 import Template from "./Template";
 import 'antd/dist/antd.css';
-import { Upload, Button , message, Progress } from 'antd';
+import { Upload, Button , Progress } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 // import reqwest from 'reqwest';
 import axios from "axios";
-import * as dfd from "danfojs/src/index";
+// import * as dfd from "danfojs/src/index";
 
 import img from "../assets/dropbox_48px.png";
+import { notification } from 'antd';
+
 
 const url = 'http://127.0.0.1:8000/api/upload/';
 
-const df = new dfd.DataFrame(
-    { pig: [20, 18, 489, 675, 1776], horse: [4, 25, 281, 600, 1900] },
-    { index: [1990, 1997, 2003, 2009, 2014] }
-);
+// const df = new dfd.DataFrame(
+//     { pig: [20, 18, 489, 675, 1776], horse: [4, 25, 281, 600, 1900] },
+//     { index: [1990, 1997, 2003, 2009, 2014] }
+// );
 
 class FileUpload extends Component {
 
@@ -51,19 +53,60 @@ class FileUpload extends Component {
             uploading: true,
         });
 
+        const token  = this.props.auth.token
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+
+        if(token){
+            config.headers['Authorization'] = `Token  ${token}`
+        }
+
+        console.log(config)
+
         // You can use any AJAX library you like
-        axios.put(`${url}`, formData).then( res => {
+        axios.put(`${url}`, formData, config).then( res => {
+            
             this.setState({
                 fileList: [],
                 uploading: false,
                 uploaded: true
             });
-            message.success('upload successfully.');
+
+            notification.success({
+                message: 'Upload réussi',
+                description: 'Les fichiers ont bien été uploadé et inséré dans la base de données',
+                placement: 'bottomRight',
+                duration: 5
+            })
+
+            
         }).catch( err => {
             this.setState({
                 uploading: false,
             });
-            message.error('upload failed.');
+
+            if (err.response) {
+                // failed uploading
+                notification.error({
+                    message: 'Erreur upload',
+                    description: err.response.data['message'],
+                    placement: 'bottomRight',
+                    duration: 10
+                });
+            }
+
+            // // failed uploading
+            // notification.error({
+            //     message: 'Erreur upload',
+            //     description: err.data['message'],
+            //     placement: 'bottomRight',
+            //     duration: 5
+            // });
+            
         })
 
         // reqwest({
@@ -119,7 +162,8 @@ class FileUpload extends Component {
     }
 
     static propTypes = {
-        fileUpload: PropTypes.func.isRequired
+        fileUpload: PropTypes.func.isRequired,
+        auth: PropTypes.object.isRequired
     }
 
     render() {
@@ -142,7 +186,6 @@ class FileUpload extends Component {
             },
 
             beforeUpload: file => {
-                console.log('Abena Nanga')
 
                 this.setState(state => ({
                     fileList: [...state.fileList, file],
@@ -154,7 +197,7 @@ class FileUpload extends Component {
             className: "upload-list-inline"
         };
 
-        const max_count = 10;
+        const max_count = 100;
 
         const percentage = (fileList.length/max_count) * 100;
 
@@ -166,18 +209,6 @@ class FileUpload extends Component {
 
         const content = (
             <>
-                <Grid container justify="center" alignItems="center" direction="column">
-                    <Grid md={12} xs={12}>
-                        {(fileList.length === 0 && this.state.uploaded === true) && (
-                            <Box mt={5}>
-                                <p>
-                                    <h5> Upload réussi</h5>
-                                    <Progress type="circle" percent={100} />
-                                </p>
-                            </Box>
-                        )}
-                    </Grid>
-                </Grid>
                 <Grid container
                       spacing={1}
                       alignItems="baseline"
@@ -217,8 +248,8 @@ class FileUpload extends Component {
                                 Réinitialiser
                             </Button>
                             <Grid item xs={12} md={12}>
-                                <h4>Max upload</h4>
-                                <Progress type="circle" percent={percentage} width={80} />
+                                <h4>Nombre de fichiers</h4>
+                                <Progress type="circle" percent={percentage} width={80} format={() => `${fileList.length}`} />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -226,7 +257,6 @@ class FileUpload extends Component {
 
             </>
         )
-
         const component = {
             'title': title,
             'subTitle': subTitle,
@@ -235,7 +265,7 @@ class FileUpload extends Component {
             "img": img
         }
 
-        console.log(df.head().print())
+        // console.log(df.head().print())
 
         return (
             <Template component={component} />
@@ -244,7 +274,8 @@ class FileUpload extends Component {
 }
 
 const mapStateToProps = state => ({
-    fileUpload: state.fileUpload
+    fileUpload: state.fileUpload,
+    auth: state.auth
 })
 
 export default compose(withStyles(useStyles, {withTheme: true}), connect(mapStateToProps, { fileUpload }))(FileUpload)

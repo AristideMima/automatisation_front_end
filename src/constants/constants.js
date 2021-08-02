@@ -4,7 +4,6 @@ import { red } from '@material-ui/core/colors';
 import image from "../assets/back_5.jpg";
 
 // Constants file
-
 export  const paperLogStyle = { padding: 30}
 
 const drawerWidth = 240;

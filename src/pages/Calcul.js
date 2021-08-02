@@ -1,9 +1,8 @@
 import React, { Component, useState  } from 'react'
 import { connect } from "react-redux";
 import PropTypes from 'prop-types'
-import { getComptes } from "../actions/comptes"
-import { getOperations } from "../actions/operations";
 import { getCalcul } from "../actions/calculs";
+import ControlledSelectionGrid from "./FullSelected"
 import axios from "axios";
 import {Grid, Button, Stepper, Step, StepLabel, Box, Paper, TextField,
      Table as TableMaterial ,TableRow,TableCell,TableBody,TableHead,TableContainer,
@@ -12,10 +11,15 @@ import { formStepperStyle, useStyles, url, config} from "../constants/constants"
 import { compose } from "redux";
 import {withStyles} from "@material-ui/core/styles";
 import Template from "./Template";
-import MUIDataTable from "mui-datatables";
 import img from "../assets/google_compute_engine_48px.png";
 import { Table, Popconfirm, Form, Input, InputNumber, Typography} from 'antd';
-
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
+import Alert from '@material-ui/lab/Alert';
+import Collapse from '@material-ui/core/Collapse';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
+import { notification } from 'antd';
 
 class SelectAccount extends Component{
 
@@ -24,21 +28,31 @@ class SelectAccount extends Component{
      */
     static propTypes = {
         data : PropTypes.array.isRequired,
-        index: PropTypes.array.isRequired
+        index: PropTypes.array.isRequired,
+        accounts: PropTypes.array.isRequired,
+        auth: PropTypes.object.isRequired
     }
 
     state = {
-        accounts_selected : [],
+        accounts_selected : this.props.accounts,
         selectedRowKeys: this.props.index,
         data: [],
+        defaultColDef: {
+            flex: 1,
+            minWidth: 100,
+            resizable: true,
+        },
+        rowSelection: 'multiple',
+        rowData: null,
     }
 
     sendAccount = (accounts) => {
         this.props.getAccount(accounts)
     }
 
-
     onChangeSelect = (selectedRowKeys, selectedRows, newData) => {
+
+        // console.log(selectedRows)
         this.setState({
             selectedRowKeys: selectedRowKeys,
             accounts_selected: selectedRows,
@@ -120,6 +134,7 @@ class SelectAccount extends Component{
             const save = async (key) => {
                 try {
 
+
                     const row = await form.validateFields();
                     const newData = [...data];
                     const index = newData.findIndex((item) => key === item.key);
@@ -133,6 +148,13 @@ class SelectAccount extends Component{
                         newData.splice(index, 1, item_saved);
 
                         const account_selects = [...this.state.accounts_selected]
+                        const index_selected = newData.findIndex((item) => key === item.key);
+
+                        if(index_selected > -1){
+                            const item_select = account_selects[index_selected]
+                            account_selects.splice(index, 1, {...item_select, ...row});
+                        }
+
 
                         this.onChangeSelect(this.state.selectedRowKeys, account_selects, newData)
 
@@ -157,12 +179,12 @@ class SelectAccount extends Component{
                 },
                 {
                     title: 'Intitulé du compte',
-                    dataIndex: 'intitule_compte',
+                    dataIndex: 'intitule',
                     editable: false,
                 },
                 {
                     title: 'Type de compte',
-                    dataIndex: 'type_account',
+                    dataIndex: 'type_compte',
                     editable: false,
                 },
                 {
@@ -180,12 +202,12 @@ class SelectAccount extends Component{
                 },
                 {
                     title: 'Début autorisation',
-                    dataIndex: 'date_deb_autorisation',
+                    dataIndex: 'debut_autorisation',
                     editable: false,
                 },
                 {
                     title: 'Fin autorisation',
-                    dataIndex: 'date_fin_autorisation',
+                    dataIndex: 'fin_autorisation',
                     editable: false,
                 },
                 {
@@ -265,7 +287,13 @@ class SelectAccount extends Component{
 
                 {/*/>*/}
                 {/*<Table  rowSelection={{ type: 'checkbox', ...rowSelection }} columns={columns} dataSource={this.props.data} pagination={{ pageSize: 50 }} scroll={{ y: 240 }} />*/}
-                <EditableTable />
+                {/*<DataGrid*/}
+                {/*    columns={[{ field: 'num_compte' }]}*/}
+                {/*    rows={[*/}
+                {/*        { id: 1, name: 'React' },*/}
+                {/*        { id: 2, name: 'Material-UI' },*/}
+                {/*    ]}*/}
+                {/*/>*/}
             </Grid>
 
         );
@@ -274,127 +302,60 @@ class SelectAccount extends Component{
 }
 
 
-
 class FormStepper extends Component {
 
     state = {
-        taux_int_1: this.props.options['taux_int_1'],
-        taux_int_2: this.props.options['taux_int_2'],
-        taux_com: this.props.options['taux_com'],
-        fort_dec: this.props.options['fort_dec'],
-        tva: this.props.options['tva'],
-        date_deb: this.props.options['date_deb'],
-        date_fin: this.props.options['date_fin'],
-        solde_initial: this.props.options['solde_initial']
+        date_deb: this.props.date_deb,
+        date_fin: this.props.date_fin,
+        openAlert: false
     }
 
     handleChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
         })
-        // this.props.updateProps(this.state)
     }
 
     handleSubmit = (e) =>{
-
         e.preventDefault()
-
         this.props.updateProps(this.state)
+        this.setState({ openAlert: true})
     }
-
 
     render() {
 
-        const { taux_int_1, taux_int_2, taux_com, fort_dec, tva, date_deb, date_fin, solde_initial } = this.state
+        const { date_deb, date_fin } = this.state
 
         return (
             <>
+                <Grid container >
+                    <Grid item md={12} xs={12}>
+                        <Collapse in={this.state.openAlert}>
+                            <Alert
+                                action={
+                                    <IconButton
+                                        aria-label="close"
+                                        color="inherit"
+                                        size="small"
+                                        onClick={() => {
+                                            this.setState({openAlert: false });
+                                        }}
+                                    >
+                                        <CloseIcon fontSize="inherit" />
+                                    </IconButton>
+                                }
+                            >
+                                Période d'arrêté mise à jour
+                            </Alert>
+                        </Collapse>
+                        <Box mb={3}>
+
+                        </Box>
+                    </Grid>
+                </Grid>
                 <Paper elevation={10} style={formStepperStyle}>
                     <form onSubmit={this.handleSubmit}>
                         <Grid spacing={1} container justify="center">
-                            <Grid item md={4}>
-                                <h3>Taux d'intérêts</h3>
-                            </Grid>
-                            <Grid item md={4}>
-                                <Box>
-                                    <TextField
-                                        name="taux_int_1"
-                                        label='Taux d’intérêts 1'
-                                        placeholder="Taux d’intérêts"
-                                        value={taux_int_1}
-                                        onChange={this.handleChange}
-                                        type="number"
-                                        required/>
-                                </Box>
-                            </Grid>
-                            <Grid item md={4}>
-                                <Box>
-                                    <TextField
-                                        name="taux_int_2"
-                                        label='Taux d’intérêts 2'
-                                        placeholder="Taux d’intérêts"
-                                        value={taux_int_2}
-                                        onChange={this.handleChange}
-                                        type="number"
-                                        required/>
-                                </Box>
-                            </Grid>
-
-                            <Grid item md={4}>
-                                <h3>Commissions/ Fort découvert</h3>
-                            </Grid>
-
-                            <Grid item md={4}>
-                                <Box >
-                                    <TextField
-                                        name="taux_com"
-                                        label='Taux de commissions,'
-                                        placeholder="Taux de commissions,"
-                                        type="number"
-                                        value={taux_com}
-                                        onChange={this.handleChange}
-                                        required/>
-                                </Box>
-                            </Grid>
-                            <Grid item md={4}>
-                                <Box >
-                                    <TextField
-                                        name="fort_dec"
-                                        label='Taux du plus fort découvert'
-                                        placeholder="Taux du plus fort découvert"
-                                        value={fort_dec}
-                                        onChange={this.handleChange}
-                                        required/>
-                                </Box>
-                            </Grid>
-
-                            <Grid item md={4}>
-                                <h3>TVA / Solde</h3>
-                            </Grid>
-
-                            <Grid item md={4}>
-                                <Box >
-                                    <TextField
-                                        name="tva"
-                                        label='TVA'
-                                        placeholder="tva"
-                                        value={tva}
-                                        onChange={this.handleChange}
-                                        required/>
-                                </Box>
-                            </Grid>
-                            <Grid item md={4}>
-                                <Box >
-                                    <TextField
-                                        name="solde_initial"
-                                        label='Solde initial'
-                                        placeholder="Solde inititial"
-                                        value={solde_initial}
-                                        onChange={this.handleChange}
-                                        required/>
-                                </Box>
-                            </Grid>
-
                             <Grid item md={4}>
                                 <h3>Période de l'arrêté</h3>
                             </Grid>
@@ -441,23 +402,36 @@ class FormStepper extends Component {
 
 class Calcul extends Component {
 
+
     state = {
         data: [],
         open: false,
         classes: this.props,
         activeStep: 0,
-        accounts: [],
-        index: []
+        accounts_selected: [],
+        index: [],
+
+        // Operations part
+        operations : [],
+        selectedOperations: [],
+        indexOperations: [],
+
+        key: `open${Date.now()}`,
+
+        // Period chosen
+        date_fin: "",
+        date_deb: "2000-01-01",
+        openAlert: false,
+        alertComp: null
     }
 
     getAccounts = (props) => {
 
         this.setState((prev) => ({
-            accounts: props.selectedRows,
-            index: props.selectedRowKeys,
-            data: typeof props.newData !== 'undefined' ? props.newData:prev.data
+            accounts_selected: props.selected_accounts,
+            index: props.newSelectionModel,
+            data: typeof props.updatedState !== 'undefined' ? props.updatedState:prev.data
         }))
-        console.log(props)
     }
 
     getOperations = (props) => {
@@ -469,7 +443,8 @@ class Calcul extends Component {
 
     updateOptions = (optionsChild) => {
         this.setState({
-            options: optionsChild
+            date_deb: optionsChild.date_deb,
+            date_fin: optionsChild.date_fin
         })
 
     }
@@ -477,19 +452,33 @@ class Calcul extends Component {
     static propTypes = {
 
         getCalcul: PropTypes.func.isRequired,
-        calculs: PropTypes.array.isRequired
+        calculs: PropTypes.array.isRequired,
+        auth: PropTypes.object.isRequired,
+        typeArrete: PropTypes.string.isRequired,
+        typeCalcul: PropTypes.string.isRequired
     }
 
     getSteps = () => {
-        return [ 'Choix des numéros de compte', 'Lancement'];
+        return [ 'Choix des numéros de compte', 'Sélectionner la période', 'Lancer le calcul'];
     }
 
     getStepContent = (stepIndex) => {
+
         switch (stepIndex) {
             case 0:
-                return   <SelectAccount getAccount={this.getAccounts} data={this.state.data} index={this.state.index} />;
+                return   <ControlledSelectionGrid data={this.state.data} selected_accounts={this.state.accounts_selected} index_selected={this.state.index}
+                                                  setAccount={this.getAccounts}  choice="calcul" check={true} />;
             case 1:
+                return <FormStepper updateProps={this.updateOptions} date_deb={this.state.date_deb} date_fin={this.state.date_fin} />;
+            case 2:
                 return <Grid container spacing={2}>
+                      <Grid item md={12} xs={12} >
+                          <Collapse in={true}>
+                              <Alert>
+                                  Période de l'arrêté: du {this.state.date_deb} au {this.state.date_fin}
+                              </Alert>
+                          </Collapse>
+                      </Grid>
                     <Grid item md={12} xs={12}>
                         <TableContainer component={Paper}>
                             <TableMaterial className={this.state.classes.table} aria-label="simple table">
@@ -502,16 +491,16 @@ class Calcul extends Component {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {this.state.accounts.map((account) => (
-                                            <TableRow key={account.key}>
+                                    {this.state.accounts_selected.map((account, key) => (
+                                            <TableRow key={key}>
                                                 <TableCell component="th" scope="row">
-                                                    {account.key}
+                                                    {key+1}
                                                 </TableCell>
                                                 <TableCell component="th" scope="row">
                                                     {account.num_compte}
                                                 </TableCell>
                                                 <TableCell component="th" scope="row">
-                                                    {account.intitule_compte}
+                                                    {account.intitule}
                                                 </TableCell>
                                                 <TableCell component="th" scope="row">
                                                     {account.solde_initial}
@@ -529,13 +518,36 @@ class Calcul extends Component {
     }
 
     componentDidMount() {
-        // console.log(this.props.comptes)
-        axios.post(`${url}`, {"conf": "conf"}, config, )
+
+        // Set accounts
+        const token  = this.props.auth.token
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+
+        if(token){
+            config.headers['Authorization'] = `Token  ${token}`
+        }
+
+        axios.post(`${url}`, {"conf": this.props.typeArrete, "type_account": this.props.typeCalcul }, config)
             .then( res => {
+                // console.log(res)
                 this.setState({data: res.data})
+                // console.log(res)
             }).catch( err => {
                 console.log(err)
         })
+
+        // Set date_fin
+        let today = new Date()
+        let dd = String(today.getDate()).padStart(2, '0');
+        let mm = String(today.getMonth() + 1).padStart(2, '0');
+        let yyyy = today.getFullYear();
+        today = yyyy + "-" + mm + '-' + dd;
+        this.setState({date_fin: today})
     }
 
     next = () => {
@@ -544,39 +556,72 @@ class Calcul extends Component {
             activeStep: prevState.activeStep + 1
         }) )
     }
-
     handleNext = () => {
-
         switch (this.state.activeStep) {
             case 0:
-                if(this.state.accounts.length !== 0){
+                if(this.state.accounts_selected.length !== 0){
                     this.next()
+                }else{
+                    notification.error({
+                        message: 'Erreur choix du compte',
+                        description: 'Vous devez sélectionner au moins 1 compte',
+                        placement: 'bottomRight',
+                        duration: 5
+                    });
                 }
                 return;
             case 1:
+                if ((this.state.date_deb) && (this.state.date_fin) && (this.state.date_deb !== this.state.date_fin)) {
+                    this.next()
+                }else{
+                    notification.error({
+                        message: 'Erreur choix de la période',
+                        description: 'Les dates ne doivent pas être identiques',
+                        placement: 'bottomRight',
+                        duration: 5
+                    });
+                }
+                return;
+            case 2:
+
+                const token  = this.props.auth.token
+
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+
+                if(token){
+                    config.headers['Authorization'] = `Token  ${token}`
+                }
 
                 // Computation happening
-                axios.post('http://127.0.0.1:8000/api/calculs', {"accounts": this.state.accounts})
+                axios.post('http://127.0.0.1:8000/api/calculs', {"accounts": this.state.accounts_selected,
+                    "period": [this.state.date_deb, this.state.date_fin], "type_account": this.props.typeCalcul, "conf": this.props.typeArrete}, config)
                     .then(
                     res => {
 
-                        console.log("Good computation")
-
-                        // console.log(res.data)
-                        // this.props.history.push(
-                        //     {
-                        //         pathname: '/Results',
-                        //         state: res.data
-                        //     }
-                        // )
+                        notification.success({
+                            message: 'Calcul éffectué',
+                            description: `Calcul terminé pour les comptes }`,
+                            placement: 'bottomRight',
+                            duration: 5
+                        });
+                        console.log(res.data)
+                        this.props.history.push(
+                            {
+                                pathname: '/Results',
+                                state: res.data
+                            }
+                        )
                     }
                 ).catch( err => {
                     console.log(err)
             })
-
-                this.setState((prevState) => ({
-                    activeStep: 0
-                }))
+                // this.setState((prevState) => ({
+                //     activeStep: 0
+                // }))
                 return;
             default:
                 return;
@@ -598,6 +643,7 @@ class Calcul extends Component {
 
     render() {
 
+        // console.log(this.state.accounts_selected, this.state.index )
 
         // {this.state.data.length > 0 && console.log(this.state.data)}
 
@@ -607,11 +653,12 @@ class Calcul extends Component {
 
         const steps = this.getSteps()
 
-        const title = 'Calcul des arrêtés - Conforme'
-        const subTitle = 'Espace de vérification des arrêtés conformes - Valider les étapes pour lancer le calcul'
+        const title = this.props.title.title
+        const subTitle = this.props.title.subTitle
 
         const content = (
                 <div className={classes.rootStepper}>
+                    {this.state.alertComp}
                     <Grid container justify="center" >
                         <Box
                             mt={5}
@@ -645,7 +692,11 @@ class Calcul extends Component {
                     ) : (
                         <Grid container justify="center" spacing={0}>
                             <Box mt={4}>
-                                <div className={classes.instructions}>{this.getStepContent(activeStep)}</div>
+                                <Grid container >
+                                    <Grid item xs={12} md={12}>
+                                        <div className={classes.instructions}>{this.getStepContent(activeStep)}</div>
+                                    </Grid>
+                                </Grid>
                             </Box>
                         </Grid>
                     )}
@@ -656,7 +707,7 @@ class Calcul extends Component {
             'title': title,
             'subTitle': subTitle,
             'content': content,
-            'selected': 2,
+            'selected': this.props.id,
             "img": img
         }
 
@@ -668,7 +719,8 @@ class Calcul extends Component {
 }
 
 const mapStateToProps = state => ({
-    calculs: state.calculs.calculs
+    calculs: state.calculs.calculs,
+    auth: state.auth
 })
 
 export default compose(withStyles(useStyles, {withTheme: true}), connect(mapStateToProps, { getCalcul }))(Calcul)

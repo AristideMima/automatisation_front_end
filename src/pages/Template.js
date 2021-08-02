@@ -282,15 +282,19 @@ class Template extends Component {
                             <ListItemIcon><CloudUploadIcon/></ListItemIcon>
                             <ListItemText primary="Charger les fichiers" />
                         </ListItem>
-                        <ListItem  button component={Link} to="/CalculConforme" style={pointer}  selected={this.props.component['selected'] === 2} >
+                        <ListItem  button component={Link} to="/ConformeCourant" style={pointer}  selected={this.props.component['selected'] === 2} >
                             <ListItemIcon><ConfirmationNumberIcon/></ListItemIcon>
-                            <ListItemText primary="Arrêté conforme" />
+                            <ListItemText primary="Conforme courant" />
                         </ListItem>
-                        <ListItem  button component={Link} to="/CalculRegularisation" style={pointer}  selected={this.props.component['selected'] === 3} >
-                            <ListItemIcon><ViewComfyIcon/></ListItemIcon>
-                            <ListItemText primary="Arrêté régularisation" />
+                        <ListItem  button component={Link} to="/ConformeEpargne" style={pointer}  selected={this.props.component['selected'] === 3} >
+                            <ListItemIcon><ConfirmationNumberIcon/></ListItemIcon>
+                            <ListItemText primary="Conforme Epargne" />
                         </ListItem>
-                        <ListItem  button component={Link} to="#" style={pointer} selected={this.props.component['selected'] === 4}>
+                        {/*<ListItem  button component={Link} to="/CalculRegularisation" style={pointer}  selected={this.props.component['selected'] === 4} >*/}
+                        {/*    <ListItemIcon><ViewComfyIcon/></ListItemIcon>*/}
+                        {/*    <ListItemText primary="Arrêté régularisation" />*/}
+                        {/*</ListItem>*/}
+                        <ListItem  button component={Link} to="#" style={pointer} selected={this.props.component['selected'] === 5}>
                             <ListItemIcon><ViewQuiltIcon /></ListItemIcon>
                             <ListItemText primary="Statistiques" />
                         </ListItem>
@@ -361,9 +365,7 @@ class Template extends Component {
                                 {/*</Box>*/}
                             </div>
                         </Grid>
-                        <Grid item xs={12}>
                             {this.props.component['content']}
-                        </Grid>
                         <BackTop>
                             <div style={style}>
                                 <VerticalAlignTopOutlined />
