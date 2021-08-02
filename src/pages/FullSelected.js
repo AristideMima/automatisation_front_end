@@ -87,7 +87,7 @@ QuickSearchToolbar.propTypes = {
 
 export default function ControlledSelectionGrid(parentProps) {
 
-
+    const realData = parentProps.data
     const useStyles = makeStyles((theme) => ({
         root: {
             display: 'flex',
@@ -109,8 +109,8 @@ export default function ControlledSelectionGrid(parentProps) {
     // Set default
     React.useEffect(
         () => {
-            setTrueData(parentProps.data)
-        }, [parentProps.data]
+            setTrueData(realData)
+        }, [realData]
     )
 
     const customStyle = (text) => {
@@ -266,7 +266,7 @@ export default function ControlledSelectionGrid(parentProps) {
     const requestSearch = (searchValue) => {
         setSearchText(searchValue);
         const searchRegex = new RegExp(escapeRegExp(searchValue), 'i');
-        const filteredRows = trueData.filter((row) => {
+        const filteredRows = realData.filter((row) => {
             return Object.keys(row).some((field) => {
                 return searchRegex.test(row[field].toString());
             });
