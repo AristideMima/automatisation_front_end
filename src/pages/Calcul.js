@@ -20,6 +20,7 @@ import Collapse from '@material-ui/core/Collapse';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import { notification } from 'antd';
+import {withRouter} from 'react-router-dom';
 
 class SelectAccount extends Component{
 
@@ -422,7 +423,11 @@ class Calcul extends Component {
         date_fin: "",
         date_deb: "2000-01-01",
         openAlert: false,
-        alertComp: null
+        alertComp: null,
+
+        // Popup confirm
+        visible: false,
+        confirmationLoading: false
     }
 
     getAccounts = (props) => {
@@ -584,49 +589,70 @@ class Calcul extends Component {
                 return;
             case 2:
 
-                const token  = this.props.auth.token
-
-                const config = {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }
-
-                if(token){
-                    config.headers['Authorization'] = `Token  ${token}`
-                }
-
-                // Computation happening
-                axios.post('http://127.0.0.1:8000/api/calculs', {"accounts": this.state.accounts_selected,
-                    "period": [this.state.date_deb, this.state.date_fin], "type_account": this.props.typeCalcul, "conf": this.props.typeArrete}, config)
-                    .then(
-                    res => {
-
-                        notification.success({
-                            message: 'Calcul éffectué',
-                            description: `Calcul terminé pour les comptes }`,
-                            placement: 'bottomRight',
-                            duration: 5
-                        });
-                        console.log(res.data)
-                        this.props.history.push(
-                            {
-                                pathname: '/Results',
-                                state: res.data
-                            }
-                        )
-                    }
-                ).catch( err => {
-                    console.log(err)
-            })
-                // this.setState((prevState) => ({
-                //     activeStep: 0
-                // }))
+                this.setState({
+                    visible: true
+                })
                 return;
             default:
                 return;
         }
 
+    };
+
+    handleOk = () => {
+        this.setState({
+            confirmationLoading: true
+        })
+
+        setTimeout(() => {
+            this.setState({
+                visible: false,
+                confirmationLoading: false
+            });
+        }, 2000);
+
+        const token  = this.props.auth.token
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+
+        if(token){
+            config.headers['Authorization'] = `Token  ${token}`
+        }
+
+        // Computation happening
+        axios.post('http://127.0.0.1:8000/api/calculs', {"accounts": this.state.accounts_selected,
+            "period": [this.state.date_deb, this.state.date_fin], "type_account": this.props.typeCalcul, "conf": this.props.typeArrete}, config)
+            .then(
+                res => {
+
+                    console.log(res)
+
+                    this.props.history.push(
+                        {
+                            pathname: '/Results',
+                            state: res.data
+                        }
+                    )
+                    notification.success({
+                        message: 'Calcul éffectué',
+                        description: `Calcul terminé pour les comptes }`,
+                        placement: 'bottomRight',
+                        duration: 5
+                    });
+                }
+            ).catch( err => {
+            console.log(err)
+        })
+    }
+
+    handleCancel = () => {
+        this.setState({
+            visible: false,
+        });
     };
 
     handleBack = () => {
@@ -671,10 +697,17 @@ class Calcul extends Component {
                             >
                                 Précédent
                             </Button>
+                            <Popconfirm
+                                title="Confirmation"
+                                visible={this.state.visible}
+                                onConfirm={this.handleOk}
+                                okButtonProps={{ loading: this.state.confirmLoading }}
+                                onCancel={this.handleCancel}
+                            >
                             <Button disabled={activeStep === steps.length} variant="contained" color="secondary" onClick={this.handleNext}>
                                 {activeStep === steps.length - 1 ? 'Lancer l\'arrêté' : 'Suivant'}
                             </Button>
-
+                            </Popconfirm>
                         </Box>
                     </Grid>
                     <Stepper activeStep={activeStep} alternativeLabel>
@@ -723,4 +756,4 @@ const mapStateToProps = state => ({
     auth: state.auth
 })
 
-export default compose(withStyles(useStyles, {withTheme: true}), connect(mapStateToProps, { getCalcul }))(Calcul)
+export default compose(withStyles(useStyles, {withTheme: true}), connect(mapStateToProps, { getCalcul }))(withRouter(Calcul))

@@ -24,7 +24,7 @@ class Results extends Component {
 
     state = {
         offset: 0,
-        elementsPerPage: 12,  //change as per your need
+        elementsPerPage: 4,  //change as per your need
         pagesCount: 1,
         allElements: [],
         totalElementsCount: 0,
@@ -78,74 +78,52 @@ class Results extends Component {
 
         const dataResults = this.props.history.location.state.data
 
-        console.log(dataResults)
         const content = (
            <>
-               <Grid container justify="center" alignContent="center" direction>
-                   <Grid item md={12} xs={12}>
-                       { allElements.length !== 0 &&
-                           <>
-                           <ExcelFile element={<Button variant="contained" color="secondary">
-                               Télécharger le résultat
-                           </Button>}
-                                      filename={`Résultat calcul -- ${complete}`}
-                           >
-                               {allElements.map( (dataSheet, key) => (
-                                        <ExcelSheet data={dataSheet["first"]} name={`${dataSheet["account"]['code_agence']}-${dataSheet["account"]['num_compte']}`}>
-                                           <ExcelColumn label="DATE COMPTABLE" value="CPTABLE"/>
-                                           <ExcelColumn label="DATE DE VALEUR" value="VALEUR"/>
-                                           <ExcelColumn label="LIBELLES" value="LIBELLES"/>
-                                           <ExcelColumn label="MOUVEMENTS DEBIT" value="DEBIT_MVTS"/>
-                                           <ExcelColumn label="MOUVEMENTS CREDIT" value="CREDIT_MVTS"/>
-                                           <ExcelColumn label="SOLDES" value="SOLDES"/>
-                                           <ExcelColumn label="SOLDES JOUR" value="SOLDE_JOUR"/>
-                                           <ExcelColumn label="NOMBRE DE JOURS" value="jrs"/>
-                                           <ExcelColumn label="NOMBRES DEBIT" value="DEBITS_NBR"/>
-                                           <ExcelColumn label="NOMBRES CREDIT" value="CREDIT_NBR"/>
-                                           <ExcelColumn label="SOLDES" value="SOLDES_NBR"/>
-                                           <ExcelColumn label="MOUVEMENTS 1" value="MVTS_13"/>
-                                           <ExcelColumn label="MOUVEMENTS 2" value="MVTS_14" />
-                                       </ExcelSheet>
-                                       ))}
-                           </ExcelFile>
-                           </>
-                       }
-                   </Grid>
-                   <Grid item md={8} xs={8}>
-                       <Box mt={5} mb={5}>
-                           <Pagination defaultCurrent={1}  pageSize={elementsPerPage} showSizeChanger={false} onChange={this.handlePageClick}  total={totalElementsCount} />
-                       </Box>
+               <Grid container spacing={0} justify="center" alignItems="center" >
+                   <Grid item md={10} xs={12}>
+                       <Box mt={5}></Box>
+                       <Grid container sapcing={1} justify="center" alignItems="center" direction="row">
+                            <Grid item md={5}>
+                                { allElements.length !== 0 &&
+                                <>
+                                    <ExcelFile element={<Button variant="contained" color="secondary">
+                                        Télécharger le résultat
+                                    </Button>}
+                                               filename={`Résultat calcul -- ${complete}`}
+                                    >
+                                        {allElements.map( (dataSheet, key) => (
+                                            <ExcelSheet data={dataSheet["first"]} name={`${dataSheet["account"]['code_agence']}-${dataSheet["account"]['num_compte']}`}>
+                                                <ExcelColumn label="DATE COMPTABLE" value="CPTABLE"/>
+                                                <ExcelColumn label="DATE DE VALEUR" value="VALEUR"/>
+                                                <ExcelColumn label="LIBELLES" value="LIBELLES"/>
+                                                <ExcelColumn label="MOUVEMENTS DEBIT" value="DEBIT_MVTS"/>
+                                                <ExcelColumn label="MOUVEMENTS CREDIT" value="CREDIT_MVTS"/>
+                                                <ExcelColumn label="SOLDES" value="SOLDES"/>
+                                                <ExcelColumn label="SOLDES JOUR" value="SOLDE_JOUR"/>
+                                                <ExcelColumn label="NOMBRE DE JOURS" value="jrs"/>
+                                                <ExcelColumn label="NOMBRES DEBIT" value="DEBITS_NBR"/>
+                                                <ExcelColumn label="NOMBRES CREDIT" value="CREDIT_NBR"/>
+                                                <ExcelColumn label="SOLDES" value="SOLDES_NBR"/>
+                                                <ExcelColumn label="MOUVEMENTS 1" value="MVTS_13"/>
+                                                <ExcelColumn label="MOUVEMENTS 2" value="MVTS_14" />
+                                            </ExcelSheet>
+                                        ))}
+                                    </ExcelFile>
+                                </>
+                                }
+                            </Grid>
+                           <Grid item md={7}>
+                               <Pagination defaultCurrent={1}  pageSize={elementsPerPage} showSizeChanger={false} onChange={this.handlePageClick}  total={totalElementsCount} />
+                           </Grid>
+                       </Grid>
+                       <Box mb={5}></Box>
                    </Grid>
                    {currentPageElements.map( (dataSec, key) => (
                         <Grid item md={10} xs={9}>
                             <Grid container spacing={1}>
-                                <Grid item md={11}>
+                                <Grid item md={12}>
                                     <Alert message={`Numéro de compte: ${dataSec["account"]['num_compte']}`} type="info" showIcon />
-                                </Grid>
-                                <Grid md={1}>
-                                    <ExcelFile element={
-                                        <IconButton variant="outlined" color="primary" aria-label="Download">
-                                            <GetAppIcon />
-                                        </IconButton>
-                                    }
-                                    filename={`${dataSec["account"]['code_agence']}-${dataSec["account"]['num_compte']}`}
-                                    >
-                                        <ExcelSheet data={dataSec["first"]} name={`${dataSec["account"]['code_agence']}-${dataSec["account"]['num_compte']}`}>
-                                            <ExcelColumn label="DATE COMPTABLE" value="CPTABLE"/>
-                                            <ExcelColumn label="DATE DE VALEUR" value="VALEUR"/>
-                                            <ExcelColumn label="LIBELLES" value="LIBELLES"/>
-                                            <ExcelColumn label="MOUVEMENTS DEBIT" value="DEBIT_MVTS"/>
-                                            <ExcelColumn label="MOUVEMENTS CREDIT" value="CREDIT_MVTS"/>
-                                            <ExcelColumn label="SOLDES" value="SOLDES"/>
-                                            <ExcelColumn label="SOLDES JOUR" value="SOLDE_JOUR"/>
-                                            <ExcelColumn label="NOMBRE DE JOURS" value="jrs"/>
-                                            <ExcelColumn label="NOMBRES DEBIT" value="DEBITS_NBR"/>
-                                            <ExcelColumn label="NOMBRES CREDIT" value="CREDIT_NBR"/>
-                                            <ExcelColumn label="SOLDES" value="SOLDES_NBR"/>
-                                            <ExcelColumn label="MOUVEMENTS 1" value="MVTS_13"/>
-                                            <ExcelColumn label="MOUVEMENTS 2" value="MVTS_14" />
-                                        </ExcelSheet>
-                                    </ExcelFile>
                                 </Grid>
                             </Grid>
                             <Box mb={2}></Box>
@@ -153,7 +131,8 @@ class Results extends Component {
                                 <ControlledSelectionGrid data={dataSec["second"]} selected_accounts={[]} index_selected={[]}
                                                          setAccount={() => {}} choice="results" check={false}  />
                             </Grid>
-                            </Grid>
+                            <Box mb={5}></Box>
+                        </Grid>
                    )) }
                </Grid>
            </>

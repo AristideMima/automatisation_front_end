@@ -362,9 +362,6 @@ export default function ControlledSelectionGrid(parentProps) {
 
     // const trueData = parentProps.data
 
-
-    console.log(trueData)
-
     return (
         <div style={{ height: 500, width: width }}>
             <DataGrid
