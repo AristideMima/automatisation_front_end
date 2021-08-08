@@ -13,8 +13,6 @@ import {withStyles} from "@material-ui/core/styles";
 import Template from "./Template";
 import img from "../assets/google_compute_engine_48px.png";
 import { Table, Popconfirm, Form, Input, InputNumber, Typography} from 'antd';
-import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import Alert from '@material-ui/lab/Alert';
 import Collapse from '@material-ui/core/Collapse';
 import CloseIcon from '@material-ui/icons/Close';
@@ -45,6 +43,7 @@ class SelectAccount extends Component{
         },
         rowSelection: 'multiple',
         rowData: null,
+        loading: true
     }
 
     sendAccount = (accounts) => {
@@ -427,7 +426,8 @@ class Calcul extends Component {
 
         // Popup confirm
         visible: false,
-        confirmationLoading: false
+        confirmationLoading: false,
+        laoding: false
     }
 
     getAccounts = (props) => {
@@ -472,7 +472,7 @@ class Calcul extends Component {
         switch (stepIndex) {
             case 0:
                 return   <ControlledSelectionGrid data={this.state.data} selected_accounts={this.state.accounts_selected} index_selected={this.state.index}
-                                                  setAccount={this.getAccounts}  choice="calcul" check={true} />;
+                                                  setAccount={this.getAccounts}  choice="calcul" check={true} loading={this.state.loading} />;
             case 1:
                 return <FormStepper updateProps={this.updateOptions} date_deb={this.state.date_deb} date_fin={this.state.date_fin} />;
             case 2:
@@ -539,11 +539,9 @@ class Calcul extends Component {
 
         axios.post(`${url}`, {"conf": this.props.typeArrete, "type_account": this.props.typeCalcul }, config)
             .then( res => {
-                // console.log(res)
-                this.setState({data: res.data})
-                // console.log(res)
+                this.setState({data: res.data, loading: false})
             }).catch( err => {
-                console.log(err)
+            this.setState({loading: false})
         })
 
         // Set date_fin
@@ -628,9 +626,7 @@ class Calcul extends Component {
             "period": [this.state.date_deb, this.state.date_fin], "type_account": this.props.typeCalcul, "conf": this.props.typeArrete}, config)
             .then(
                 res => {
-
-                    console.log(res)
-
+                    console.log()
                     this.props.history.push(
                         {
                             pathname: '/Results',

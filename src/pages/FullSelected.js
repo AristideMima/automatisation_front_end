@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { DataGrid, GridToolbarDensitySelector, GridToolbarFilterButton } from '@material-ui/data-grid';
-import { useDemoData } from '@material-ui/x-grid-data-generator';
+import { DataGrid, GridOverlay, useGridSlotComponentProps, GridToolbarDensitySelector, GridToolbarFilterButton } from '@material-ui/data-grid';
 import Avatar from '@material-ui/core/Avatar';
 import { indigo } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,10 +11,44 @@ import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
 import { createMuiTheme } from '@material-ui/core/styles';
+import LinearProgress from '@material-ui/core/LinearProgress';
+// import Pagination from '@material-ui/lab/Pagination';
+
+
+// const useStyles2 = makeStyles({
+//     root: {
+//         display: 'flex',
+//     },
+// });
+//
+// // pagination
+// function CustomPagination() {
+//     const { state, apiRef } = useGridSlotComponentProps();
+//     const classes = useStyles2();
+//     return (
+//         <Pagination
+//             className={classes.root}
+//             color="primary"
+//             count={state.pagination.pageCount}
+//             page={state.pagination.page + 1}
+//             onChange={(event, value) => apiRef.current.setPage(value - 1)}
+//         />
+//     );
+// }
+
+// Loading data
+function CustomLoadingOverlay() {
+    return (
+        <GridOverlay>
+            <div style={{ position: 'absolute', top: 0, width: '100%' }}>
+                <LinearProgress />
+            </div>
+        </GridOverlay>
+    );
+}
 
 
 // Regex
-
 function escapeRegExp(value) {
     return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 }
@@ -101,16 +134,23 @@ export default function ControlledSelectionGrid(parentProps) {
         },
     }))
     const classes = useStyles();
-    const [selectionModel, setSelectionModel] = React.useState(parentProps.index_selected);
+    const [selectionModel, setSelectionModel] = React.useState([]);
     const [editRowsModel, setEditRowsModel] = React.useState({});
     const [searchText, setSearchText] = React.useState('');
     const [trueData, setTrueData] = React.useState([]);
+    const [loading, setLoading] = React.useState(true)
 
     // Set default
     React.useEffect(
         () => {
             setTrueData(realData)
-        }, [realData]
+            setLoading(parentProps.loading)
+        }, [realData, loading]
+    )
+    React.useEffect(
+        () => {
+            setSelectionModel(parentProps.index_selected)
+        }, [selectionModel]
     )
 
     const customStyle = (text) => {
@@ -140,14 +180,14 @@ export default function ControlledSelectionGrid(parentProps) {
             width: 200,
             editable: false,
         },
-        {
-            id: 1,
-            width: 200,
-            headerName: 'Intitulé du compte',
-            headerAlign: 'center',
-            field: 'intitule',
-            editable: false,
-        },
+        // {
+        //     id: 1,
+        //     width: 200,
+        //     headerName: 'Intitulé du compte',
+        //     headerAlign: 'center',
+        //     field: 'intitule',
+        //     editable: false,
+        // },
         {
             id: 2,
             width: 110,
@@ -180,7 +220,7 @@ export default function ControlledSelectionGrid(parentProps) {
             headerName: 'Montant autorisé',
             field: 'montant',
             type: 'number',
-            editable: false,
+            editable: true,
             valueFormatter: (params) => {
                 const valueFormatted = currencyTransform(params.value);
                 return `${valueFormatted}`;
@@ -192,7 +232,7 @@ export default function ControlledSelectionGrid(parentProps) {
             headerAlign: 'center',
             headerName: 'Début autorisation',
             field: 'debut_autorisation',
-            editable: false,
+            editable: true,
             type: 'date'
         },
         {
@@ -259,6 +299,9 @@ export default function ControlledSelectionGrid(parentProps) {
 
     // helpers functions
     const currencyTransform = (amount) => {
+
+        if (amount === "") return amount
+
         const formatter = new Intl.NumberFormat('fr-FR', {style: 'currency', currency: 'XAF' })
         return  formatter.format(amount)
     }
@@ -276,22 +319,22 @@ export default function ControlledSelectionGrid(parentProps) {
 
     const handleEditCellChange = React.useCallback(
         ({ id, field, props }) => {
-            if (field === 'solde_initial') {
 
                 const data = props;
+
+
 
                 if( data.value){
                     const value = data.value
                     const newState = {};
                     newState[id] = {
                         ...editRowsModel[id],
-                        solde_initial: {...props, error: value === "" },
                     };
+                    newState[id][field] = {...props, error: value === "" }
 
                     const updatedState = { ...editRowsModel, ...newState }
 
                     setEditRowsModel(updatedState);
-                }
             }
         },
         [editRowsModel],
@@ -300,7 +343,6 @@ export default function ControlledSelectionGrid(parentProps) {
     const handleEditCellChangeCommitted = React.useCallback(
         ({ id, field, props }) => {
 
-            if (field === 'solde_initial') {
 
                 const data = props;
 
@@ -314,7 +356,7 @@ export default function ControlledSelectionGrid(parentProps) {
                         // update datas
                         const updateData = trueData.map( (row) => {
                             if( row.id === id){
-                                row.solde_initial = value
+                                row[field] = value
                                 return row
                             }
                             return row
@@ -347,14 +389,13 @@ export default function ControlledSelectionGrid(parentProps) {
                 //
                 //
 
-            }
 
         },
         [editRowsModel]
     );
 
 
-    let width = 800
+    let width = "80em"
 
     if(column_choice === "results"){
         width = "100%"
@@ -365,6 +406,10 @@ export default function ControlledSelectionGrid(parentProps) {
     return (
         <div style={{ height: 500, width: width }}>
             <DataGrid
+                components={{
+                    LoadingOverlay: CustomLoadingOverlay,
+                }}
+                loading = {loading}
                 checkboxSelection = {checKboxSelection}
                 components={{ Toolbar: QuickSearchToolbar }}
                 componentsProps={{

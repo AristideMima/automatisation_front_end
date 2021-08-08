@@ -7,7 +7,8 @@ import {withStyles} from "@material-ui/core/styles";
 import { useStyles} from "../constants/constants";
 import {  Redirect } from "react-router-dom";
 import ViewComfyIcon from '@material-ui/icons/ViewComfy';
-
+// import TreeView from '@material-ui/lab/TreeView';
+// import TreeItem from '@material-ui/lab/TreeItem';
 import {
     AppBar,
     Badge, Box,
@@ -17,10 +18,7 @@ import {
     IconButton,
      List, ListItem, ListItemIcon,
     Card, CardHeader,
-    // CardMedia, CardContent,
-    // CardActions, Collapse,
     Avatar,
-    // Menu,
     Toolbar,
     Typography
 } from "@material-ui/core";
@@ -28,7 +26,6 @@ import {
     ChevronRight as ChevronRightIcon, Close as CloseIcon, CloudUpload as CloudUploadIcon, Edit as EditIcon,
     Mail as MailIcon,
     Menu as MenuIcon,
-    // Menu as MenuItem,
     More as MoreIcon,
     Notifications as NotificationsIcon, SettingsPower as SettingsPowerIcon,
 } from "@material-ui/icons";
@@ -66,19 +63,12 @@ class Template extends Component {
         if (this.state.redirect){
             return <Redirect to={this.state.redirect} />
         }
-        // datas
 
+        // datas
         const { classes } = this.props;
 
         const theme = this.props.theme;
         const  {open} = this.state;
-        // const [auth, setAuth] = React.useState(true);
-        // const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-        // const [anchorEl, setAnchorEl] = React.useState(null);
-
-
-        // const isMenuOpen = Boolean(anchorEl);
-        // const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
         const handleMobileMenuOpen = (event) => {
             this.setState({
@@ -282,6 +272,13 @@ class Template extends Component {
                             <ListItemIcon><CloudUploadIcon/></ListItemIcon>
                             <ListItemText primary="Charger les fichiers" />
                         </ListItem>
+                        {/*<ListItem  button component={Link} to="/ConformeCourant" style={pointer}  selected={this.props.component['selected'] === 2} >*/}
+                        {/*<TreeItem nodeId="1" label="Applications">*/}
+                        {/*    <TreeItem nodeId="2" label="Calendar" />*/}
+                        {/*    <TreeItem nodeId="3" label="Chrome" />*/}
+                        {/*    <TreeItem nodeId="4" label="Webstorm" />*/}
+                        {/*</TreeItem>*/}
+                        {/*</ListItem>*/}
                         <ListItem  button component={Link} to="/ConformeCourant" style={pointer}  selected={this.props.component['selected'] === 2} >
                             <ListItemIcon><ConfirmationNumberIcon/></ListItemIcon>
                             <ListItemText primary="Conforme courant" />
@@ -301,7 +298,7 @@ class Template extends Component {
                     </List>
                     <Divider />
                     <List>
-                        {['Edit my profile', 'Settings',].map((text, index) => (
+                        {['Changer mot de passe', 'Paramètres',].map((text, index) => (
                             <ListItem button key={text}>
                                 <ListItemIcon>{index % 2 === 0 ? <EditIcon /> : <Settings />}</ListItemIcon>
                                 <ListItemText primary={text} />

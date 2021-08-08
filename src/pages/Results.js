@@ -33,6 +33,7 @@ class Results extends Component {
 
     componentDidMount() {
         const datas = this.props.history.location.state.data
+        console.log(this.props.history.location.state)
         this.setState({
             allElements: datas,
             totalElementsCount: datas.length,

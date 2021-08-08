@@ -5,7 +5,7 @@ import { fileUpload } from "../actions/files";
 
 import {Grid,
     // IconButton,
-    // Box
+    Box
 } from "@material-ui/core";
 // import {
 //     CloudUpload as CloudUploadIcon
@@ -20,9 +20,15 @@ import { UploadOutlined } from '@ant-design/icons';
 // import reqwest from 'reqwest';
 import axios from "axios";
 // import * as dfd from "danfojs/src/index";
-
 import img from "../assets/dropbox_48px.png";
 import { notification } from 'antd';
+import Radio from '@material-ui/core/Radio';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import RadioGroup from '@material-ui/core/RadioGroup';
+
+
 
 
 const url = 'http://127.0.0.1:8000/api/upload/';
@@ -39,7 +45,20 @@ class FileUpload extends Component {
         files: [],
         fileList: [],
         uploading: false,
-        uploaded: false
+        uploaded: false,
+        choice: "historique"
+    }
+
+    handleChoice = (e) => {
+        this.setState({
+            choice: e.target.value
+        })
+        notification.success({
+            message: 'Changement du type de chargement',
+            description: `Nouveau type: ${e.target.value}`,
+            placement: 'bottomRight',
+            duration: 5
+        })
     }
 
     handleUpload = () => {
@@ -48,6 +67,9 @@ class FileUpload extends Component {
         fileList.forEach(file => {
             formData.append('files[]', file);
         });
+        
+        // Add selected choice
+        formData.append('choice', this.state.choice)
 
         this.setState({
             uploading: true,
@@ -138,6 +160,7 @@ class FileUpload extends Component {
     }
 
     handleSave(files) {
+
         //Saving files to state for further use and closing Modal.
         this.setState({
             files: files,
@@ -206,7 +229,6 @@ class FileUpload extends Component {
         const subTitle = 'Cliquez sur l\'icone pour pouvoir envoyers les fichiers vers le serveur'
 
 
-
         const content = (
             <>
                 <Grid container
@@ -214,10 +236,25 @@ class FileUpload extends Component {
                       alignItems="baseline"
                       justify="center"
                 >
+                    <Grid item md={12} xs={12} >
+                        <Grid container spacing={0} justify="center" alignItems="center" direction="column">
+                        <Box mt={5} mb={5}>  
+                        <FormControl component="fieldset">                  
+                            <FormLabel component="legend">Chosir le type de fichier que vous souhaitez charger </FormLabel>
+                            <RadioGroup row aria-label="Choices" name="choice" value={this.state.choice} onChange={this.handleChoice}>
+                            <FormControlLabel value="historique" control={<Radio />} label="Historique" />
+                            <FormControlLabel value="solde" control={<Radio />} label="Solde initial" />
+                            <FormControlLabel value="autorisation" control={<Radio />} label="Autorisations découvert" />
+                            <FormControlLabel value="Journal" disabled control={<Radio />} label="Journal d'arrêté" />
+                            </RadioGroup>
+                         </FormControl>
+                        </Box>
+                        </Grid>
+                    </Grid>
                     <Grid item xs={7} md={7}>
                         <Upload
                             multiple {...props}
-                            accept="text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                            accept="text/plain, text/unl,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                             maxCount={max_count}
                         >
                             <Button disabled={fileList.length === max_count} icon={<UploadOutlined />}>Sélectionner les fichiers</Button>
