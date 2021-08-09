@@ -412,7 +412,7 @@ class Calcul extends Component {
         index: [],
 
         // Operations part
-        operations : [],
+        data_operations : [],
         selectedOperations: [],
         indexOperations: [],
 
@@ -423,6 +423,22 @@ class Calcul extends Component {
         date_deb: "2000-01-01",
         openAlert: false,
         alertComp: null,
+        options_courant: {
+            taux_interet_debiteur_1: 15.5,
+            taux_interet_debiteur_2: 6.5,
+            taux_interet_debiteur_3: 0,
+            taux_commision_mouvement: 0.025,
+            taux_commision_decouvert: 0.020833,
+            frais_fixe: 5000,
+            taux_tva: 19.25
+        },
+        options_epargne: {
+            taux_interet_inferieur: 2.45,
+            taux_interet_superieur: 2.45,
+            ircm: 16.5,
+            frais_fixe: 2000,
+            taux_tva: 19.25
+        },
 
         // Popup confirm
         visible: false,
@@ -433,17 +449,19 @@ class Calcul extends Component {
     getAccounts = (props) => {
 
         this.setState((prev) => ({
-            accounts_selected: props.selected_accounts,
+            accounts_selected: props.selected_rows,
             index: props.newSelectionModel,
-            data: typeof props.updatedState !== 'undefined' ? props.updatedState:prev.data
+            data: typeof props.updateData !== 'undefined' ? props.updateData:prev.data
         }))
     }
 
     getOperations = (props) => {
-        this.setState({
-            operations: props.operations,
-            index_operations: props.index_operations
-        })
+
+        this.setState((prev) => ({
+            operations: props.selected_rows,
+            indexOperations: props.newSelectionModel,
+            data_operations: typeof props.updateData !== 'undefined' ? props.updateData:prev.data_operations
+        }))
     }
 
     updateOptions = (optionsChild) => {
@@ -464,7 +482,7 @@ class Calcul extends Component {
     }
 
     getSteps = () => {
-        return [ 'Choix des numéros de compte', 'Sélectionner la période', 'Lancer le calcul'];
+        return [ 'Choix des numéros de compte', 'Choix des opérations', 'Options supplémentaires', 'Lancer le calcul'];
     }
 
     getStepContent = (stepIndex) => {
@@ -472,10 +490,13 @@ class Calcul extends Component {
         switch (stepIndex) {
             case 0:
                 return   <ControlledSelectionGrid data={this.state.data} selected_accounts={this.state.accounts_selected} index_selected={this.state.index}
-                                                  setAccount={this.getAccounts}  choice="calcul" check={true} loading={this.state.loading} />;
+                                                  setSelection={this.getAccounts}  choice="calcul" check={true} loading={this.state.loading} />;
             case 1:
-                return <FormStepper updateProps={this.updateOptions} date_deb={this.state.date_deb} date_fin={this.state.date_fin} />;
+                    return   <ControlledSelectionGrid data={this.state.data_operations} selected_accounts={this.state.selectedOperations} index_selected={this.state.indexOperations}
+                                                      setSelection={this.getOperations}  choice="operations" check={true} loading={false} />;
             case 2:
+                return <FormStepper updateProps={this.updateOptions} date_deb={this.state.date_deb} date_fin={this.state.date_fin} />;
+            case 3:
                 return <Grid container spacing={2}>
                       <Grid item md={12} xs={12} >
                           <Collapse in={true}>
@@ -539,7 +560,7 @@ class Calcul extends Component {
 
         axios.post(`${url}`, {"conf": this.props.typeArrete, "type_account": this.props.typeCalcul }, config)
             .then( res => {
-                this.setState({data: res.data, loading: false})
+                this.setState({data: res.data['accounts'], data_operations: res.data['operations'],  loading: false})
             }).catch( err => {
             this.setState({loading: false})
         })
@@ -574,6 +595,9 @@ class Calcul extends Component {
                 }
                 return;
             case 1:
+                this.next()
+                return
+            case 2:
                 if ((this.state.date_deb) && (this.state.date_fin) && (this.state.date_deb !== this.state.date_fin)) {
                     this.next()
                 }else{
@@ -585,8 +609,7 @@ class Calcul extends Component {
                     });
                 }
                 return;
-            case 2:
-
+            case 3:
                 this.setState({
                     visible: true
                 })

@@ -13,6 +13,8 @@ import PropTypes from 'prop-types';
 import { createMuiTheme } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
 // import Pagination from '@material-ui/lab/Pagination';
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 
 // const useStyles2 = makeStyles({
@@ -120,7 +122,6 @@ QuickSearchToolbar.propTypes = {
 
 export default function ControlledSelectionGrid(parentProps) {
 
-    const realData = parentProps.data
     const useStyles = makeStyles((theme) => ({
         root: {
             display: 'flex',
@@ -134,27 +135,38 @@ export default function ControlledSelectionGrid(parentProps) {
         },
     }))
     const classes = useStyles();
+
+
+    // Variables definition
+    const realData = parentProps.data
+    const checkBox = parentProps.check
+    const choice = parentProps.choice
+    const selected = parentProps.index_selected
+    const load = parentProps.loading
+
     const [selectionModel, setSelectionModel] = React.useState([]);
     const [editRowsModel, setEditRowsModel] = React.useState({});
     const [searchText, setSearchText] = React.useState('');
     const [trueData, setTrueData] = React.useState([]);
     const [loading, setLoading] = React.useState(true)
+    const [checKboxSelection, setChecKboxSelection] = React.useState(true)
+    const [column_choice, setColumn_choice] = React.useState("calcul")
 
     // Set default
     React.useEffect(
         () => {
             setTrueData(realData)
-            setLoading(parentProps.loading)
-        }, [realData, loading]
-    )
-    React.useEffect(
-        () => {
-            setSelectionModel(parentProps.index_selected)
-        }, [selectionModel]
+            setChecKboxSelection(checkBox)
+            setColumn_choice(choice)
+            setLoading(load)
+            setSelectionModel(selected)
+        }, [realData, checkBox, choice, loading, selected, parentProps]
     )
 
     const customStyle = (text) => {
-        return <Grid container direction="columns" justify="center" alignContent="center"> <Avatar className={classes.purple}>{text.charAt(0)}</Avatar> </Grid>
+
+        if(text) return <Grid container direction="columns" justify="center" alignContent="center"> <Avatar className={classes.purple}>{text.charAt(0)}</Avatar> </Grid>
+        else return ""
     }
 
     const transFormPercentage = (value) => {
@@ -167,10 +179,24 @@ export default function ControlledSelectionGrid(parentProps) {
         return finalValue
     }
 
-    // Declaring all columns
+    // Change status of switch button
+    const handleChange  = (params) => {
+        const value = !params.value
+        const id = params.id
+        const field = params.field
+        let updateData = trueData
 
-    const checKboxSelection = parentProps.check
-    const column_choice = parentProps.choice
+        updateData[id][field] = value
+
+        setTrueData(updateData)
+
+        const selected_rows = selectionModel.map( (ind, val) => updateData[val])
+        const newSelectionModel = selectionModel
+
+        parentProps.setSelection({newSelectionModel, selected_rows, updateData})
+    }
+
+    // Declaring all columns
     const columns = [
         {
             id: 0,
@@ -245,6 +271,53 @@ export default function ControlledSelectionGrid(parentProps) {
             type: 'date'
         },
     ];
+
+    const column_operations = [
+        {
+            id: 0,
+            headerAlign: 'center',
+            width: 200,
+            headerName: 'Code opération',
+            field: 'code_operation',
+            editable: false,
+            type: 'number'
+        },
+        {
+            id: 1,
+            headerAlign: 'center',
+            width: 250,
+            headerName: 'Libellé opération',
+            field: 'libelle_operation',
+            editable: false,
+            type: 'number'
+        },
+        {
+            id: 2,
+            width: 186,
+            headerAlign: 'center',
+            headerName: 'Com mouvement',
+            field: 'com_mvt',
+            editable: false,
+            renderCell: (params) => {
+                return <FormControlLabel
+                    control={<Switch checked={params.value}  name="checkedA" onChange={() => handleChange(params)} />}
+                />
+            }
+        },
+        {
+            id: 3,
+            width: 180,
+            headerAlign: 'center',
+            headerName: 'Com découvert',
+            field: 'com_dec',
+            editable: false,
+            renderCell: (params) => {
+                return <FormControlLabel
+                    control={<Switch checked={params.value}  name="checkedA" onChange={() => handleChange(params)} />}
+                />
+            }
+        }
+    ]
     const column_results = [
         {
             id: 0,
@@ -294,7 +367,8 @@ export default function ControlledSelectionGrid(parentProps) {
     const all_columns = {
 
         "calcul": columns,
-        "results": column_results
+        "results": column_results,
+        "operations": column_operations
     }
 
     // helpers functions
@@ -322,8 +396,6 @@ export default function ControlledSelectionGrid(parentProps) {
 
                 const data = props;
 
-
-
                 if( data.value){
                     const value = data.value
                     const newState = {};
@@ -343,9 +415,7 @@ export default function ControlledSelectionGrid(parentProps) {
     const handleEditCellChangeCommitted = React.useCallback(
         ({ id, field, props }) => {
 
-
                 const data = props;
-
 
                 if  (data.value){
 
@@ -361,16 +431,18 @@ export default function ControlledSelectionGrid(parentProps) {
                             }
                             return row
                         })
+
                         notification.success({
                             message: `${field} mis à jour`,
                             description: ` Nouvelle valeur: ${value}`,
                             placement: 'bottomRight',
                             duration: 5
                         });
-                        const selected_accounts = selectionModel.map( (ind, val) => updateData[val])
+
+                        const selected_rows = selectionModel.map( (ind, val) => updateData[val])
                         const newSelectionModel = selectionModel
 
-                        parentProps.setAccount({newSelectionModel, selected_accounts, updateData})
+                        parentProps.setSelection({newSelectionModel, selected_rows, updateData})
                     }
 
                 }
@@ -397,11 +469,12 @@ export default function ControlledSelectionGrid(parentProps) {
 
     let width = "80em"
 
+
     if(column_choice === "results"){
         width = "100%"
+    }else if(column_choice === "operations"){
+        width = "63em"
     }
-
-    // const trueData = parentProps.data
 
     return (
         <div style={{ height: 500, width: width }}>
@@ -423,9 +496,9 @@ export default function ControlledSelectionGrid(parentProps) {
 
                     setSelectionModel(newSelectionModel);
 
-                    const selected_accounts = newSelectionModel.map( (ind, val) => trueData[val])
+                    const selected_rows = newSelectionModel.map( (ind, val) => trueData[val])
 
-                    parentProps.setAccount({newSelectionModel, selected_accounts})
+                    parentProps.setSelection({newSelectionModel, selected_rows})
                 }}
                 columns={all_columns[column_choice]}
                 selectionModel={selectionModel}
@@ -433,6 +506,7 @@ export default function ControlledSelectionGrid(parentProps) {
                 editRowsModel={editRowsModel}
                 onEditCellChange={handleEditCellChange}
                 onEditCellChangeCommitted={handleEditCellChangeCommitted}
+                disableSelectionOnClick
             />
         </div>
     );
