@@ -325,7 +325,6 @@ class SelectAccount extends Component{
 
 class SelectOperation extends Component{
 
-
     state = {
         data: this.props.data,
         operations_selected : [],

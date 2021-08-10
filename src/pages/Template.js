@@ -6,9 +6,6 @@ import { compose } from "redux";
 import {withStyles} from "@material-ui/core/styles";
 import { useStyles} from "../constants/constants";
 import {  Redirect } from "react-router-dom";
-import ViewComfyIcon from '@material-ui/icons/ViewComfy';
-// import TreeView from '@material-ui/lab/TreeView';
-// import TreeItem from '@material-ui/lab/TreeItem';
 import {
     AppBar,
     Badge, Box,

@@ -121,27 +121,8 @@ class FileUpload extends Component {
                 });
             }
 
-            // // failed uploading
-            // notification.error({
-            //     message: 'Erreur upload',
-            //     description: err.data['message'],
-            //     placement: 'bottomRight',
-            //     duration: 5
-            // });
-            
         })
 
-        // reqwest({
-        //     url: `${url}`,
-        //     method: 'put',
-        //     processData: false,
-        //     data: formData,
-        //     success: () => {
-        //     },
-        //     error: () => {
-        //
-        //     },
-        // });
     };
 
     handleEmpty = () => {

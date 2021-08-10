@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DataGrid, GridOverlay, useGridSlotComponentProps, GridToolbarDensitySelector, GridToolbarFilterButton } from '@material-ui/data-grid';
+import { DataGrid, GridOverlay } from '@material-ui/data-grid';
 import Avatar from '@material-ui/core/Avatar';
 import { indigo } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
@@ -16,27 +16,6 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
-
-// const useStyles2 = makeStyles({
-//     root: {
-//         display: 'flex',
-//     },
-// });
-//
-// // pagination
-// function CustomPagination() {
-//     const { state, apiRef } = useGridSlotComponentProps();
-//     const classes = useStyles2();
-//     return (
-//         <Pagination
-//             className={classes.root}
-//             color="primary"
-//             count={state.pagination.pageCount}
-//             page={state.pagination.page + 1}
-//             onChange={(event, value) => apiRef.current.setPage(value - 1)}
-//         />
-//     );
-// }
 
 // Loading data
 function CustomLoadingOverlay() {
@@ -206,14 +185,6 @@ export default function ControlledSelectionGrid(parentProps) {
             width: 200,
             editable: false,
         },
-        // {
-        //     id: 1,
-        //     width: 200,
-        //     headerName: 'Intitulé du compte',
-        //     headerAlign: 'center',
-        //     field: 'intitule',
-        //     editable: false,
-        // },
         {
             id: 2,
             width: 110,
@@ -271,6 +242,106 @@ export default function ControlledSelectionGrid(parentProps) {
             type: 'date'
         },
     ];
+    const columns_recap = [
+        {
+            id: 0,
+            headerName: 'Numéro de compte',
+            headerAlign: 'center',
+            field: 'num_compte',
+            width: 200,
+            editable: false,
+        },
+        {
+            id: 1,
+            width: 170,
+            headerName: 'Solde initial',
+            headerAlign: 'center',
+            field: 'solde_initial',
+            type: 'number',
+            editable: false,
+            valueFormatter: (params) => {
+                const valueFormatted = currencyTransform(params.value);
+                return valueFormatted;
+            },
+        },
+        {
+            id: 4,
+            width: 200,
+            headerAlign: 'center',
+            headerName: 'Montant autorisé',
+            field: 'montant',
+            type: 'number',
+            editable: false,
+            valueFormatter: (params) => {
+                const valueFormatted = currencyTransform(params.value);
+                return `${valueFormatted}`;
+            },
+        },
+        {
+            id: 5,
+            width: 200,
+            headerAlign: 'center',
+            headerName: 'Début autorisation',
+            field: 'debut_autorisation',
+            editable: false,
+            type: 'date'
+        },
+        {
+            id: 6,
+            headerAlign: 'center',
+            width: 200,
+            headerName: 'Fin autorisation',
+            field: 'fin_autorisation',
+            editable: false,
+            type: 'date'
+        },
+    ];
+    const column_operations_recap = [
+        {
+            id: 0,
+            headerAlign: 'center',
+            width: 200,
+            headerName: 'Code opération',
+            field: 'code_operation',
+            editable: false,
+            type: 'number'
+        },
+        {
+            id: 1,
+            headerAlign: 'center',
+            width: 250,
+            headerName: 'Libellé opération',
+            field: 'libelle_operation',
+            editable: false,
+            type: 'number'
+        },
+        {
+            id: 2,
+            width: 186,
+            headerAlign: 'center',
+            headerName: 'Com mouvement',
+            field: 'com_mvt',
+            editable: false,
+            renderCell: (params) => {
+                return <FormControlLabel
+                    control={<Switch checked={params.value}  name="checkedA" />}
+                />
+            }
+        },
+        {
+            id: 3,
+            width: 180,
+            headerAlign: 'center',
+            headerName: 'Com découvert',
+            field: 'com_dec',
+            editable: false,
+            renderCell: (params) => {
+                return <FormControlLabel
+                    control={<Switch checked={params.value}  name="checkedA" />}
+                />
+            }
+        }
+    ]
 
     const column_operations = [
         {
@@ -368,7 +439,9 @@ export default function ControlledSelectionGrid(parentProps) {
 
         "calcul": columns,
         "results": column_results,
-        "operations": column_operations
+        "operations": column_operations,
+        "accounts_recap": columns_recap,
+        "operations_recap": column_operations_recap
     }
 
     // helpers functions
@@ -474,6 +547,10 @@ export default function ControlledSelectionGrid(parentProps) {
         width = "100%"
     }else if(column_choice === "operations"){
         width = "63em"
+    }else if(column_choice === "accounts_recap"){
+        width = "40em"
+    }else if(column_choice === "operations_recap"){
+        width = "40em"
     }
 
     return (

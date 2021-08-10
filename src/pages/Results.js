@@ -9,8 +9,6 @@ import ControlledSelectionGrid from "./FullSelected";
 import { Alert } from 'antd';
 import { Pagination } from 'antd';
 import ReactExport from "react-export-excel";
-import GetAppIcon from '@material-ui/icons/GetApp';
-import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 
 
@@ -76,8 +74,6 @@ class Results extends Component {
 
         const title = 'Résultats'
         const subTitle = 'Résultats des calculs des différents arrêtés'
-
-        const dataResults = this.props.history.location.state.data
 
         const content = (
            <>

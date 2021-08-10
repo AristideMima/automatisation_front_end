@@ -1,330 +1,73 @@
-import React, { Component, useState  } from 'react'
+import React, { Component  } from 'react'
 import { connect } from "react-redux";
 import PropTypes from 'prop-types'
 import { getCalcul } from "../actions/calculs";
 import ControlledSelectionGrid from "./FullSelected"
 import axios from "axios";
 import {Grid, Button, Stepper, Step, StepLabel, Box, Paper, TextField,
-     Table as TableMaterial ,TableRow,TableCell,TableBody,TableHead,TableContainer,
 } from "@material-ui/core";
-import { formStepperStyle, useStyles, url, config} from "../constants/constants";
+import { useStyles, url} from "../constants/constants";
 import { compose } from "redux";
 import {withStyles} from "@material-ui/core/styles";
 import Template from "./Template";
 import img from "../assets/google_compute_engine_48px.png";
-import { Table, Popconfirm, Form, Input, InputNumber, Typography} from 'antd';
+import { Popconfirm, Typography} from 'antd';
 import Alert from '@material-ui/lab/Alert';
 import Collapse from '@material-ui/core/Collapse';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import { notification } from 'antd';
 import {withRouter} from 'react-router-dom';
+import { formStepperStyle } from "../constants/constants";
+import Radio from '@material-ui/core/Radio';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import RadioGroup from '@material-ui/core/RadioGroup';
 
-class SelectAccount extends Component{
 
-    /*
-     * Select corresponding account with preferred operations
-     */
-    static propTypes = {
-        data : PropTypes.array.isRequired,
-        index: PropTypes.array.isRequired,
-        accounts: PropTypes.array.isRequired,
-        auth: PropTypes.object.isRequired
-    }
+// Form stepper to for Epargne and Courant
+class FormCourant extends Component {
 
     state = {
-        accounts_selected : this.props.accounts,
-        selectedRowKeys: this.props.index,
-        data: [],
-        defaultColDef: {
-            flex: 1,
-            minWidth: 100,
-            resizable: true,
-        },
-        rowSelection: 'multiple',
-        rowData: null,
-        loading: true
-    }
-
-    sendAccount = (accounts) => {
-        this.props.getAccount(accounts)
-    }
-
-    onChangeSelect = (selectedRowKeys, selectedRows, newData) => {
-
-        // console.log(selectedRows)
-        this.setState({
-            selectedRowKeys: selectedRowKeys,
-            accounts_selected: selectedRows,
-        })
-
-        // Send informations to parent component
-        this.sendAccount({selectedRowKeys, selectedRows, newData})
-    }
-
-    currencyTransform = (text) => {
-        return  <p> {new Intl.NumberFormat('fr-FR', {style: 'currency', currency: 'XAF' }).format(text)} </p>
-    }
-
-    render() {
-
-        const { selectedRowKeys } = this.state;
-
-
-        const dataProps = this.props.data
-
-        const EditableCell = ({ editing, dataIndex, title, inputType, record, index, children, ...restProps
-        }) => {
-            const inputNode = inputType === 'number' ? <InputNumber size = "large"/> : <Input />;
-            return (
-                <td {...restProps}>
-                    {editing ? (
-                        <Form.Item
-                            name={dataIndex}
-                            style={{
-                                margin: 0,
-                            }}
-                            rules={[
-                                {
-                                    required: true,
-                                    message: `Veuillez entrer ${title}!`,
-                                },
-                            ]}
-                        >
-                            {inputNode}
-                        </Form.Item>
-                    ) : (
-                        children
-                    )}
-                </td>
-            );
-        }
-
-
-        const rowSelection = {
-            selectedRowKeys,
-            onChange: this.onChangeSelect
-        };
-
-        const EditableTable = () => {
-            const [form] = Form.useForm();
-            const [data, setData] = useState(dataProps);
-            const [editingKey, setEditingKey] = useState('');
-
-            const isEditing = (record) => record.key === editingKey;
-
-            const edit = (record) => {
-
-                form.setFieldsValue({
-                    num_compte: '',
-                    intitule_compte: '',
-                    type_account: '',
-                    solde_initial: '',
-                    montant: '',
-                    period: '',
-                    ...record,
-                });
-                setEditingKey(record.key);
-            };
-
-            const cancel = () => {
-                setEditingKey('');
-            };
-
-            const save = async (key) => {
-                try {
-
-
-                    const row = await form.validateFields();
-                    const newData = [...data];
-                    const index = newData.findIndex((item) => key === item.key);
-
-                    if (index > -1) {
-
-                        const item = newData[index];
-
-                        const item_saved = { ...item, ...row }
-
-                        newData.splice(index, 1, item_saved);
-
-                        const account_selects = [...this.state.accounts_selected]
-                        const index_selected = newData.findIndex((item) => key === item.key);
-
-                        if(index_selected > -1){
-                            const item_select = account_selects[index_selected]
-                            account_selects.splice(index, 1, {...item_select, ...row});
-                        }
-
-
-                        this.onChangeSelect(this.state.selectedRowKeys, account_selects, newData)
-
-                        this.setState({data: newData})
-                        this.setState({EditingKey: ""})
-                    } else {
-
-                        newData.push(row);
-                        setData(newData);
-                        setEditingKey('');
-                    }
-                } catch (errInfo) {
-                    console.log('Validate Failed:', errInfo);
-                }
-            };
-
-            const columns = [
-                {
-                    title: 'Numéro de compte',
-                    dataIndex: 'num_compte',
-                    editable: false,
-                },
-                {
-                    title: 'Intitulé du compte',
-                    dataIndex: 'intitule',
-                    editable: false,
-                },
-                {
-                    title: 'Type de compte',
-                    dataIndex: 'type_compte',
-                    editable: false,
-                },
-                {
-                    title: 'Solde initial',
-                    dataIndex: 'solde_initial',
-                    editable: true,
-                    render: val => this.currencyTransform(val),
-                },
-                {
-                    title: 'Montant autorisé',
-                    dataIndex: 'montant',
-                    width: 200,
-                    editable: false,
-                    render: val => this.currencyTransform(val),
-                },
-                {
-                    title: 'Début autorisation',
-                    dataIndex: 'debut_autorisation',
-                    editable: false,
-                },
-                {
-                    title: 'Fin autorisation',
-                    dataIndex: 'fin_autorisation',
-                    editable: false,
-                },
-                {
-                    title: 'operation',
-                    dataIndex: 'operation',
-                    render: (_, record) => {
-                        const editable = isEditing(record);
-                        return editable ? (
-                            <span>
-            <a
-                href="javascript:;"
-                onClick={() => save(record.key)}
-                style={{
-                    marginRight: 8,
-                }}
-            >
-              Enregistrer
-            </a>
-            <Popconfirm title="Etes vous sûr ?" onConfirm={cancel}>
-              <a>Annuler</a>
-            </Popconfirm>
-          </span>
-                        ) : (
-                            <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-                                Modifier le solde initial
-                            </Typography.Link>
-                        );
-                    },
-                },
-            ];
-
-            const mergedColumns = columns.map((col) => {
-                if (!col.editable) {
-                    return col;
-                }
-                return {
-                    ...col,
-                    onCell: (record) => ({
-                        record,
-                        inputType: col.dataIndex === 'solde_initial' ? 'number' : 'text',
-                        dataIndex: col.dataIndex,
-                        title: col.title,
-                        editing: isEditing(record),
-                    }),
-                };
-            });
-
-            return (
-                <Form form={form} component={false}>
-                    <Table
-                        rowSelection={rowSelection}
-                        components={{
-                            body: {
-                                cell: EditableCell,
-                            },
-                        }}
-                        bordered
-                        dataSource={data}
-                        columns={mergedColumns}
-                        rowClassName="editable-row"
-                        pagination={{
-                            onChange: cancel,
-                        }}
-                    />
-                </Form>
-            );
-        }
-
-
-        return (
-            <Grid item md={12}>
-                {/*<MUIDataTable*/}
-                {/*    title={"Liste des numéros de compte"}*/}
-                {/*    data={this.props.data}*/}
-                {/*    columns={this.state.columns}*/}
-                {/*    options={options}*/}
-
-                {/*/>*/}
-                {/*<Table  rowSelection={{ type: 'checkbox', ...rowSelection }} columns={columns} dataSource={this.props.data} pagination={{ pageSize: 50 }} scroll={{ y: 240 }} />*/}
-                {/*<DataGrid*/}
-                {/*    columns={[{ field: 'num_compte' }]}*/}
-                {/*    rows={[*/}
-                {/*        { id: 1, name: 'React' },*/}
-                {/*        { id: 2, name: 'Material-UI' },*/}
-                {/*    ]}*/}
-                {/*/>*/}
-            </Grid>
-
-        );
-    }
-
-}
-
-
-class FormStepper extends Component {
-
-    state = {
-        date_deb: this.props.date_deb,
-        date_fin: this.props.date_fin,
-        openAlert: false
+        options: this.props.options,
+        openAlert: false,
+        choice: this.props.choice
     }
 
     handleChange = (e) => {
-        this.setState({
-            [e.target.name]: e.target.value
-        })
+        const options = this.state.options;
+        const newValue = e.target.value
+
+        options[e.target.name] = newValue
+
+        this.setState({options: options})
     }
 
     handleSubmit = (e) =>{
         e.preventDefault()
-        this.props.updateProps(this.state)
-        this.setState({ openAlert: true})
+
+        const options = this.state.options
+        const choice = this.state.choice
+
+        const isEmpty = Object.values(options).every(x => x === null || x === '');
+
+        if (!isEmpty) {
+            this.props.updateProps({options, choice})
+            this.setState({ openAlert: true})
+        }else{
+            notification.error({
+                message: 'Erreur optons',
+                description: 'Aucun paramètre ne doit être vide',
+                placement: 'bottomRight',
+                duration: 5
+            })
+        }
     }
 
     render() {
 
-        const { date_deb, date_fin } = this.state
+        const { taux_interet_debiteur_1, taux_interet_debiteur_2, taux_interet_debiteur_3, taux_commision_mouvement, taux_commision_decouvert, taux_tva,   date_deb, date_fin } = this.state.options
 
         return (
             <>
@@ -355,11 +98,99 @@ class FormStepper extends Component {
                 </Grid>
                 <Paper elevation={10} style={formStepperStyle}>
                     <form onSubmit={this.handleSubmit}>
-                        <Grid spacing={1} container justify="center">
+                        <Grid spacing={1} container justify="left">
+                            <Grid item md={3}>
+                                <h3>Taux d'intérêts</h3>
+                            </Grid>
+                            <Grid item md={3}>
+                                <Box>
+                                    <TextField
+                                        name="taux_interet_debiteur_1"
+                                        label='Intérêt débiteur 1'
+                                        placeholder="Intérêt débiteur 1"
+                                        value={taux_interet_debiteur_1}
+                                        onChange={this.handleChange}
+                                        type="number"
+                                        InputProps={{ inputProps: { min: 0, step: "any" } }}
+                                        required/>
+                                </Box>
+                            </Grid>
+                            <Grid item md={3}>
+                                <Box>
+                                    <TextField
+                                        name="taux_interet_debiteur_2"
+                                        label='Intérêt débiteur 2'
+                                        placeholder="Intérêt débiteur 2"
+                                        value={taux_interet_debiteur_2}
+                                        onChange={this.handleChange}
+                                        type="number"
+                                        InputProps={{ inputProps: { min: 0, step: "any" } }}
+                                        required/>
+                                </Box>
+                            </Grid>
+                            <Grid item md={3}>
+                                <Box>
+                                    <TextField
+                                        name="taux_interet_debiteur_3"
+                                        label='Intérêt débiteur 3'
+                                        placeholder="Intérêt débiteur 3"
+                                        value={taux_interet_debiteur_3}
+                                        onChange={this.handleChange}
+                                        type="number"
+                                        InputProps={{ inputProps: { min: 0, step: "any" } }}
+                                        required/>
+                                </Box>
+                                <Box mt={4}></Box>
+                            </Grid>
+                            <Grid item md={3}>
+                                <h3>Commissions / Tva </h3>
+                            </Grid>
+
+                            <Grid item md={3}>
+                                <Box >
+                                    <TextField
+                                        name="taux_commision_mouvement"
+                                        label='Mouvement'
+                                        placeholder="Mouvement"
+                                        onChange={this.handleChange}
+                                        type="number"
+                                        InputProps={{ inputProps: { min: 0, step: "any" } }}
+                                        value={taux_commision_mouvement}
+                                        required/>
+                                </Box>
+                            </Grid>
+                            <Grid item md={3}>
+                                <Box >
+                                    <TextField
+                                        name="taux_dec"
+                                        label='Découvert'
+                                        placeholder="Découvert"
+                                        onChange={this.handleChange}
+                                        type="number"
+                                        InputProps={{ inputProps: { min: 0, step: "any" } }}
+                                        value={taux_commision_decouvert}
+                                        required/>
+                                </Box>
+                            </Grid>
+
+                            <Grid item md={3}>
+                                <Box >
+                                    <TextField
+                                        name="taux_tva"
+                                        label='Taux tva'
+                                        placeholder="Taux tva"
+                                        onChange={this.handleChange}
+                                        type="number"
+                                        InputProps={{ inputProps: { min: 0, step: "any" } }}
+                                        value={taux_tva}
+                                        required/>
+                                </Box>
+                                <Box mt={4} ></Box>
+                            </Grid>
                             <Grid item md={4}>
                                 <h3>Période de l'arrêté</h3>
                             </Grid>
-                            <Grid item  md={4}>
+                            <Grid item  md={3}>
                                 <Box>
                                     <TextField
                                         id="date"
@@ -372,7 +203,7 @@ class FormStepper extends Component {
                                     />
                                 </Box>
                             </Grid>
-                            <Grid item md={4}>
+                            <Grid item md={3}>
                                 <Box>
                                     <TextField
                                         id="date"
@@ -400,6 +231,185 @@ class FormStepper extends Component {
     }
 }
 
+
+class FormEpargne extends Component {
+
+    state = {
+        options : this.props.options,
+        openAlert: false,
+        choice: this.props.choice
+    }
+
+
+    handleChange = (e) => {
+        const options = this.state.options;
+        const newValue = e.target.value
+
+        options[e.target.name] = newValue
+
+        this.setState({options: options})
+    }
+
+    handleSubmit = (e) => {
+        e.preventDefault()
+
+        const options = this.state.options
+        const choice = this.state.choice
+
+        const isEmpty = Object.values(options).every(x => x === null || x === '');
+        console.log(isEmpty)
+
+        if (!isEmpty) {
+            this.props.updateProps({options, choice})
+            this.setState({ openAlert: true})
+        }else{
+            notification.error({
+                message: 'Erreur optons',
+                description: 'Aucun paramètre ne doit être vide',
+                placement: 'bottomRight',
+                duration: 5
+            })
+        }
+    }
+
+   render() {
+       const { taux_interet_inferieur, taux_interet_superieur, taux_ircm, taux_tva, date_deb, date_fin } = this.state.options
+
+       return (
+           <>
+               <Grid container >
+                   <Grid item md={12} xs={12}>
+                       <Collapse in={this.state.openAlert}>
+                           <Alert
+                               action={
+                                   <IconButton
+                                       aria-label="close"
+                                       color="inherit"
+                                       size="small"
+                                       onClick={() => {
+                                           this.setState({openAlert: false });
+                                       }}
+                                   >
+                                       <CloseIcon fontSize="inherit" />
+                                   </IconButton>
+                               }
+                           >
+                               Période d'arrêté mise à jour
+                           </Alert>
+                       </Collapse>
+                       <Box mb={3}>
+
+                       </Box>
+                   </Grid>
+               </Grid>
+               <Paper elevation={10} style={formStepperStyle}>
+                   <form onSubmit={this.handleSubmit}>
+                       <Grid spacing={1} container justify="left">
+                           <Grid item md={3}>
+                               <h3>Taux d'intérêts</h3>
+                           </Grid>
+                           <Grid item md={3}>
+                               <Box>
+                                   <TextField
+                                       name="taux_interet_inferieur"
+                                       label='Taux <= 10 000'
+                                       placeholder="Taux <= 10 000"
+                                       value={taux_interet_inferieur}
+                                       onChange={this.handleChange}
+                                       type="number"
+                                       InputProps={{ inputProps: { min: 0, step: "any" } }}
+                                       required />
+                               </Box>
+                           </Grid>
+                           <Grid item md={3}>
+                               <Box>
+                                   <TextField
+                                       name="taux_interet_superieur"
+                                       label='Taux > 10 000'
+                                       placeholder="Taux > 10 000"
+                                       value={taux_interet_superieur}
+                                       onChange={this.handleChange}
+                                       type="number"
+                                       InputProps={{ inputProps: { min: 0, step: "any" } }}
+                                       required/>
+                               </Box>
+                               <Box mt={4} ></Box>
+                           </Grid>
+                           <Grid item md={4}>
+                               <h3>Tva / Taux Ircm : </h3>
+                           </Grid>
+                           <Grid item md={3}>
+                               <Box >
+                                   <TextField
+                                       name="tva"
+                                       label='Taux tva'
+                                       type="number"
+                                       InputProps={{ inputProps: { min: 0, step: "any" } }}
+                                       placeholder="Taux tva"
+                                       value={taux_tva}
+                                       onChange={this.handleChange}
+                                       required/>
+                               </Box>
+                           </Grid>
+
+                           <Grid item md={3}>
+                               <Box >
+                                   <TextField
+                                       name="taux_ircm"
+                                       label='Taux Ircm'
+                                       placeholder="Taux Ircm"
+                                       value={taux_ircm}
+                                       type="number"
+                                       InputProps={{ inputProps: { min: 0, step: "any" } }}
+                                       onChange={this.handleChange}
+                                       required/>
+                               </Box>
+                               <Box mt={4} ></Box>
+                           </Grid>
+                           <Grid item md={4}>
+                               <h3>Période de l'arrêté</h3>
+                           </Grid>
+                           <Grid item  md={3}>
+                               <Box>
+                                   <TextField
+                                       id="date"
+                                       type="date"
+                                       name="date_deb"
+                                       label="Date de début"
+                                       value={date_deb}
+                                       onChange={this.handleChange}
+                                       required
+                                   />
+                               </Box>
+                           </Grid>
+                           <Grid item md={3}>
+                               <Box>
+                                   <TextField
+                                       id="date"
+                                       type="date"
+                                       name="date_fin"
+                                       label="Date de fin"
+                                       value={date_fin}
+                                       onChange={this.handleChange}
+                                       required
+                                   />
+                               </Box>
+                           </Grid>
+                           <Grid container justify="center" alignContent="center">
+                               <Box mt={5}>
+                                   <Button type="submit" variant="contained" color="primary">
+                                       Valider
+                                   </Button>
+                               </Box>
+                           </Grid>
+                       </Grid>
+                   </form>
+               </Paper>
+           </>
+       )
+   }
+}
+
 class Calcul extends Component {
 
 
@@ -419,31 +429,15 @@ class Calcul extends Component {
         key: `open${Date.now()}`,
 
         // Period chosen
-        date_fin: "",
-        date_deb: "2000-01-01",
         openAlert: false,
         alertComp: null,
-        options_courant: {
-            taux_interet_debiteur_1: 15.5,
-            taux_interet_debiteur_2: 6.5,
-            taux_interet_debiteur_3: 0,
-            taux_commision_mouvement: 0.025,
-            taux_commision_decouvert: 0.020833,
-            frais_fixe: 5000,
-            taux_tva: 19.25
-        },
-        options_epargne: {
-            taux_interet_inferieur: 2.45,
-            taux_interet_superieur: 2.45,
-            ircm: 16.5,
-            frais_fixe: 2000,
-            taux_tva: 19.25
-        },
-
+        options_courant: {},
+        options_epargne: {},
         // Popup confirm
         visible: false,
         confirmationLoading: false,
-        laoding: false
+        laoding: false,
+        choice: "unique"
     }
 
     getAccounts = (props) => {
@@ -465,11 +459,31 @@ class Calcul extends Component {
     }
 
     updateOptions = (optionsChild) => {
-        this.setState({
-            date_deb: optionsChild.date_deb,
-            date_fin: optionsChild.date_fin
-        })
 
+        const options = optionsChild.options
+        const choice = optionsChild.choice
+
+        if (choice === "Epargne") {
+            this.setState({
+                options_courant: options
+            })
+        }else {
+            this.setState({
+                options_epargne: options
+            })
+        }
+    }
+
+    handleChoice = (e) => {
+        this.setState({
+            choice: e.target.value
+        })
+        notification.success({
+            message: 'Mode d\'arrêté',
+            description: `Nouveau mode: ${e.target.value}`,
+            placement: 'bottomRight',
+            duration: 5
+        })
     }
 
     static propTypes = {
@@ -482,7 +496,7 @@ class Calcul extends Component {
     }
 
     getSteps = () => {
-        return [ 'Choix des numéros de compte', 'Choix des opérations', 'Options supplémentaires', 'Lancer le calcul'];
+        return [ 'Choix des numéros de compte', 'Opérations à exclure', 'Options supplémentaires', 'Mode d\'arrêté', 'Lancer le calcul'];
     }
 
     getStepContent = (stepIndex) => {
@@ -495,47 +509,70 @@ class Calcul extends Component {
                     return   <ControlledSelectionGrid data={this.state.data_operations} selected_accounts={this.state.selectedOperations} index_selected={this.state.indexOperations}
                                                       setSelection={this.getOperations}  choice="operations" check={true} loading={false} />;
             case 2:
-                return <FormStepper updateProps={this.updateOptions} date_deb={this.state.date_deb} date_fin={this.state.date_fin} />;
+
+                const type_computation = this.props.typeCalcul
+                let component = <></>
+
+                if (type_computation === "Courant") component = <FormCourant updateProps={this.updateOptions} options={this.state.options_courant} choice={type_computation} />;
+                else component = <FormEpargne updateProps={this.updateOptions} options={this.state.options_epargne} choice={type_computation} />;
+
+                return <Grid container spacing={2} justify="center" alignItems="center">
+                            <Grid item md={6}>
+                                {component}
+                            </Grid>
+                        </Grid>;
             case 3:
-                return <Grid container spacing={2}>
-                      <Grid item md={12} xs={12} >
+                return <Grid item md={12} xs={12} >
+                    <Grid container spacing={0} justify="center" alignItems="center" direction="column">
+                        <Box mt={5} mb={5}>
+                            <FormControl component="fieldset">
+                                <FormLabel component="legend">Chosir le mode d'arrêté </FormLabel>
+                                <RadioGroup row aria-label="Choices" name="choice" value={this.state.choice} onChange={this.handleChoice}>
+                                    <FormControlLabel value="unique" control={<Radio />} label="Unique" />
+                                    <FormControlLabel value="fusion" control={<Radio />} label="Fusion" />
+                                </RadioGroup>
+                            </FormControl>
+                        </Box>
+                    </Grid>
+                </Grid>
+            case 4:
+                const resultsOperations = this.state.data_operations.filter(({ code_operation: id1 }) => !this.state.selectedOperations.some(({ value: id2 }) => id2 === id1));
+                let options = this.state.options_courant
+                let recap_options =
+                    <>
+                        <Alert>
+                            Intérêt 1: {options.taux_interet_debiteur_1} %, Intérêt 2: {options.taux_interet_debiteur_2} %, Intérêt 3: {options.taux_interet_debiteur_3} %,
+                            Com Mouvement: {options.taux_commision_mouvement}, Com Découvert: {options.taux_commision_decouvert}, Tva: {options.taux_tva}
+                        </Alert>
+                    </>
+                if (this.props.typeCalcul === "Epargne"){
+                    options = this.state.options_epargne
+                    recap_options =
+                        <>
+                            <Alert>
+                                Intérêt {"<="} 10 000: {options.taux_interet_superieur} %, Intérêt {">"} 10 000: {options.taux_interet_superieur} %, Ircm: {options.taux_ircm} %,
+                                Tva: {options.taux_tva}
+                            </Alert>
+                        </>
+                }
+
+                return <Grid container spacing={0} justify="center">
+                      <Grid item md={8} xs={12} >
                           <Collapse in={true}>
                               <Alert>
-                                  Période de l'arrêté: du {this.state.date_deb} au {this.state.date_fin}
+                                  Période de l'arrêté: du {options.date_deb} au {options.date_fin}   Mode : {this.state.choice}
                               </Alert>
+                              {recap_options}
                           </Collapse>
+                          <Box mt={2}></Box>
                       </Grid>
-                    <Grid item md={12} xs={12}>
-                        <TableContainer component={Paper}>
-                            <TableMaterial className={this.state.classes.table} aria-label="simple table">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>#</TableCell>
-                                        <TableCell>Numéro de compte</TableCell>
-                                        <TableCell>Intitulé du compte</TableCell>
-                                        <TableCell>Solde initial</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {this.state.accounts_selected.map((account, key) => (
-                                            <TableRow key={key}>
-                                                <TableCell component="th" scope="row">
-                                                    {key+1}
-                                                </TableCell>
-                                                <TableCell component="th" scope="row">
-                                                    {account.num_compte}
-                                                </TableCell>
-                                                <TableCell component="th" scope="row">
-                                                    {account.intitule}
-                                                </TableCell>
-                                                <TableCell component="th" scope="row">
-                                                    {account.solde_initial}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                </TableBody>
-                                </TableMaterial>
-                        </TableContainer>
+                    <Grid item md={6} xs={4}>
+                        <ControlledSelectionGrid data={this.state.accounts_selected} selected_accounts={[]} index_selected={[]}
+                                                 setSelection={this.getAccounts}  choice="accounts_recap" check={false} loading={false} />;
+                    </Grid>
+                    <Grid item md={6}>
+                        <ControlledSelectionGrid data={resultsOperations} selected_accounts={[]} index_selected={[]}
+                                                 setSelection={this.getAccounts}  choice="operations_recap" check={false} loading={false} />;
                     </Grid>
                 </Grid> ;
             default:
@@ -571,7 +608,29 @@ class Calcul extends Component {
         let mm = String(today.getMonth() + 1).padStart(2, '0');
         let yyyy = today.getFullYear();
         today = yyyy + "-" + mm + '-' + dd;
-        this.setState({date_fin: today})
+
+        // set options dates
+        const options_courant =  {
+            taux_interet_debiteur_1: 15.5,
+                taux_interet_debiteur_2: 6.5,
+                taux_interet_debiteur_3: 0,
+                taux_commision_mouvement: 0.025,
+                taux_commision_decouvert: 0.020833,
+                taux_tva: 19.25,
+                date_fin: `${today}`,
+                date_deb: "2000-01-01"
+        }
+        const options_epargne =  {
+            taux_interet_inferieur: 2.45,
+                taux_interet_superieur: 2.45,
+                taux_ircm: 16.5,
+                taux_tva: 19.25,
+                date_fin: `${today}`,
+                date_deb: "2000-01-01",
+        }
+
+        // Set all options values
+        this.setState({options_courant: options_courant, options_epargne: options_epargne})
     }
 
     next = () => {
@@ -598,18 +657,24 @@ class Calcul extends Component {
                 this.next()
                 return
             case 2:
-                if ((this.state.date_deb) && (this.state.date_fin) && (this.state.date_deb !== this.state.date_fin)) {
+                let options = this.state.options_courant
+                if (this.props.typeCalcul === "Epargne") options = this.state.options_epargne
+
+                if ((options.date_deb) && (options.date_fin) && (options.date_deb < options.date_fin)) {
                     this.next()
                 }else{
                     notification.error({
                         message: 'Erreur choix de la période',
-                        description: 'Les dates ne doivent pas être identiques',
+                        description: 'Dates incorrectes',
                         placement: 'bottomRight',
                         duration: 5
                     });
                 }
                 return;
             case 3:
+                this.next()
+                return;
+            case 4:
                 this.setState({
                     visible: true
                 })
@@ -644,8 +709,13 @@ class Calcul extends Component {
             config.headers['Authorization'] = `Token  ${token}`
         }
 
+        let options = this.state.options_courant
+
+        if(this.state.choice === "Epargne") options = this.state.options_epargne
+
         // Computation happening
-        axios.post('http://127.0.0.1:8000/api/calculs', {"accounts": this.state.accounts_selected,
+        axios.post('http://127.0.0.1:8000/api/calculs', {"accounts": this.state.accounts_selected, "operations": this.state.data_operations,
+            "options": options,
             "period": [this.state.date_deb, this.state.date_fin], "type_account": this.props.typeCalcul, "conf": this.props.typeArrete}, config)
             .then(
                 res => {
