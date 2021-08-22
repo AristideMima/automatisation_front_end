@@ -14,13 +14,14 @@ import Alerts from "./pages/Alerts";
 import { loadUser } from "./actions/auth";
 import Home from "./pages/Home";
 import FileUpload from "./pages/FileUpload";
-import Calcul from "./pages/Calcul";
-import CalculReg from "./pages/CalculReg"
 import Results from "./pages/Results";
 import NotFound from "./pages/404";
-import { PersistGate } from 'redux-persist/integration/react'
 import {ConformeCourant} from "./pages/ConformeCourant";
 import ConformeEpargne from "./pages/ConformeEpargne";
+import History from "./pages/parameters/History";
+import Solde from "./pages/parameters/Solde";
+import Journal from "./pages/parameters/Journal";
+import Discovered from "./pages/parameters/Discovered";
 
 class App extends React.Component {
 
@@ -47,8 +48,13 @@ class App extends React.Component {
                             <PrivateRoute exact path ='/FileUpload' component={FileUpload} />
                             <PrivateRoute exact path ='/ConformeCourant' component={ConformeCourant} />
                             <PrivateRoute exact path ='/ConformeEpargne' component={ConformeEpargne} />
-                            <Route exact path ='/Register' component={Register} />
-                            <Route exact path ='/Results' component={Results} />
+                            <PrivateRoute exact path ='/Register' component={Register} />
+                            <PrivateRoute exact path ='/Results' component={Results} />
+
+                            <PrivateRoute exact path ='/History' component={History} />
+                            <PrivateRoute exact path ='/Discovered' component={Discovered} />
+                            <PrivateRoute exact path ='/Journal' component={Journal} />
+                            <PrivateRoute exact path ='/Solde' component={Solde} />
                             <Route
                                 render={function() {
                                     return <NotFound/>

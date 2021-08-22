@@ -17,16 +17,21 @@ import {
     Card, CardHeader,
     Avatar,
     Toolbar,
-    Typography
+    Typography,
+    Collapse
 } from "@material-ui/core";
 import {
-    ChevronRight as ChevronRightIcon, Close as CloseIcon, CloudUpload as CloudUploadIcon, Edit as EditIcon,
+    ExpandLess,ExpandMore,
+    ChevronRight as ChevronRightIcon, Close as CloseIcon, CloudUpload as CloudUploadIcon,
     Mail as MailIcon,
     Menu as MenuIcon,
     More as MoreIcon,
     Notifications as NotificationsIcon, SettingsPower as SettingsPowerIcon,
 } from "@material-ui/icons";
-
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import HistoryIcon from '@material-ui/icons/History';
+import EventAvailableRoundedIcon from '@material-ui/icons/EventAvailableRounded';
+import PausePresentationRoundedIcon from '@material-ui/icons/PausePresentationRounded';
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import clsx from "clsx";
 import logo from "../assets/newLogo.png";
@@ -38,13 +43,15 @@ import { Link } from 'react-router-dom'
 import { BackTop } from "antd";
 import { VerticalAlignTopOutlined } from '@ant-design/icons';
 import ViewQuiltIcon from '@material-ui/icons/ViewQuilt';
-import ConfirmationNumberIcon from '@material-ui/icons/ConfirmationNumber';
-
+import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
+import AcUnitIcon from '@material-ui/icons/AcUnit';
+import ContactSupportIcon from '@material-ui/icons/ContactSupport';
 
 class Template extends Component {
 
     static propTypes = {
-        logout: PropTypes.func.isRequired
+        logout: PropTypes.func.isRequired,
+        auth: PropTypes.object.isRequired
     }
 
     state = {
@@ -52,8 +59,13 @@ class Template extends Component {
         auth: true,
         mobileMoreAnchorEl: null,
         anchorEl: null,
-        redirect: null
+        redirect: null,
+        openNav: false
     }
+
+     handleClick = () => {
+        this.setState((prev) => ({openNav: !prev.openNav}));
+    };
 
     render() {
 
@@ -61,10 +73,16 @@ class Template extends Component {
             return <Redirect to={this.state.redirect} />
         }
 
+
         // datas
         const { classes } = this.props;
 
         const theme = this.props.theme;
+        let type = "gfc"
+
+        if (typeof this.props.auth.user.user !== "undefined") type = this.props.auth.user.user.type
+        else type = this.props.auth.user.type
+
         const  {open} = this.state;
 
         const handleMobileMenuOpen = (event) => {
@@ -97,6 +115,7 @@ class Template extends Component {
                 open: false
             })
         };
+
 
         // const handleChange = (event) => {
         //     this.setState({
@@ -167,6 +186,11 @@ class Template extends Component {
         // End datas
 
         const appTitle = "Automatisation Arrêtés des comptes"
+
+        const loadItem = type === "dcpo" ? <ListItem button component={Link} to="/FileUpload" style={pointer}  selected={this.props.component['selected'] === 1} >
+            <ListItemIcon><CloudUploadIcon/></ListItemIcon>
+            <ListItemText primary="Charger les fichiers" />
+        </ListItem>: <></>
 
 
         return (
@@ -265,24 +289,14 @@ class Template extends Component {
                             <ListItemIcon><HomeIcon/></ListItemIcon>
                             <ListItemText primary="Accueil"/>
                         </ListItem>
-                        <ListItem button component={Link} to="/FileUpload" style={pointer}  selected={this.props.component['selected'] === 1} >
-                            <ListItemIcon><CloudUploadIcon/></ListItemIcon>
-                            <ListItemText primary="Charger les fichiers" />
-                        </ListItem>
-                        {/*<ListItem  button component={Link} to="/ConformeCourant" style={pointer}  selected={this.props.component['selected'] === 2} >*/}
-                        {/*<TreeItem nodeId="1" label="Applications">*/}
-                        {/*    <TreeItem nodeId="2" label="Calendar" />*/}
-                        {/*    <TreeItem nodeId="3" label="Chrome" />*/}
-                        {/*    <TreeItem nodeId="4" label="Webstorm" />*/}
-                        {/*</TreeItem>*/}
-                        {/*</ListItem>*/}
+                        {loadItem}
                         <ListItem  button component={Link} to="/ConformeCourant" style={pointer}  selected={this.props.component['selected'] === 2} >
-                            <ListItemIcon><ConfirmationNumberIcon/></ListItemIcon>
-                            <ListItemText primary="Conforme courant" />
+                            <ListItemIcon><AcUnitIcon/></ListItemIcon>
+                            <ListItemText primary="Comptes Courants" />
                         </ListItem>
                         <ListItem  button component={Link} to="/ConformeEpargne" style={pointer}  selected={this.props.component['selected'] === 3} >
-                            <ListItemIcon><ConfirmationNumberIcon/></ListItemIcon>
-                            <ListItemText primary="Conforme Epargne" />
+                            <ListItemIcon><AccountBalanceWalletIcon/></ListItemIcon>
+                            <ListItemText primary="Comptes Epargne" />
                         </ListItem>
                         {/*<ListItem  button component={Link} to="/CalculRegularisation" style={pointer}  selected={this.props.component['selected'] === 4} >*/}
                         {/*    <ListItemIcon><ViewComfyIcon/></ListItemIcon>*/}
@@ -295,12 +309,46 @@ class Template extends Component {
                     </List>
                     <Divider />
                     <List>
-                        {['Changer mot de passe', 'Paramètres',].map((text, index) => (
-                            <ListItem button key={text}>
-                                <ListItemIcon>{index % 2 === 0 ? <EditIcon /> : <Settings />}</ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItem>
-                        ))}
+                        <ListItem button onClick={this.handleClick}>
+                            <ListItemIcon>
+                                <Settings />
+                            </ListItemIcon>
+                            <ListItemText primary="Paramètres" />
+                            {this.state.openNav ? <ExpandLess /> : <ExpandMore />}
+                        </ListItem>
+                        <Collapse in={this.state.openNav} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                <ListItem button component={Link} to="/History" style={pointer} selected={this.props.component['selected'] === 6}  >
+                                    <ListItemIcon>
+                                        <HistoryIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Historiques" />
+                                </ListItem>
+                                <ListItem button component={Link} to="/Solde" style={pointer} selected={this.props.component['selected'] === 7 }>
+                                    <ListItemIcon>
+                                        <AttachMoneyIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Solde initial" />
+                                </ListItem>
+                                <ListItem button component={Link} to="/Journal" style={pointer} selected={this.props.component['selected'] === 8} >
+                                    <ListItemIcon>
+                                        <EventAvailableRoundedIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Journal" />
+                                </ListItem>
+                                <ListItem button component={Link} to="/Discovered" style={pointer} selected={this.props.component['selected'] === 9} >
+                                    <ListItemIcon>
+                                        <PausePresentationRoundedIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Autorisations" />
+                                </ListItem>
+
+                            </List>
+                        </Collapse>
+                        <ListItem>
+                            <ListItemIcon><ContactSupportIcon /></ListItemIcon>
+                            <ListItemText primary="Aide" />
+                        </ListItem>
                     </List>
                 </Drawer>
                 <main className={classes.content}>
@@ -312,9 +360,6 @@ class Template extends Component {
                             <div  className="custom_titled_header">
 
                                 <Grid container spacing={2} justify="center" direction="column" alignItems="center">
-                                    {/*<Grid item xs={3}>*/}
-                                    {/*    /!*<img  src={icon_svg} alt="Dashboard" className="" style={{ maxWidth: "30%"}} />*!/*/}
-                                    {/*</Grid>*/}
                                     <Grid item xs={12}>
 
                                         <Card className="card_header_title">
@@ -335,23 +380,6 @@ class Template extends Component {
                                                 titleTypographyProps = {{ variant: "h5"}}
                                             />
                                         </Card>
-
-                                        {/*<Box mt={5} mb={1} >*/}
-                                        {/*    <Typography variant="h4" color="textSecondary"  className="header_title">*/}
-                                        {/*        {this.props.component['title']}*/}
-                                        {/*    </Typography>*/}
-
-
-                                        {/*    <Typography variant="paragraph"  color="white" >*/}
-                                        {/*        {this.props.component['subTitle']}*/}
-                                        {/*    </Typography>*/}
-                                        {/*</Box>*/}
-                                        {/*<Box mb={4}>*/}
-
-                                        {/*    /!*<Typography variant="p"  display="block">*!/*/}
-                                        {/*    /!*    Accédez aux foncionnalités sur le pannel de gauche*!/*/}
-                                        {/*    /!*</Typography>*!/*/}
-                                        {/*</Box>*/}
                                     </Grid>
                                 </Grid>
                                 {/*<Box mb={2}>*/}
@@ -373,7 +401,8 @@ class Template extends Component {
 }
 
 const mapStateToProps = state => ({
-    logout: state.logout
+    logout: state.logout,
+    auth: state.auth
 })
 
 export default compose(withStyles(useStyles, {withTheme: true}), connect(mapStateToProps, { logout }),)(Template)

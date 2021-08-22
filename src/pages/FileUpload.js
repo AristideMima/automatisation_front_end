@@ -17,9 +17,7 @@ import Template from "./Template";
 import 'antd/dist/antd.css';
 import { Upload, Button , Progress } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-// import reqwest from 'reqwest';
 import axios from "axios";
-// import * as dfd from "danfojs/src/index";
 import img from "../assets/dropbox_48px.png";
 import { notification } from 'antd';
 import Radio from '@material-ui/core/Radio';
@@ -29,14 +27,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import RadioGroup from '@material-ui/core/RadioGroup';
 
 
-
-
 const url = 'http://127.0.0.1:8000/api/upload/';
 
-// const df = new dfd.DataFrame(
-//     { pig: [20, 18, 489, 675, 1776], horse: [4, 25, 281, 600, 1900] },
-//     { index: [1990, 1997, 2003, 2009, 2014] }
-// );
 
 class FileUpload extends Component {
 
@@ -60,6 +52,16 @@ class FileUpload extends Component {
             duration: 5
         })
     }
+
+    parseJwt (token) {
+        let base64Url = token.split('.')[1];
+        let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        let jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        return JSON.parse(jsonPayload);
+    };
 
     handleUpload = () => {
         const { fileList } = this.state;
@@ -87,9 +89,6 @@ class FileUpload extends Component {
             config.headers['Authorization'] = `Token  ${token}`
         }
 
-        console.log(config)
-
-        // You can use any AJAX library you like
         axios.put(`${url}`, formData, config).then( res => {
             
             this.setState({
@@ -150,15 +149,6 @@ class FileUpload extends Component {
 
     }
 
-    submitServeur = () => {
-         // Loop through each file and upload to the server
-        this.state.files.map(
-            file => {
-                this.props.fileUpload(file)
-            }
-        )
-    }
-
     handleOpen() {
         this.setState({
             open: true,
@@ -201,7 +191,7 @@ class FileUpload extends Component {
             className: "upload-list-inline"
         };
 
-        const max_count = 100;
+        const max_count = 1;
 
         const percentage = (fileList.length/max_count) * 100;
 
@@ -226,7 +216,7 @@ class FileUpload extends Component {
                             <FormControlLabel value="historique" control={<Radio />} label="Historique" />
                             <FormControlLabel value="solde" control={<Radio />} label="Solde initial" />
                             <FormControlLabel value="autorisation" control={<Radio />} label="Autorisations découvert" />
-                            <FormControlLabel value="Journal" disabled control={<Radio />} label="Journal d'arrêté" />
+                            <FormControlLabel value="journal"  control={<Radio />} label="Journal d'arrêté" />
                             </RadioGroup>
                          </FormControl>
                         </Box>

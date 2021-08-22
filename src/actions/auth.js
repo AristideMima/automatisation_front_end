@@ -11,6 +11,7 @@ import {
 } from "./types";
 
 
+
 let url = "http://127.0.0.1:8000/"
 
 // Check token and load the user
@@ -26,7 +27,6 @@ export const loadUser  = () => (dispatch, getState) => {
             'Content-Type': 'application/json'
         }
     }
-
     // If token, add to headers
     if(token){
         config.headers['Authorization'] = `Token  ${token}`
@@ -34,13 +34,11 @@ export const loadUser  = () => (dispatch, getState) => {
 
     axios.get(`${url}api/auth/user`, config)
         .then( res => {
-            console.log("sucesss")
             dispatch({
                 type: USER_LOADED,
                 payload: res.data
             })
         }).catch( err => {
-            console.log(err)
             dispatch( returnErrors(err.response.data, err.response.status))
             dispatch({
                 type: AUTH_ERROR
@@ -122,7 +120,6 @@ export const register = ({username, password, email}) =>  dispatch => {
 
     axios.post(`${url}api/auth/register`, body, config)
         .then( res => {
-            console.log(res)
             dispatch({
                 type: REGISTER_SUCCESS,
                 payload: res.data

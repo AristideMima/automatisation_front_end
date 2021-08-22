@@ -19,11 +19,20 @@ import IconButton from '@material-ui/core/IconButton';
 import { notification } from 'antd';
 import {withRouter} from 'react-router-dom';
 import { formStepperStyle } from "../constants/constants";
-import Radio from '@material-ui/core/Radio';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import RadioGroup from '@material-ui/core/RadioGroup';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormGroup from '@material-ui/core/FormGroup';
+import ReactExport from "react-export-excel";
+import imgResult from "../assets/accounting_80px.png";
+import DataTable from "./FullSelected_Antd";
+import { CountdownCircleTimer } from 'react-countdown-circle-timer'
+import './style.css'
+import ReplayIcon from '@material-ui/icons/Replay';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+axios.defaults.timeout = 60 * 300 * 1000
 
 
 // Form stepper to for Epargne and Courant
@@ -98,7 +107,7 @@ class FormCourant extends Component {
                 </Grid>
                 <Paper elevation={10} style={formStepperStyle}>
                     <form onSubmit={this.handleSubmit}>
-                        <Grid spacing={1} container justify="left">
+                        <Grid spacing={1} container justify="flex-start">
                             <Grid item md={3}>
                                 <h3>Taux d'intérêts</h3>
                             </Grid>
@@ -257,7 +266,6 @@ class FormEpargne extends Component {
         const choice = this.state.choice
 
         const isEmpty = Object.values(options).every(x => x === null || x === '');
-        console.log(isEmpty)
 
         if (!isEmpty) {
             this.props.updateProps({options, choice})
@@ -304,7 +312,7 @@ class FormEpargne extends Component {
                </Grid>
                <Paper elevation={10} style={formStepperStyle}>
                    <form onSubmit={this.handleSubmit}>
-                       <Grid spacing={1} container justify="left">
+                       <Grid spacing={1} container justify="flex-start">
                            <Grid item md={3}>
                                <h3>Taux d'intérêts</h3>
                            </Grid>
@@ -312,8 +320,8 @@ class FormEpargne extends Component {
                                <Box>
                                    <TextField
                                        name="taux_interet_inferieur"
-                                       label='Taux <= 10 000'
-                                       placeholder="Taux <= 10 000"
+                                       label='Taux Inférieur'
+                                       placeholder="Taux Inférieur"
                                        value={taux_interet_inferieur}
                                        onChange={this.handleChange}
                                        type="number"
@@ -325,8 +333,8 @@ class FormEpargne extends Component {
                                <Box>
                                    <TextField
                                        name="taux_interet_superieur"
-                                       label='Taux > 10 000'
-                                       placeholder="Taux > 10 000"
+                                       label='Taux Supérieur'
+                                       placeholder="Taux Supérieur"
                                        value={taux_interet_superieur}
                                        onChange={this.handleChange}
                                        type="number"
@@ -351,7 +359,6 @@ class FormEpargne extends Component {
                                        required/>
                                </Box>
                            </Grid>
-
                            <Grid item md={3}>
                                <Box >
                                    <TextField
@@ -418,13 +425,13 @@ class Calcul extends Component {
         open: false,
         classes: this.props,
         activeStep: 0,
-        accounts_selected: [],
         index: [],
+        accountSelected: [],
 
         // Operations part
         data_operations : [],
-        selectedOperations: [],
         indexOperations: [],
+        operationSelected: [],
 
         key: `open${Date.now()}`,
 
@@ -436,26 +443,41 @@ class Calcul extends Component {
         // Popup confirm
         visible: false,
         confirmationLoading: false,
-        laoding: false,
-        choice: "unique"
+        loading: true,
+        choice: "unique",
+        choice_fusion: false,
+        choice_valeur: true,
+        commision_mouvement: false,
+        commission_decouvert: false,
+        regularisation: false,
+
+        data_history: {},
+        // Persistent State in local storage
+        _loading: false,
+        _saveStatus: 'READY',
+        calcul_epargne_int_default: true,
+        progress: false
     }
 
     getAccounts = (props) => {
 
+        const newData = typeof props.updateData !== "undefined" ? props.updateData:this.state.data
+        const indexes = props.selectedRowKeys
+        const newAccounts = indexes.map( (ind, val) => newData[ind])
         this.setState((prev) => ({
-            accounts_selected: props.selected_rows,
-            index: props.newSelectionModel,
-            data: typeof props.updateData !== 'undefined' ? props.updateData:prev.data
+            index: props.selectedRowKeys,
+            data: newData,
+            accountSelected: newAccounts
         }))
+
     }
 
     getOperations = (props) => {
-
         this.setState((prev) => ({
-            operations: props.selected_rows,
-            indexOperations: props.newSelectionModel,
+            indexOperations: props.selectedRowKeys,
             data_operations: typeof props.updateData !== 'undefined' ? props.updateData:prev.data_operations
         }))
+
     }
 
     updateOptions = (optionsChild) => {
@@ -476,13 +498,7 @@ class Calcul extends Component {
 
     handleChoice = (e) => {
         this.setState({
-            choice: e.target.value
-        })
-        notification.success({
-            message: 'Mode d\'arrêté',
-            description: `Nouveau mode: ${e.target.value}`,
-            placement: 'bottomRight',
-            duration: 5
+            [e.target.name]: e.target.checked
         })
     }
 
@@ -500,14 +516,18 @@ class Calcul extends Component {
     }
 
     getStepContent = (stepIndex) => {
-
         switch (stepIndex) {
             case 0:
-                return   <ControlledSelectionGrid data={this.state.data} selected_accounts={this.state.accounts_selected} index_selected={this.state.index}
-                                                  setSelection={this.getAccounts}  choice="calcul" check={true} loading={this.state.loading} />;
+                const datas = this.state.data
+                const index = this.state.index
+                const loading = this.state.loading
+                const choice = this.props.typeCalcul === "Courant" ? "calcul": "calcul_epargne"
+                return   <DataTable title="Numéros de comptes disponibles dans l'historique actif" data={datas}  index_selected={index} setSelection={this.getAccounts} select={true}  choice={choice} check={true} loading={loading} />;
             case 1:
-                    return   <ControlledSelectionGrid data={this.state.data_operations} selected_accounts={this.state.selectedOperations} index_selected={this.state.indexOperations}
-                                                      setSelection={this.getOperations}  choice="operations" check={true} loading={false} />;
+                    const dataOperations = this.state.data_operations
+                    const indexOperations = this.state.indexOperations
+                    const loadingOperations = this.state.loading
+                    return   <DataTable title="Choisissez les opérations à exclure" select={true} data={dataOperations}  index_selected={indexOperations} setSelection={this.getOperations}  choice="operations" check={true} loading={loadingOperations} />;
             case 2:
 
                 const type_computation = this.props.typeCalcul
@@ -522,21 +542,53 @@ class Calcul extends Component {
                             </Grid>
                         </Grid>;
             case 3:
+                let box_sup = <>
+                    <FormControlLabel
+                        control={<Checkbox checked={this.state.commision_mouvement} onChange={this.handleChoice} name="commision_mouvement" />}
+                        label="Exclure commission mouvement"
+                    />
+                    <FormControlLabel
+                        control={<Checkbox checked={this.state.commission_decouvert} onChange={this.handleChoice} name="commission_decouvert" />}
+                        label="Exclure commission découvert"
+                    />
+                </>
+
+                if (this.props.typeCalcul === "Epargne")
+                    box_sup =  <>
+                        <FormControlLabel
+                            control={<Checkbox checked={this.state.calcul_epargne_int_default} onChange={this.handleChoice} name="calcul_epargne_int_default" />}
+                            label="Intérêts à 10 000"
+                        />
+                    </>
+
                 return <Grid item md={12} xs={12} >
                     <Grid container spacing={0} justify="center" alignItems="center" direction="column">
                         <Box mt={5} mb={5}>
-                            <FormControl component="fieldset">
-                                <FormLabel component="legend">Chosir le mode d'arrêté </FormLabel>
-                                <RadioGroup row aria-label="Choices" name="choice" value={this.state.choice} onChange={this.handleChoice}>
-                                    <FormControlLabel value="unique" control={<Radio />} label="Unique" />
-                                    <FormControlLabel value="fusion" control={<Radio />} label="Fusion" />
-                                </RadioGroup>
-                            </FormControl>
+                            <FormGroup row>
+                                {box_sup}
+                                <FormControlLabel
+                                    control={<Checkbox checked={this.state.regularisation} onChange={this.handleChoice} name="regularisation" />}
+                                    label="Arrêté en régularisation"
+                                />
+                                <FormControlLabel control={<Checkbox
+                                            checked={this.state.choice_valeur}
+                                            onChange={this.handleChoice}
+                                            name="choice_valeur"
+                                            color="primary"
+                                        />
+                                    }
+                                    label="Classement par ordre de valeur"
+                                />
+                            </FormGroup>
                         </Box>
                     </Grid>
                 </Grid>
             case 4:
-                const resultsOperations = this.state.data_operations.filter(({ code_operation: id1 }) => !this.state.selectedOperations.some(({ value: id2 }) => id2 === id1));
+
+                const newAccounts = this.state.accountSelected
+                const newOperations = this.getFinalSelected()
+                const choiceRecap = this.props.typeCalcul === "Courant" ? "accounts_recap": "accounts_recap_epargne"
+                const val_epargne = this.state.calcul_epargne_int_default === false ? 50_000_000 : 10_000_000
                 let options = this.state.options_courant
                 let recap_options =
                     <>
@@ -550,31 +602,32 @@ class Calcul extends Component {
                     recap_options =
                         <>
                             <Alert>
-                                Intérêt {"<="} 10 000: {options.taux_interet_superieur} %, Intérêt {">"} 10 000: {options.taux_interet_superieur} %, Ircm: {options.taux_ircm} %,
+                                Intérêt {"<="} {val_epargne}: {options.taux_interet_superieur} %, Intérêt {">"} {val_epargne}: {options.taux_interet_superieur} %, Ircm: {options.taux_ircm} %,
                                 Tva: {options.taux_tva}
                             </Alert>
                         </>
                 }
 
-                return <Grid container spacing={0} justify="center">
-                      <Grid item md={8} xs={12} >
-                          <Collapse in={true}>
-                              <Alert>
-                                  Période de l'arrêté: du {options.date_deb} au {options.date_fin}   Mode : {this.state.choice}
-                              </Alert>
-                              {recap_options}
-                          </Collapse>
-                          <Box mt={2}></Box>
-                      </Grid>
-                    <Grid item md={6} xs={4}>
-                        <ControlledSelectionGrid data={this.state.accounts_selected} selected_accounts={[]} index_selected={[]}
-                                                 setSelection={this.getAccounts}  choice="accounts_recap" check={false} loading={false} />;
+
+                const recap = <Grid container spacing={2}>
+                    <Grid item md={12} xs={12} >
+                        <Collapse in={true}>
+                            <Alert>
+                                Période de l'arrêté: du {options.date_deb} au {options.date_fin}   Mode : {this.state.choice}
+                            </Alert>
+                            {recap_options}
+                        </Collapse>
+                        <Box mt={2}></Box>
                     </Grid>
-                    <Grid item md={6}>
-                        <ControlledSelectionGrid data={resultsOperations} selected_accounts={[]} index_selected={[]}
-                                                 setSelection={this.getAccounts}  choice="operations_recap" check={false} loading={false} />;
+                    <Grid item md={12}>
+                        <DataTable title="Numéros de compte choisis" data={newAccounts}  index_selected={[]} select={false} setSelection={this.getAccounts}  choice={choiceRecap} check={false} loading={false} />
                     </Grid>
-                </Grid> ;
+                    <Grid item md={12}>
+                        <DataTable title="Opérations choisies" data={newOperations}  index_selected={[]} select={false} setSelection={this.getAccounts}  choice="operations_recap" check={false} loading={false} />;
+                    </Grid>
+                </Grid>
+
+                return recap;
             default:
                 return 'cliquez sur lancer l\'arrêté';
         }
@@ -595,7 +648,7 @@ class Calcul extends Component {
             config.headers['Authorization'] = `Token  ${token}`
         }
 
-        axios.post(`${url}`, {"conf": this.props.typeArrete, "type_account": this.props.typeCalcul }, config)
+        axios.post(`${url}`, {"type_arrete": this.state.regularisation, "type_account": this.props.typeCalcul }, config)
             .then( res => {
                 this.setState({data: res.data['accounts'], data_operations: res.data['operations'],  loading: false})
             }).catch( err => {
@@ -611,22 +664,22 @@ class Calcul extends Component {
 
         // set options dates
         const options_courant =  {
-            taux_interet_debiteur_1: 15.5,
+                taux_interet_debiteur_1: 15.5,
                 taux_interet_debiteur_2: 6.5,
                 taux_interet_debiteur_3: 0,
                 taux_commision_mouvement: 0.025,
                 taux_commision_decouvert: 0.020833,
                 taux_tva: 19.25,
-                date_fin: `${today}`,
-                date_deb: "2000-01-01"
+                date_fin: '2021-07-31',
+                date_deb: "2021-07-01"
         }
         const options_epargne =  {
-            taux_interet_inferieur: 2.45,
+                taux_interet_inferieur: 2.45,
                 taux_interet_superieur: 2.45,
                 taux_ircm: 16.5,
                 taux_tva: 19.25,
-                date_fin: `${today}`,
-                date_deb: "2000-01-01",
+                date_fin: '2021-07-31',
+                date_deb: "2021-07-01",
         }
 
         // Set all options values
@@ -642,7 +695,7 @@ class Calcul extends Component {
     handleNext = () => {
         switch (this.state.activeStep) {
             case 0:
-                if(this.state.accounts_selected.length !== 0){
+                if(this.state.index.length !== 0){
                     this.next()
                 }else{
                     notification.error({
@@ -685,18 +738,26 @@ class Calcul extends Component {
 
     };
 
+    getFinalSelected(){
+        const indexesOperations = this.state.indexOperations
+        const operations = this.state.data_operations
+
+        const newOperations = operations.filter( obj  => !indexesOperations.includes(obj.key))
+
+        return newOperations
+    }
+
     handleOk = () => {
         this.setState({
             confirmationLoading: true
         })
 
-        setTimeout(() => {
-            this.setState({
-                visible: false,
-                confirmationLoading: false
-            });
-        }, 2000);
-
+        this.setState({
+            visible: false,
+            confirmationLoading: false,
+            progress: true
+        });
+        // Get local token
         const token  = this.props.auth.token
 
         const config = {
@@ -709,32 +770,50 @@ class Calcul extends Component {
             config.headers['Authorization'] = `Token  ${token}`
         }
 
-        let options = this.state.options_courant
 
-        if(this.state.choice === "Epargne") options = this.state.options_epargne
+
+        // Get all necessaries options
+        let options = this.state.options_courant
+        const choice_valeur = this.state.choice_valeur
+        const commision_mouvement = this.state.commision_mouvement
+        const commission_decouvert = this.state.commission_decouvert
+        const calcul_epargne_int_default = this.state.calcul_epargne_int_default
+        // const operations = this.state.data_operations.filter(({ code_operation: id1 }) => !this.state.selectedOperations.some(({ value: id2 }) => id2 === id1));
+        const typeCalcul = this.props.typeCalcul
+
+        // Select Operations and options
+        const newAccounts = this.state.accountSelected
+        const newOperations = this.getFinalSelected()
+
+        if(this.props.typeCalcul === "Epargne") options = this.state.options_epargne
+
 
         // Computation happening
-        axios.post('http://127.0.0.1:8000/api/calculs', {"accounts": this.state.accounts_selected, "operations": this.state.data_operations,
-            "options": options,
-            "period": [this.state.date_deb, this.state.date_fin], "type_account": this.props.typeCalcul, "conf": this.props.typeArrete}, config)
+        axios.post('http://127.0.0.1:8000/api/calculs', {"accounts": newAccounts, "operations": newOperations,
+            "options": options, "type_arrete": this.state.regularisation, "ordre": choice_valeur, "com_mvt": commision_mouvement, "com_dec": commission_decouvert, "int_epargne": calcul_epargne_int_default , "type_account": typeCalcul}, config)
             .then(
                 res => {
-                    console.log()
-                    this.props.history.push(
-                        {
-                            pathname: '/Results',
-                            state: res.data
-                        }
-                    )
+                    this.setState({data_history: res.data})
+                    // history.push(
+                    //     {
+                    //         pathname: '/Results',
+                    //         state: res.data
+                    //     }
+                    // )
                     notification.success({
-                        message: 'Calcul éffectué',
-                        description: `Calcul terminé pour les comptes }`,
+                        message: 'Calcul Terminé',
                         placement: 'bottomRight',
                         duration: 5
                     });
                 }
             ).catch( err => {
-            console.log(err)
+                this.setState({progress: false})
+            notification.error({
+                message: 'Erreur',
+                description: err.response.data['message'],
+                placement: 'bottomRight',
+                duration: 5
+            });
         })
     }
 
@@ -758,9 +837,14 @@ class Calcul extends Component {
 
     render() {
 
-        // console.log(this.state.accounts_selected, this.state.index )
+        // Get current date
+        let today = new Date()
+        let complete = today.toUTCString()
+        complete = complete.replaceAll(":", "-")
+        complete = complete.replaceAll(",", "")
+        complete = complete.replace("GMT", "")
 
-        // {this.state.data.length > 0 && console.log(this.state.data)}
+
 
         const { classes } = this.props;
 
@@ -771,7 +855,29 @@ class Calcul extends Component {
         const title = this.props.title.title
         const subTitle = this.props.title.subTitle
 
+        const renderTime = ({ remainingTime }) => {
+                return <div >Temps restant probable: <span className="timer">{remainingTime}</span></div>;
+            }
+
+        const UrgeWithPleasureComponent = this.state.progress === true ?
+            <Grid container justify="center" >
+                <CountdownCircleTimer
+                    isPlaying
+                    duration={this.state.accountSelected.length/15}
+                    colors={[
+                        ['#004777', 0.33],
+                        ['#F7B801', 0.33],
+                        ['#A30000', 0.33],
+                    ]}
+                >
+                    {renderTime}
+                </CountdownCircleTimer>
+            </Grid>
+        : <></>
+
         const content = (
+             <>
+                 {UrgeWithPleasureComponent}
                 <div className={classes.rootStepper}>
                     {this.state.alertComp}
                     <Grid container justify="center" >
@@ -813,7 +919,7 @@ class Calcul extends Component {
                         </div>
                     ) : (
                         <Grid container justify="center" spacing={0}>
-                            <Box mt={4}>
+                            <Box mt={4} mb={5}>
                                 <Grid container >
                                     <Grid item xs={12} md={12}>
                                         <div className={classes.instructions}>{this.getStepContent(activeStep)}</div>
@@ -823,6 +929,7 @@ class Calcul extends Component {
                         </Grid>
                     )}
                 </div>
+             </>
         )
 
         const component = {
@@ -833,9 +940,92 @@ class Calcul extends Component {
             "img": img
         }
 
-        return (
-            <Template component={component} />
+        //
+        let trueComponent = component
 
+        if( Object.keys(this.state.data_history).length !== 0){
+
+            const component_results = {
+                'title': 'Résultats',
+                'subTitle' : 'Résultats des calculs des différents arrêtés',
+                'content' : <>
+                    <Grid container spacing={0} justify="center" alignContent="center" alignItems="center" >
+                        <Grid item md={10} xs={12}>
+                            <Box mt={5}></Box>
+                            <Grid container sapcing={1} justify="center" alignItems="center" direction="row">
+                                <Grid item md={6}>
+                                    <Button
+                                        onClick={ () => window.location(false)}
+                                        variant="contained"
+                                        color="primary"
+                                        size="large"
+                                        startIcon={<ReplayIcon />}
+                                    >
+                                        Refaites le calcul
+                                    </Button>
+                                </Grid>
+                                <Grid item md={6}>
+                                    { this.state.data_history['all_data'] !== 0 &&
+                                    <>
+                                        <ExcelFile element={<Button variant="contained" color="secondary">
+                                            Télécharger le résultat complet
+                                        </Button>}
+                                                   filename={`Résultat calcul -- ${complete}`}
+                                        >
+                                            <ExcelSheet data={ this.state.data_history['compressed_data']} name={'Récaptitulatif'}>
+                                                <ExcelColumn label="Numéro de Compte" value="N° Compte"  width={80}/>
+                                                <ExcelColumn label="Résultat Calcul" value="Calcul"/>
+                                                <ExcelColumn label="Résultat Journal" value="Journal"/>
+                                                <ExcelColumn label="Ecart" value="Ecart"/>
+                                                <ExcelColumn label="Date début arrêté" value="date_deb"/>
+                                                <ExcelColumn label="Date fin arrêté" value="date_fin"/>
+                                            </ExcelSheet>
+                                            {this.state.data_history['all_data'].map( (dataSheet, key) => (
+                                                <ExcelSheet data={dataSheet["first"]} name={`${dataSheet['account']}`}>
+                                                    <ExcelColumn label="DATE COMPTABLE" value="CPTABLE"/>
+                                                    <ExcelColumn label="DATE DE VALEUR" value="VALEUR"/>
+                                                    <ExcelColumn label="LIBELLES" value="LIBELLES"/>
+                                                    <ExcelColumn label="MOUVEMENTS DEBIT" value="DEBIT_MVTS"/>
+                                                    <ExcelColumn label="MOUVEMENTS CREDIT" value="CREDIT_MVTS"/>
+                                                    <ExcelColumn label="SOLDES" value="SOLDES"/>
+                                                    <ExcelColumn label="SOLDES JOUR" value="SOLDE_JOUR"/>
+                                                    <ExcelColumn label="NOMBRE DE JOURS" value="jrs"/>
+                                                    <ExcelColumn label="NOMBRES DEBIT" value="DEBITS_NBR"/>
+                                                    <ExcelColumn label="NOMBRES CREDIT" value="CREDIT_NBR"/>
+                                                    <ExcelColumn label="SOLDES" value="SOLDES_NBR"/>
+                                                    <ExcelColumn label="MOUVEMENTS 1" value="MVTS_13"/>
+                                                    <ExcelColumn label="MOUVEMENTS 2" value="MVTS_14" />
+                                                </ExcelSheet>
+                                            ))}
+                                        </ExcelFile>
+                                    </>
+                                    }
+                                </Grid>
+                            </Grid>
+                            <Box mb={5}></Box>
+                        </Grid>
+                        <Grid item md={10} xs={9}>
+                            <Box mb={2}></Box>
+                            <Grid container justify="center" alignItems="center">
+                                <Grid item md={12}>
+                                    <ControlledSelectionGrid data={this.state.data_history['compressed_data']} choice="results" check={false}  />
+                                </Grid>
+                            </Grid>
+                            <Box mb={5}></Box>
+                        </Grid>
+                    </Grid>
+                </>,
+                'selected': this.props.id,
+                "img": imgResult
+
+            }
+
+            trueComponent = component_results
+        }
+
+
+        return (
+            <Template component={trueComponent} />
         );
     }
 }

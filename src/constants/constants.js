@@ -1,6 +1,5 @@
 
 import { transitions, positions } from "react-alert";
-import { red } from '@material-ui/core/colors';
 import image from "../assets/back_5.jpg";
 
 // Constants file
@@ -192,3 +191,8 @@ export const config = {
         'Content-Type': 'application/json'
     }
 }
+
+
+export let urlActivate = 'http://127.0.0.1:8000/api/activateFile'
+export let setActiveFile = 'http://127.0.0.1:8000/api/setActiveFile'
+export let deleteFile = 'http://127.0.0.1:8000/api/deleteFile'

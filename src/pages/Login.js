@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import {
     Box,
     Button,
-    Checkbox,
-    FormControlLabel,
+    // Checkbox,
+    // FormControlLabel,
     Grid,
     Grow,
     Paper,
@@ -12,9 +12,13 @@ import {
 } from "@material-ui/core";
 import logo from "../assets/newLogo.png";
 import loginImage from "../assets/external2.svg"
-import {paperLogStyle, gridContainerStyle, specialLinkLog} from '../constants/constants'
+import {paperLogStyle, gridContainerStyle,
+    // specialLinkLog
+} from '../constants/constants'
 import PropTypes from 'prop-types';
-import { Link, Redirect } from 'react-router-dom';
+import {
+    // Link,
+    Redirect } from 'react-router-dom';
 import { connect } from "react-redux";
 import { login } from "../actions/auth";
 
@@ -95,28 +99,28 @@ class Login extends Component {
                                         type='password'
                                         fullWidth required/>
                                 </Box>
-                                <Grid align="center">
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                name="checkedB"
-                                                color="primary"
-                                            />
-                                        }
-                                        label="Se souvenir de moi"
-                                    />
-                                </Grid>
-                                <Box mt={2}>
+                                {/*<Grid align="center">*/}
+                                {/*    <FormControlLabel*/}
+                                {/*        control={*/}
+                                {/*            <Checkbox*/}
+                                {/*                name="checkedB"*/}
+                                {/*                color="primary"*/}
+                                {/*            />*/}
+                                {/*        }*/}
+                                {/*        label="Se souvenir de moi"*/}
+                                {/*    />*/}
+                                {/*</Grid>*/}
+                                <Box mt={5}>
                                     <Button type='submit' color='secondary' style={{ backgroundColor: "#424242"}} variant="contained" fullWidth>Connexion</Button>
                                 </Box>
                             </form>
-                            <Grid align="center">
-                                <Box mt={3} >
-                                    <Typography>
-                                        Vous n'avez pas de compte ?  <Link style={specialLinkLog} to="/Register">Inscrivez-vous</Link>
-                                    </Typography>
-                                </Box>
-                            </Grid>
+                            {/*<Grid align="center">*/}
+                            {/*    <Box mt={3} >*/}
+                            {/*        <Typography>*/}
+                            {/*            Vous n'avez pas de compte ?  <Link style={specialLinkLog} to="/Register">Inscrivez-vous</Link>*/}
+                            {/*        </Typography>*/}
+                            {/*    </Box>*/}
+                            {/*</Grid>*/}
                         </Paper>
                     </Grow>
                 </Grid>

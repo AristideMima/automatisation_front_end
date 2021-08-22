@@ -12,9 +12,17 @@ import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
 import { createMuiTheme } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
-// import Pagination from '@material-ui/lab/Pagination';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import DeleteIcon from '@material-ui/icons/Delete';
+import Button from '@material-ui/core/Button';
+
+// Dialog librairies
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 
 // Loading data
@@ -97,8 +105,6 @@ QuickSearchToolbar.propTypes = {
     value: PropTypes.string.isRequired,
 };
 
-
-
 export default function ControlledSelectionGrid(parentProps) {
 
     const useStyles = makeStyles((theme) => ({
@@ -129,7 +135,9 @@ export default function ControlledSelectionGrid(parentProps) {
     const [trueData, setTrueData] = React.useState([]);
     const [loading, setLoading] = React.useState(true)
     const [checKboxSelection, setChecKboxSelection] = React.useState(true)
+    const [deleteButton, setDeleteButton] = React.useState(false)
     const [column_choice, setColumn_choice] = React.useState("calcul")
+    const [openDialog, setOpenDialog] = React.useState(false)
 
     // Set default
     React.useEffect(
@@ -139,7 +147,8 @@ export default function ControlledSelectionGrid(parentProps) {
             setColumn_choice(choice)
             setLoading(load)
             setSelectionModel(selected)
-        }, [realData, checkBox, choice, loading, selected, parentProps]
+            setDeleteButton(parentProps.delete)
+        }, [realData, checkBox, choice, load, selected, parentProps.delete]
     )
 
     const customStyle = (text) => {
@@ -148,32 +157,52 @@ export default function ControlledSelectionGrid(parentProps) {
         else return ""
     }
 
-    const transFormPercentage = (value) => {
-        let finalValue
-
-        if (value !== ""){
-
-             finalValue  = (value *1000)/10  + "%"
-        }
-        return finalValue
-    }
+    // const transFormPercentage = (value) => {
+    //     let finalValue
+    //
+    //     if (value !== ""){
+    //
+    //          finalValue  = (value *1000)/10  + "%"
+    //     }
+    //     return finalValue
+    // }
 
     // Change status of switch button
     const handleChange  = (params) => {
-        const value = !params.value
-        const id = params.id
-        const field = params.field
-        let updateData = trueData
 
-        updateData[id][field] = value
-
-        setTrueData(updateData)
-
-        const selected_rows = selectionModel.map( (ind, val) => updateData[val])
-        const newSelectionModel = selectionModel
-
-        parentProps.setSelection({newSelectionModel, selected_rows, updateData})
+        if (params.value === false){
+            const type = "edit"
+            const id = params.id
+            parentProps.setSelection({id, type})
+        }else{
+            notification.error({
+                message: 'Erreur activation',
+                description: 'Vous ne pouvez pas désactiver',
+                placement: 'bottomRight',
+                duration: 5
+            })
+        }
     }
+
+    // Delete file
+    const deleteFile = (params) => {
+        console.log("file deleted")
+        setOpenDialog(false)
+        const type = "delete"
+        const id = params.id
+        parentProps.setSelection({id, type})
+    }
+
+    // Dialog delete function
+    const handleClose = () => {
+        setOpenDialog(false)
+    }
+
+    const handleOpen = () => {
+        setOpenDialog(true)
+    }
+
+
 
     // Declaring all columns
     const columns = [
@@ -265,7 +294,7 @@ export default function ControlledSelectionGrid(parentProps) {
             },
         },
         {
-            id: 4,
+            id: 2,
             width: 200,
             headerAlign: 'center',
             headerName: 'Montant autorisé',
@@ -278,7 +307,7 @@ export default function ControlledSelectionGrid(parentProps) {
             },
         },
         {
-            id: 5,
+            id: 3,
             width: 200,
             headerAlign: 'center',
             headerName: 'Début autorisation',
@@ -287,7 +316,7 @@ export default function ControlledSelectionGrid(parentProps) {
             type: 'date'
         },
         {
-            id: 6,
+            id: 4,
             headerAlign: 'center',
             width: 200,
             headerName: 'Fin autorisation',
@@ -342,7 +371,6 @@ export default function ControlledSelectionGrid(parentProps) {
             }
         }
     ]
-
     const column_operations = [
         {
             id: 0,
@@ -392,56 +420,162 @@ export default function ControlledSelectionGrid(parentProps) {
     const column_results = [
         {
             id: 0,
-            headerName: 'DESIGNATION',
+            headerName: 'N° de Compte',
             headerAlign: 'center',
-            field: 'col_0',
+            field: 'N° Compte',
             width: 200,
             editable: false,
         },
         {
             id: 1,
-            headerName: 'TAUX',
+            headerName: 'Résultat calcul',
             headerAlign: 'center',
-            field: 'col_1',
-            width: 200,
-            editable: false,
-            renderCell: (params) => {
-                const newValue =  transFormPercentage(params.value)
-                return newValue
-            }
-        },
-        {
-            id: 2,
-            headerName: 'AGIOS',
-            headerAlign: 'center',
-            field: 'col_2',
+            field: 'Calcul',
             width: 200,
             editable: false,
         },
         {
             id: 2,
-            headerName: 'AMPLITUDE',
+            headerName: 'Résultat journal',
             headerAlign: 'center',
-            field: 'col_3',
+            field: 'Journal',
             width: 200,
             editable: false,
         },
         {
-            id: 4,
-            headerName: 'ECART',
+            id: 2,
+            headerName: 'Ecart',
             headerAlign: 'center',
-            field: 'col_4',
+            field: 'Ecart',
+            width: 200,
+            editable: false,
+        },
+        {
+            id: 3,
+            headerName: 'Date début arrêté',
+            headerAlign: 'center',
+            field: 'date_deb',
+            width: 200,
+            editable: false,
+        },
+        {
+            id: 3,
+            headerName: 'Date fin arrêté',
+            headerAlign: 'center',
+                field: 'date_fin',
             width: 200,
             editable: false,
         },
     ]
+
     const all_columns = {
 
         "calcul": columns,
         "results": column_results,
         "operations": column_operations,
         "accounts_recap": columns_recap,
-        "operations_recap": column_operations_recap
+        "operations_recap": column_operations_recap,
+        "columns_files": [
+            {
+                id: 0,
+                headerName: '#',
+                headerAlign: 'center',
+                field: 'index',
+                width: 90,
+                editable: false,
+            },
+            {
+                id: 1,
+                headerName: 'Type',
+                headerAlign: 'center',
+                field: 'type',
+                width: 150,
+                editable: false,
+            },
+            {
+                id: 2,
+                headerName: 'Longueur',
+                headerAlign: 'center',
+                field: 'longueur',
+                width: 150,
+                editable: false,
+            },
+            {
+                id: 5,
+                headerName: 'Date Valeur min',
+                headerAlign: 'center',
+                field: 'date_inf',
+                width: 180,
+                editable: false,
+            },
+            {
+                id: 4,
+                headerName: 'Date Valeur max',
+                headerAlign: 'center',
+                field: 'date_sup',
+                width: 190,
+                editable: false,
+            },
+            {
+                id: 3,
+                headerName: 'Ajouté le',
+                headerAlign: 'center',
+                field: 'created_at',
+                width: 150,
+                editable: false,
+                type: 'date'
+            },
+            {
+                id: 6,
+                headerName: 'Action',
+                headerAlign: 'center',
+                field: 'active_file',
+                width: 200,
+                editable: false,
+                renderCell: (params) => {
+
+                    // Add options parameters
+                    const addDelete = deleteButton === true ?
+                        <>
+                            <IconButton aria-label="delete" onClick={handleOpen}>
+                                <DeleteIcon fontSize="small" />
+                            </IconButton>
+                            <Dialog
+                                open={openDialog}
+                                onClose={handleClose}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                            >
+                                <DialogTitle id="alert-dialog-title">{"Suppression du fichier"}</DialogTitle>
+                                <DialogContent>
+                                    <DialogContentText id="alert-dialog-description">
+                                        Voulez-vous vraiment supprimer ce fichier ? Cette action sera irreversible
+                                    </DialogContentText>
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button onClick={handleClose} color="primary">
+                                        Annuler
+                                    </Button>
+                                    <Button onClick={() => deleteFile(params)} color="primary" autoFocus>
+                                        Confirmer
+                                    </Button>
+                                </DialogActions>
+                            </Dialog>
+                        </>
+                        : <></>
+
+                    const result =
+                    <div>
+                        <FormControlLabel control={<Switch checked={params.value}  name="checkedA" onChange={() => handleChange(params)} />}/>
+                        {addDelete}
+                    </div>
+
+                    return result
+                }
+            },
+
+
+        ],
     }
 
     // helpers functions
@@ -511,32 +645,17 @@ export default function ControlledSelectionGrid(parentProps) {
                             placement: 'bottomRight',
                             duration: 5
                         });
-
-                        const selected_rows = selectionModel.map( (ind, val) => updateData[val])
-                        const newSelectionModel = selectionModel
+                        const newSelectionModel  = {...selectionModel}
+                        const selected_rows = selectionModel.map( (ind, val) => updateData[ind])
 
                         parentProps.setSelection({newSelectionModel, selected_rows, updateData})
                     }
 
                 }
-                // const newState = {};
-                // newState[id] = {
-                //     ...editRowsModel[id],
-                //     solde_initial: {...props, error: value === "" },
-                // };
-                //
-                // const updatedState = { ...editRowsModel, ...newState }
-                //
-                // const selected_accounts = selectionModel.map( (ind, val) => trueData[val])
-                // const newSelectionModel = selectionModel
-                //
-                // setEditRowsModel(updatedState);
-                //
-                //
 
 
         },
-        [editRowsModel]
+        [parentProps, trueData, selectionModel]
     );
 
 
@@ -544,7 +663,7 @@ export default function ControlledSelectionGrid(parentProps) {
 
 
     if(column_choice === "results"){
-        width = "100%"
+        width = "80em"
     }else if(column_choice === "operations"){
         width = "63em"
     }else if(column_choice === "accounts_recap"){
@@ -553,15 +672,15 @@ export default function ControlledSelectionGrid(parentProps) {
         width = "40em"
     }
 
+    let autoHeight = true
+    if (trueData.length > 20) autoHeight = null
     return (
         <div style={{ height: 500, width: width }}>
             <DataGrid
-                components={{
-                    LoadingOverlay: CustomLoadingOverlay,
-                }}
+                autoHeight={autoHeight}
                 loading = {loading}
                 checkboxSelection = {checKboxSelection}
-                components={{ Toolbar: QuickSearchToolbar }}
+                components={{ Toolbar: QuickSearchToolbar, LoadingOverlay: CustomLoadingOverlay }}
                 componentsProps={{
                     toolbar: {
                         value: searchText,
@@ -569,16 +688,18 @@ export default function ControlledSelectionGrid(parentProps) {
                         clearSearch: () => requestSearch(''),
                     },
                 }}
-                onSelectionModelChange = {(newSelectionModel, data) => {
-
-                    setSelectionModel(newSelectionModel);
-
-                    const selected_rows = newSelectionModel.map( (ind, val) => trueData[val])
-
-                    parentProps.setSelection({newSelectionModel, selected_rows})
-                }}
+                // onSelectionModelChange = {(newSelectionModel, data) => {
+                //
+                //
+                //     setSelectionModel(newSelectionModel);
+                //
+                //     const selected_rows = newSelectionModel.map( (ind, val) => trueData[ind])
+                //     const updateData = trueData
+                //
+                //     parentProps.setSelection({newSelectionModel, selected_rows, updateData})
+                // }}
                 columns={all_columns[column_choice]}
-                selectionModel={selectionModel}
+                // selectionModel={selectionModel}
                 rows = {trueData}
                 editRowsModel={editRowsModel}
                 onEditCellChange={handleEditCellChange}

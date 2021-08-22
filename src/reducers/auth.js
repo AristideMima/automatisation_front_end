@@ -9,6 +9,7 @@ import {
 } from "../actions/types";
 
 
+
 const initialState = {
     token: localStorage.getItem('token'),
     isAuthenticated: null,
@@ -25,7 +26,6 @@ export default function auth(state = initialState, action) {
                 return {...state, isAuthenticated: true, isLoading: false, user: action.payload};
             case LOGIN_SUCCESS:
             case REGISTER_SUCCESS:
-                // console.Log(action.payload)
                 localStorage.setItem('token', action.payload.token)
                 return {...state, ...action.payload, isAuthenticated: true, isLoading: false};
             case AUTH_ERROR:
