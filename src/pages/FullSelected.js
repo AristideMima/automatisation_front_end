@@ -485,14 +485,6 @@ export default function ControlledSelectionGrid(parentProps) {
                 editable: false,
             },
             {
-                id: 1,
-                headerName: 'Type',
-                headerAlign: 'center',
-                field: 'type',
-                width: 150,
-                editable: false,
-            },
-            {
                 id: 2,
                 headerName: 'Longueur',
                 headerAlign: 'center',

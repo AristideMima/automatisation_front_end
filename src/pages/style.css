@@ -3,3 +3,76 @@
     font-size: xx-large;
     display: block;
 }
+
+.icon-file{
+    display: flex;
+    float: left;
+    font-size: 1em;
+}
+.icon-file_more{
+    display: flex;
+    float: right;
+}
+.text-file{
+    margin-top: 12px;
+    display: block;
+    font-size: large;
+    float: left;
+    color: #3f50b5;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+}
+
+.text-file .histo{
+    color: #ef5350;
+}
+
+.text-file .solde{
+    color: #00695c
+}
+
+.text-file .journal{
+    color: #ab47bc
+}
+
+.text-file .autorisation{
+    color: #616161;
+}
+
+.number{
+    float: left;
+}
+
+.title-disk{
+    font-size: xx-large;
+    font-family: "Bitstream Charter";
+    vertical-align: middle;
+    margin: auto;
+    color: #7481ce;
+}
+.number-space{
+    font-size: x-large;
+    font-style: unset;
+}
+
+.box-simulation{
+    border: 1px solid #1890ff;
+    background-color: #1890ff;
+    border-radius: 10px;
+    padding: 20%;
+}
+
+.title-sumlation{
+    font-size: medium;
+}
+
+.number-space-simulation{
+    font-size: 2.7em;
+    color: #1890ff;
+    font-weight: bold;
+}
+
+.tableTitle{
+    text-align: center;
+    font-family: "Bitstream Charter";
+    font-size: large;
+}

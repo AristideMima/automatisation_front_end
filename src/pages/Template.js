@@ -8,7 +8,7 @@ import { useStyles} from "../constants/constants";
 import {  Redirect } from "react-router-dom";
 import {
     AppBar,
-    Badge, Box,
+    Box,
     CssBaseline,
     Divider,
     Drawer, Grid,
@@ -23,10 +23,9 @@ import {
 import {
     ExpandLess,ExpandMore,
     ChevronRight as ChevronRightIcon, Close as CloseIcon, CloudUpload as CloudUploadIcon,
-    Mail as MailIcon,
     Menu as MenuIcon,
     More as MoreIcon,
-    Notifications as NotificationsIcon, SettingsPower as SettingsPowerIcon,
+    SettingsPower as SettingsPowerIcon,
 } from "@material-ui/icons";
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import HistoryIcon from '@material-ui/icons/History';
@@ -220,16 +219,6 @@ class Template extends Component {
                             { appTitle }
                         </Typography>
                         <div className={classes.sectionDesktop}>
-                            <IconButton aria-label="show 4 new mails" color="inherit">
-                                <Badge badgeContent={4} color="secondary">
-                                    <MailIcon />
-                                </Badge>
-                            </IconButton>
-                            <IconButton aria-label="show 17 new notifications" color="inherit">
-                                <Badge badgeContent={17} color="secondary">
-                                    <NotificationsIcon />
-                                </Badge>
-                            </IconButton>
                             <IconButton
                                 edge="end"
                                 aria-label="account of current user"
@@ -345,7 +334,7 @@ class Template extends Component {
 
                             </List>
                         </Collapse>
-                        <ListItem>
+                        <ListItem button component={Link} to="/Help" style={pointer} selected={this.props.component['selected'] === 12} >
                             <ListItemIcon><ContactSupportIcon /></ListItemIcon>
                             <ListItemText primary="Aide" />
                         </ListItem>

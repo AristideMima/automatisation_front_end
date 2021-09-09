@@ -474,7 +474,7 @@ class Calcul extends Component {
 
     getOperations = (props) => {
         this.setState((prev) => ({
-            indexOperations: props.selectedRowKeys,
+            indexOperations: typeof props.selectedRowKeys !== 'undefined' ? props.selectedRowKeys:prev.indexOperations,
             data_operations: typeof props.updateData !== 'undefined' ? props.updateData:prev.data_operations
         }))
 
@@ -522,19 +522,29 @@ class Calcul extends Component {
                 const index = this.state.index
                 const loading = this.state.loading
                 const choice = this.props.typeCalcul === "Courant" ? "calcul": "calcul_epargne"
-                return   <DataTable title="Numéros de comptes disponibles dans l'historique actif" data={datas}  index_selected={index} setSelection={this.getAccounts} select={true}  choice={choice} check={true} loading={loading} />;
+                return<Grid container spacing={2} justify="center" alignItems="center">
+                    <Grid item md={10}>
+                        <DataTable key={0} title="Numéros de comptes disponibles dans l'historique actif" data={datas}  index_selected={index} setSelection={this.getAccounts} select={true}  choice={choice} check={true} loading={loading} typeArrete={this.props.typeCalcul} />
+                    </Grid>
+                </Grid>;
+
             case 1:
                     const dataOperations = this.state.data_operations
                     const indexOperations = this.state.indexOperations
                     const loadingOperations = this.state.loading
-                    return   <DataTable title="Choisissez les opérations à exclure" select={true} data={dataOperations}  index_selected={indexOperations} setSelection={this.getOperations}  choice="operations" check={true} loading={loadingOperations} />;
+                    return <Grid container spacing={2} justify="center" alignItems="center">
+                        <Grid item md={10}>
+                            <DataTable key={1} title="Choisissez les opérations à exclure" select={true} data={dataOperations} typeArrete={this.props.typeCalcul}  index_selected={indexOperations} setSelection={this.getOperations}  choice="operations" check={true} loading={loadingOperations} />
+                        </Grid>
+                    </Grid>;
+
             case 2:
 
                 const type_computation = this.props.typeCalcul
                 let component = <></>
 
-                if (type_computation === "Courant") component = <FormCourant updateProps={this.updateOptions} options={this.state.options_courant} choice={type_computation} />;
-                else component = <FormEpargne updateProps={this.updateOptions} options={this.state.options_epargne} choice={type_computation} />;
+                if (type_computation === "Courant") component = <FormCourant key={5} updateProps={this.updateOptions} options={this.state.options_courant} choice={type_computation} />;
+                else component = <FormEpargne key={4} updateProps={this.updateOptions} options={this.state.options_epargne} choice={type_computation} />;
 
                 return <Grid container spacing={2} justify="center" alignItems="center">
                             <Grid item md={6}>
@@ -620,10 +630,10 @@ class Calcul extends Component {
                         <Box mt={2}></Box>
                     </Grid>
                     <Grid item md={12}>
-                        <DataTable title="Numéros de compte choisis" data={newAccounts}  index_selected={[]} select={false} setSelection={this.getAccounts}  choice={choiceRecap} check={false} loading={false} />
+                        <DataTable key={2} title="Numéros de compte choisis" data={newAccounts}  index_selected={[]} select={false} setSelection={this.getAccounts}  choice={choiceRecap} check={false} loading={false} />
                     </Grid>
                     <Grid item md={12}>
-                        <DataTable title="Opérations choisies" data={newOperations}  index_selected={[]} select={false} setSelection={this.getAccounts}  choice="operations_recap" check={false} loading={false} />;
+                        <DataTable key={3} title="Opérations choisies" data={newOperations}  index_selected={[]} select={false} setSelection={this.getAccounts}  choice="operations_recap" check={false} loading={false} />
                     </Grid>
                 </Grid>
 
@@ -856,14 +866,14 @@ class Calcul extends Component {
         const subTitle = this.props.title.subTitle
 
         const renderTime = ({ remainingTime }) => {
-                return <div >Temps restant probable: <span className="timer">{remainingTime}</span></div>;
+                return <div >Durée probable: <span className="timer">{remainingTime}</span></div>;
             }
 
         const UrgeWithPleasureComponent = this.state.progress === true ?
             <Grid container justify="center" >
                 <CountdownCircleTimer
                     isPlaying
-                    duration={this.state.accountSelected.length/15}
+                    duration={this.state.accountSelected.length/15 + 5}
                     colors={[
                         ['#004777', 0.33],
                         ['#F7B801', 0.33],
@@ -886,7 +896,7 @@ class Calcul extends Component {
                             mb={3}
                         >
                             <Button
-                                disabled={activeStep === 0}
+                                disabled={activeStep === 0 || this.state.progress}
                                 onClick={this.handleBack}
                                 className={classes.backButton}
                             >
@@ -899,7 +909,7 @@ class Calcul extends Component {
                                 okButtonProps={{ loading: this.state.confirmLoading }}
                                 onCancel={this.handleCancel}
                             >
-                            <Button disabled={activeStep === steps.length} variant="contained" color="secondary" onClick={this.handleNext}>
+                            <Button disabled={activeStep === steps.length || this.state.progress} variant="contained" color="secondary" onClick={this.handleNext}>
                                 {activeStep === steps.length - 1 ? 'Lancer l\'arrêté' : 'Suivant'}
                             </Button>
                             </Popconfirm>
@@ -955,17 +965,17 @@ class Calcul extends Component {
                             <Grid container sapcing={1} justify="center" alignItems="center" direction="row">
                                 <Grid item md={6}>
                                     <Button
-                                        onClick={ () => window.location(false)}
+                                        onClick={() => this.setState({data_history: {}, progress: false, activeStep: 0})}
                                         variant="contained"
                                         color="primary"
                                         size="large"
                                         startIcon={<ReplayIcon />}
                                     >
-                                        Refaites le calcul
+                                        Lancer un autre calcul
                                     </Button>
                                 </Grid>
                                 <Grid item md={6}>
-                                    { this.state.data_history['all_data'] !== 0 &&
+                                    { this.state.data_history['all_data'].length !== 0 &&
                                     <>
                                         <ExcelFile element={<Button variant="contained" color="secondary">
                                             Télécharger le résultat complet

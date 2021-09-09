@@ -3,6 +3,10 @@ import {Button, Input, InputNumber, Space, Table, Tag, Form} from "antd";
 import {SearchOutlined} from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import moment from "moment";
+import { Switch } from 'antd';
+import { Row, Col } from 'antd';
+
+
 
 const EditableContext = React.createContext(null);
 
@@ -70,7 +74,6 @@ const EditableCell = ({
                 ]}
             >
                 {inputNode}
-                {/*<InputNumber ref={inputRef} onPressEnter={save} onBlur={save} />*/}
             </Form.Item>
         ) : (
             <div
@@ -91,6 +94,8 @@ const EditableCell = ({
 class DataTable extends React.Component {
 
     state = {
+        searchInput: "",
+        dataSource: [],
         searchText: '',
         searchedColumn: '',
         selectedRowKeys: [],
@@ -98,7 +103,9 @@ class DataTable extends React.Component {
         checkboxSelection: true,
         loading: true,
         column_choice: "calcul",
-        select: true
+        select: true,
+        typeArrete: "Courant",
+        allowSearchOperations: ["operations", "operations_recap"],
 
     };
 
@@ -109,11 +116,27 @@ class DataTable extends React.Component {
             column_choice: props.choice,
             selectedRowKeys: props.index_selected,
             checkboxSelection: props.check,
-            select: props.select
+            select: props.select,
+            typeArrete: props.typeArrete,
         })
     }
 
-    onSelectChange = selectedRowKeys => {
+    onSelectChange = selected => {
+
+
+        let selectedRowKeys = []
+        const searchValue = this.state.searchInput
+
+
+        if (searchValue !== ""){
+            const selectedState = this.state.selectedRowKeys
+
+             selectedRowKeys = [...new Set([...selectedState, ...selected])]
+        }else{
+            selectedRowKeys = [...selected]
+        }
+
+        // this.setState({selectedRowKeys: selectedRowKeys})
 
         this.props.setSelection({selectedRowKeys})
 
@@ -204,6 +227,8 @@ class DataTable extends React.Component {
         const item = updateData[index];
         updateData.splice(index, 1, { ...item, ...row });
 
+        // this.setState({ dataSource: updateData})
+
         this.props.setSelection({selectedRowKeys, updateData})
     };
 
@@ -211,15 +236,93 @@ class DataTable extends React.Component {
         return  <p> {new Intl.NumberFormat('fr-FR', {style: 'currency', currency: 'XAF' }).format(amount)} </p>
     }
 
+    handleChange  = (record, colName) => {
+        // update data value:
+        let updateData = this.state.dataSource
+        const value = record[colName]
+        const key = record.key
+        updateData[key][colName] = !value
+        this.setState({dataSource: updateData})
+        this.props.setSelection({updateData})
+    }
+
+    onChange =  (e) => {
+
+        const value = e.target.value
+
+        this.setState({
+            searchInput: value
+        })
+    }
+
+     resultSearch = (title) => {
+       const allowSearchOperations = this.state.allowSearchOperations
+       const column_choice = this.state.column_choice
+
+        const inter_res = !allowSearchOperations.includes(column_choice)? <Col className="gutter-row" span={5}>
+            <Input.Search
+                placeholder="Rechercher un matricule"
+                allowClear
+                onKeyUp={this.onChange}
+            />
+        </Col> : <></>
+        let res =  <Row gutter={0}>
+            <Col className="gutter-row" span={19}>
+                <span className="tableTitle">{title}</span>
+            </Col>
+            {inter_res}
+        </Row>
+        return res
+    }
+
     render() {
 
-        const all_columns =  {
+        const operations_added = this.state.typeArrete === "Epargne"? []: [
+            {
+                title: "Commision mouvement",
+                dataIndex: "com_mvt",
+                key: "com_mvt",
+                width: 100,
+                render: (text, record) => (
+                    <Switch checked={text} onChange={() => this.handleChange(record, "com_mvt")} />
+                ),
+            },
+            {
+                title: "Commision découvert",
+                dataIndex: "com_dec",
+                key: "com_dec",
+                width: 100,
+                render: (text, record) => (
+                    <Switch checked={text} onChange={() => this.handleChange(record, "com_dec")} />
+                ),
+            },
+        ]
+        const operations_added_recap = this.state.typeArrete === "Epargne"? []: [
+            {
+                title: "Commision mouvement",
+                dataIndex: "com_mvt",
+                key: "com_mvt",
+                width: 100,
+                render: (text) => (
+                    <Switch checked={text} />
+                ),
+            },
+            {
+                title: "Commision découvert",
+                dataIndex: "com_dec",
+                key: "com_dec",
+                width: 100,
+                render: (text) => (
+                    <Switch checked={text} />
+                ),
+            },
+        ]
+        const all_columns = {
             "calcul": [
                 {
                     title: 'Numéro de compte',
                     dataIndex: 'num_compte',
                     key: 'num_compte',
-                    ...this.getColumnSearchProps('num_compte')
                 },
                 {
                     title: 'Type',
@@ -250,7 +353,6 @@ class DataTable extends React.Component {
                         handleSave: this.handleSave,
                     }),
                     render: solde => this.currencyTransform(solde),
-                    // ...this.getColumnSearchProps('solde_initial')
 
                 },
                 {
@@ -271,7 +373,6 @@ class DataTable extends React.Component {
                         handleSave: this.handleSave,
                     }),
                     render: montant => this.currencyTransform(montant),
-                    // ...this.getColumnSearchProps('montant')
 
                 },
                 {
@@ -292,7 +393,6 @@ class DataTable extends React.Component {
                         title: 'Début autorisation',
                         handleSave: this.handleSave,
                     }),
-                    // ...this.getColumnSearchProps('debut_autorisation')
                 }
                 ,
                 {
@@ -320,15 +420,16 @@ class DataTable extends React.Component {
                     title: "Code Opération",
                     dataIndex: "code_operation",
                     key: "code_operation",
+                    width: 200,
                     ...this.getColumnSearchProps("code_operation")
                 },
                 {
                     title: "Libellé Opération",
                     dataIndex: "libelle_operation",
                     key: "libelle_operation",
-                    ...this.getColumnSearchProps("code_operation")
+                    width: 200,
                 },
-            ],
+            ].concat(operations_added),
             "accounts_recap": [
                 {
                     title: 'Numéro de compte',
@@ -396,51 +497,45 @@ class DataTable extends React.Component {
                     title: "Code Opération",
                     dataIndex: "code_operation",
                     key: "code_operation",
-                    ...this.getColumnSearchProps("code_operation")
+                    width: 150,
                 },
                 {
                     title: "Libellé Opération",
                     dataIndex: "libelle_operation",
                     key: "libelle_operation",
-                    ...this.getColumnSearchProps("code_operation")
+                    width: 150,
                 },
-            ],
+            ].concat(operations_added_recap),
             "results": [
                 {
                     title: "N° de Compte",
                     dataIndex: "N° de Compte",
                     key: "N° de Compte",
-                    ...this.getColumnSearchProps("\"N° de Compte")
                 },
                 {
                     title: "Résultat calcul",
                     dataIndex: "Calcul",
                     key: "Calcul",
-                    ...this.getColumnSearchProps("Calcul")
                 },
                 {
                     title: "Résultat journal",
                     dataIndex: "Journal",
                     key: "Journal",
-                    ...this.getColumnSearchProps("Journal")
                 },
                 {
                     title: "Ecart",
                     dataIndex: "Ecart",
                     key: "Ecart",
-                    ...this.getColumnSearchProps("Ecart")
                 },
                 {
                     title: "Date début arrêté",
                     dataIndex: "date_deb",
                     key: "date_deb",
-                    ...this.getColumnSearchProps("date_deb")
                 },
                 {
                     title: "Date fin arrêté",
                     dataIndex: "date_fin",
                     key: "date_fin",
-                    ...this.getColumnSearchProps("date_fin")
                 }
             ],
             "calcul_epargne": [
@@ -448,7 +543,6 @@ class DataTable extends React.Component {
                     title: 'Numéro de compte',
                     dataIndex: 'num_compte',
                     key: 'num_compte',
-                    ...this.getColumnSearchProps('num_compte')
                 },
                 {
                     title: 'Type',
@@ -514,42 +608,54 @@ class DataTable extends React.Component {
         ]
         }
 
-        const { selectedRowKeys, column_choice, loading, dataSource, select } = this.state;
+        const { selectedRowKeys, column_choice, loading, dataSource, select, searchInput, allowSearchOperations } = this.state;
+        let newDataSource = dataSource
+
+        if (!allowSearchOperations.includes(column_choice) && (searchInput !== "")){
+                // colSearch = "code_operation"
+            const colSearch = "num_compte"
+
+            newDataSource = newDataSource.filter((record, index) =>{
+                record.key = index
+                return  record[colSearch].includes(searchInput)
+            })
+        }
+
         const rowSelection = select !== false ? {
             selectedRowKeys,
             onChange: this.onSelectChange,
             selections: [
-                Table.SELECTION_ALL,
-                Table.SELECTION_INVERT,
-                Table.SELECTION_NONE,
-                {
-                    key: 'odd',
-                    text: 'Select Odd Row',
-                    onSelect: changableRowKeys => {
-                        let newSelectedRowKeys = [];
-                        newSelectedRowKeys = changableRowKeys.filter((key, index) => {
-                            if (index % 2 !== 0) {
-                                return false;
-                            }
-                            return true;
-                        });
-                        this.setState({ selectedRowKeys: newSelectedRowKeys });
-                    },
-                },
-                {
-                    key: 'even',
-                    text: 'Select Even Row',
-                    onSelect: changableRowKeys => {
-                        let newSelectedRowKeys = [];
-                        newSelectedRowKeys = changableRowKeys.filter((key, index) => {
-                            if (index % 2 !== 0) {
-                                return true;
-                            }
-                            return false;
-                        });
-                        this.setState({ selectedRowKeys: newSelectedRowKeys });
-                    },
-                },
+                // Table.SELECTION_ALL,
+                // Table.SELECTION_INVERT,
+                // Table.SELECTION_NONE,
+                // {
+                //     key: 'odd',
+                //     text: 'Select Odd Row',
+                //     onSelect: changableRowKeys => {
+                //         let newSelectedRowKeys = [];
+                //         newSelectedRowKeys = changableRowKeys.filter((key, index) => {
+                //             if (index % 2 !== 0) {
+                //                 return false;
+                //             }
+                //             return true;
+                //         });
+                //         this.setState({ selectedRowKeys: newSelectedRowKeys });
+                //     },
+                // },
+                // {
+                //     key: 'even',
+                //     text: 'Select Even Row',
+                //     onSelect: changableRowKeys => {
+                //         let newSelectedRowKeys = [];
+                //         newSelectedRowKeys = changableRowKeys.filter((key, index) => {
+                //             if (index % 2 !== 0) {
+                //                 return true;
+                //             }
+                //             return false;
+                //         });
+                //         this.setState({ selectedRowKeys: newSelectedRowKeys });
+                //     },
+                // },
             ],
         }:{
             selectedRowKeys: [],
@@ -565,7 +671,11 @@ class DataTable extends React.Component {
             },
         };
 
-        return <Table title={() => this.props.title} loading={loading}  components={components} rowClassName={() => 'editable-row'} bordered rowSelection={rowSelection} columns={all_columns[column_choice]} dataSource={dataSource} pagination={{ pageSize: 100}} scroll={{ y: 240, x: x }}  />;
+        return  <>
+                    <Row>
+                        <Table title={() => this.resultSearch(this.props.title)} loading={loading}  components={components} rowClassName={() => 'editable-row'} bordered rowSelection={rowSelection} columns={all_columns[column_choice]} dataSource={newDataSource} pagination={{ pageSize: 15}} scroll={{ y: 390, x: x }}  />
+                    </Row>
+                </>
     }
 }
 

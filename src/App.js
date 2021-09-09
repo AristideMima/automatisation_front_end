@@ -22,10 +22,9 @@ import History from "./pages/parameters/History";
 import Solde from "./pages/parameters/Solde";
 import Journal from "./pages/parameters/Journal";
 import Discovered from "./pages/parameters/Discovered";
+import Help from "./pages/Help";
 
 class App extends React.Component {
-
-
      constructor(props) {
          super(props);
 
@@ -55,6 +54,7 @@ class App extends React.Component {
                             <PrivateRoute exact path ='/Discovered' component={Discovered} />
                             <PrivateRoute exact path ='/Journal' component={Journal} />
                             <PrivateRoute exact path ='/Solde' component={Solde} />
+                            <PrivateRoute exact path ='/Help' component={Help} />
                             <Route
                                 render={function() {
                                     return <NotFound/>

@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/automatisation_arrete.iml" filepath="$PROJECT_DIR$/automatisation_arrete.iml" />
       <module fileurl="file://$PROJECT_DIR$/../automatisation_arrete_backend/automatisation_arrete_backend.iml" filepath="$PROJECT_DIR$/../automatisation_arrete_backend/automatisation_arrete_backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../nginx/nginx.iml" filepath="$PROJECT_DIR$/../nginx/nginx.iml" />
     </modules>
   </component>
 </project>
