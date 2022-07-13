@@ -1,70 +1,63 @@
-# Getting Started with Create React App
+<br/>
+<p align="center">
+  <h3 align="center">Automation control of account balances</h3>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+  <p align="center">
+    web platform for the automatic control of the calculation of account statements 
+    <br/>
+    <br/>
+  </p>
+</p>
 
-## Available Scripts
 
-In the project directory, you can run:
 
-### `yarn start`
+## Table Of Contents
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+* [About the Project](#about-the-project)
+* [Built With](#built-with)
+* [Getting Started](#getting-started)
+  * [Prerequisites](#prerequisites)
+* [Usage](#usage)
+* [Authors](#authors)
+* [Acknowledgements](#acknowledgements)
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## About The Project
 
-### `yarn test`
+This project was carried out as part of an operation to automate bank order checks.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The bankruptcy control operations are very important elements in the bank, allowing it to be able to
+control not only system anomalies, but also the situations of its customers.
 
-### `yarn build`
+The main challenge here has been the fact that the data used is a not very
+well structured. So it was a question of setting up a system capable of extracting the necessary information.
+, automatically perform the necessary calculations and make the results available in the form of Excel files.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+So we have set up a Django rest API for the backend and a frontEnd part for the interfaces
+with ReactJs.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+This is just the frontend repository, the backend can be found here <a href="https://github.com/AristideMima/automatisation_back_end/tree/master"> https://github.com/AristideMima/automatisation_back_end</a>
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Built With
 
-### `yarn eject`
+We used the following main languages and librairies
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+* [Reactjs](https://fr.reactjs.org/)
+* [Javascript](https://www.javascript.com/)
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Getting Started
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+To get a local copy up and running follow these simple example steps.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Prerequisites
 
-## Learn More
+* Nodejs
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Usage
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+automatic control of the calculation of account statements, Document extraction, File Upload, Excel file generation.
 
-### Code Splitting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
 
-### Analyzing the Bundle Size
+## Authors
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+* **Aristide Mathieu MISSITANE** - *Software Engineer & Data Scientist* - [Aristide Mathieu MISSITANE](https://github.com/AristideMima) - **
