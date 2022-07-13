@@ -1,0 +1,215 @@
+.header_count{
+    font-family: "Tempus Sans ITC";
+    font-size: large ;
+    color: cornflowerblue;
+    font-weight: bold;
+}
+
+.header_title{
+    /*font-family: "Tempus Sans ITC";*/
+    /*font-size: large ;*/
+    /*color: cornflowerblue;*/
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+}
+
+.custom_titled_header {
+    padding: 1px;
+    border-radius: 25px;
+}
+
+.card_header_title {
+    width: 100%;
+    text-align: center;
+}
+
+.editable-row .ant-form-item-explain {
+    position: absolute;
+    top: 100%;
+    font-size: 12px;
+}
+
+.editable-cell-value-wrap {
+    padding: 5px 12px;
+    cursor: pointer;
+}
+
+.editable-row:hover .editable-cell-value-wrap {
+    padding: 4px 11px;
+    border: 1px solid #d9d9d9;
+    border-radius: 2px;
+}
+
+[data-theme='dark'] .editable-row:hover .editable-cell-value-wrap {
+    border: 1px solid #434343;
+}
+
+
+.timer{
+    text-align: center;
+    font-size: xx-large;
+    display: block;
+}
+
+.icon-file{
+    display: flex;
+    float: left;
+    font-size: 2em;
+}
+.icon-file_more{
+    margin-top: 6px;
+    display: flex;
+    float: right;
+}
+.text-file{
+    margin-top: 12px;
+    display: block;
+    float: left;
+    font-size: medium;
+    color: #3f50b5;
+    font-family: Arial
+}
+
+.text-file .histo{
+    color: #ef5350;
+}
+
+.box-home{
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+}
+
+.text-file .solde{
+    color: #00695c
+}
+
+.text-file .journal{
+    color: #ab47bc
+}
+
+.text-file .autorisation{
+    color: #616161;
+}
+
+.number{
+    float: left;
+}
+
+.title-disk{
+    font-size: x-large;
+    font-family: "Bitstream Charter";
+    vertical-align: middle;
+    margin: auto;
+    color: #7481ce;
+}
+.number-space{
+    font-size: x-large;
+    font-style: unset;
+}
+
+.box-simulation{
+    border: 1px solid #1890ff;
+    background-color: #1890ff;
+    border-radius: 10px;
+    padding: 20%;
+}
+
+.title-sumlation{
+    font-size: medium;
+}
+
+.number-space-simulation{
+    font-size: 2.7em;
+    color: #1890ff;
+    font-weight: bold;
+}
+
+.tableTitle{
+    text-align: center;
+    font-family: "Bitstream Charter";
+    font-size: large;
+}
+
+
+
+.type-loading{
+    font-size: large;
+    font-family: Arial;
+    color: gray;
+}
+
+.whole-page{
+    margin-top: 100px;
+}
+
+.antd-table-m{
+    max-width: 50%;
+    background-color: #282c34;
+    border: 1px solid black;
+}
+
+.antd-layout{
+    overflow-x: hidden !important;
+}
+
+.content{
+    margin-top: 10px;
+}
+
+.header-title-stockage{
+    padding-left: 15px;
+    font-size: large;
+    color: gray;
+    margin-bottom: 30px;
+    text-transform: initial;
+    font-family: Arial;
+}
+
+.header-title-legend{
+    text-align: center;
+    font-size: large;
+    color: gray;
+    font-style: italic;
+    text-decoration: underline;
+
+}
+
+.chart-display{
+    /*vertical-align: middle;*/
+}
+
+.title-ecarts{
+    text-align: center;
+    margin-top: 80px;
+    color: gray;
+    display: block;
+    vertical-align: middle;
+    font-size: 8em;
+}
+
+.title-statistique{
+    text-align: center;
+    margin-top: auto;
+    font-size: medium;
+    font-family: Arial;
+}
+
+.ant-table-title {
+    text-align: center;
+    text-transform: uppercase;
+    color: white;
+    background-color: #ef5350;
+}
+
+.download-statistique{
+    margin-left: 10px;
+    float: right;
+}
+
+.ant-table-column-title {
+    text-align: center;
+}
+
+.link-component:hover{
+    color: #afa9a9;
+}
